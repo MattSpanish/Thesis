@@ -30,7 +30,7 @@
                         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                         <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
                         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                        <a class="btn btn-primary btn-s" href="register.html" role="button">Sign-up</a>
+                        <a class="btn btn-primary btn-s" href="register.php" role="button">Sign-up</a>
 
                     </ul>
                 </div>
@@ -47,8 +47,8 @@
                 <p class="fs-5">Are you a Professor or Human Resource</p>
 
                 <div class="col">
-                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.html" role="button">Professor</a>
-                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.html" role="button">HR</a>
+                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.php" role="button">Professor</a>
+                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.php" role="button">HR</a>
                 </div>
             </div>
             <div class="overlay"></div> <!-- Add an overlay div for the black color -->
