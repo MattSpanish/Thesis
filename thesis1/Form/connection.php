@@ -1,8 +1,8 @@
 <?php
 // Connect to your database (Replace placeholders with actual values)
 $servername = "localhost";
-$username = "username";
-$password = "password";
+$username = "your_username";
+$password = "your_password";
 $database = "register";
 $conn = new mysqli($servername, $username, $password, $database);
 

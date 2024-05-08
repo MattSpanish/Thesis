@@ -73,7 +73,7 @@
           
           
           <div class="text-center">
-            <p class="mb-0">Already Have an Account? <a href="LoginPage.html" class="text-success">Login</a></p>
+            <p class="mb-0">Already Have an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
           </div>
         </form>
       </div>
@@ -86,12 +86,14 @@
 
   <!-- Add JavaScript to handle button click and redirect -->
   <script>
+
     document.addEventListener('DOMContentLoaded', function() {
       var button = document.getElementById('nextButton');
       button.addEventListener('click', function() {
-        window.location.href = 'register2.html';
+        window.location.href = 'register2.php';
       });
     });
+
   </script>
 
 </body>
