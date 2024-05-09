@@ -1,8 +1,8 @@
 <?php
 // Connect to your database (Replace placeholders with actual values)
 $servername = "localhost";
-$username = "your_username";
-$password = "your_password";
+$username = "root";
+$password = "";
 $database = "register";
 $conn = new mysqli($servername, $username, $password, $database);
 
@@ -20,20 +20,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nationality = $_POST['nationality'];
     $address = $_POST['address'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $password = $_POST["pass"];
     $cellphone = $_POST['cellphone'];
     $viber_account = $_POST['viber_account'];
 
     // Prepare and execute SQL statement to insert data into the database
-    $stmt = $conn->prepare("INSERT INTO users (fullname, dob, age, gender, nationality, address, email, password, cellphone, viber_account) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssisssssss", $fullname, $dob, $age, $gender, $nationality, $address, $email, $password, $cellphone, $viber_account);
+    $stmt = $conn->prepare("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssisssssii", $fullname, $dob, $age, $gender, $nationality, $address, $email, $pass, $cellphone, $viber_account);
     $stmt->execute();
 
     // Close statement
     $stmt->close();
 
     // Redirect to a success page or do something else
-    header("Location: success.php");
+    header("Location: LoginPage.php");
     exit();
 }
 

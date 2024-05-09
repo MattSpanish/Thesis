@@ -22,28 +22,29 @@
       </div>
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
-        <form action="LoginPage.php" method="post">
+        <form action="connection.php" method="post">
+        
           <h4 class="text-center mb-5 mt-3">Register your Account</h4>
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example1">Email</label>
-            <input type="email" id="form2Example1" class="form-control" />
+            <input type="email" id="form2Example1" name="email" class="form-control" />
           </div>
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example1">Password</label>
-            <input type="password" id="form2Example1" class="form-control" />
+            <input type="password" id="form2Example1" name="password" class="form-control" />
           </div>
 
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example1">Cellphone number</label>
-            <input type="number" id="form2Example1" class="form-control" />
+            <input type="number" id="form2Example1" name="cellphone" class="form-control" />
           </div>
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form3Example3">Viber Account</label>
-            <input type="number" id="form3Example3" class="form-control" />
+            <input type="number" id="form3Example3" name="viber_account" class="form-control" />
           </div>
 
           

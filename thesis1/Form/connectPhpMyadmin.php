@@ -1,6 +1,6 @@
 <?php
 
-$connection = mysqli_connect("localhost:3306","root","","register");
+$connection = mysqli_connect("localhost:3000","root","","register");
 
 if(!$connection){ 
     die("Error". mysqli_connect_error());

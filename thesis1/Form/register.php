@@ -22,7 +22,7 @@
       </div>
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
-        <form action="register2.php" method="post">
+        <form action="connection.php" method="post">
           <h4 class="text-center mb-5 mt-3">Register your Account</h4>
           
           <div data-mdb-input-init class="form-outline mb-4">
@@ -64,8 +64,30 @@
           </div>
 
           <div data-mdb-input-init class="form-outline mb-4">
-            <label class="form-label" for="form2Example5">Address</label>
-            <input type="text" id="form2Example5" name="address" class="form-control" />
+            <label class="form-label" for="form2Example6">Email</label>
+            <input type="email" id="form2Example6" name="email" class="form-control" />
+          </div>
+
+          <div data-mdb-input-init class="form-outline mb-4">
+            <label class="form-label" for="form2Example7">Password</label>
+            <input type="password" id="form2Example7" name="password" class="form-control" />
+          </div>
+
+          <div class="form-row mb-4">
+            <div class="col">
+              <label class="form-label" for="form2Example8">Cellphone Number</label>
+              <input type="tel" id="form2Example8" name="cellphone" class="form-control" />
+            </div>
+            
+            <div class="col">
+              <label class="form-label" for="form2Example9">Viber Account</label>
+              <input type="text" id="form2Example9" name="viber_account" class="form-control" />
+            </div>
+          </div>
+
+          <div data-mdb-input-init class="form-outline mb-4">
+            <label class="form-label" for="form2Example10">Address</label>
+            <input type="text" id="form2Example10" name="address" class="form-control" />
           </div>
 
           <!-- Add an ID to the button -->
@@ -83,18 +105,6 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-  <!-- Add JavaScript to handle button click and redirect -->
-  <script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-      var button = document.getElementById('nextButton');
-      button.addEventListener('click', function() {
-        window.location.href = 'register2.php';
-      });
-    });
-
-  </script>
 
 </body>
 </html>
