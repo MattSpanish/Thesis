@@ -20,13 +20,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nationality = $_POST['nationality'];
     $address = $_POST['address'];
     $email = $_POST['email'];
-    $password = $_POST["pass"];
+    $password = $_POST['passowrd'];
     $cellphone = $_POST['cellphone'];
     $viber_account = $_POST['viber_account'];
 
     // Prepare and execute SQL statement to insert data into the database
-    $stmt = $conn->prepare("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssisssssii", $fullname, $dob, $age, $gender, $nationality, $address, $email, $pass, $cellphone, $viber_account);
+    $stmt = $conn->prepare("INSERT INTO users (fullname, dob, age, gender, nationality, address, email, password, cellphone, viber_account) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssisssssii", $fullname, $dob, $age, $gender, $nationality, $address, $email, $password, $cellphone, $viber_account);
     $stmt->execute();
 
     // Close statement
