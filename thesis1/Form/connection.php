@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nationality = $_POST['nationality'];
     $address = $_POST['address'];
     $email = $_POST['email'];
-    $password = $_POST['passowrd'];
+    $password = $_POST['password'];
     $cellphone = $_POST['cellphone'];
     $viber_account = $_POST['viber_account'];
 
