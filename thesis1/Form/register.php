@@ -1,3 +1,44 @@
+<?php
+// Include database connection code here
+// Database connection parameters
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "register";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $database);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve username and password from form
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert user data into the database
+    $sql = "INSERT INTO users (email, password) VALUES (?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $email, $hashed_password);
+
+    if ($stmt->execute()) {
+        echo "Registration successful";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +64,9 @@
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
 
-        <form action="connection.php" method="post">
-        <form action="LoginPage.php" method="post">
+         <form action="login_proccess.php" method="post">
+        
+          
           <h4 class="text-center mb-5 mt-3">Register your Account</h4>
           
           <div data-mdb-input-init class="form-outline mb-4">
@@ -67,7 +109,7 @@
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example6">Email</label>
-            <input type="email" name="email" required id="email" class="form-control" />
+            <input type="email" name="email" required  class="form-control" />
           </div>
 
           <div data-mdb-input-init class="form-outline mb-4">
@@ -93,7 +135,8 @@
           </div>
 
           <!-- Add an ID to the button -->
-          <button id="nextButton" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Next</button>
+          <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign up</button>
+
           
           
           <div class="text-center">
@@ -101,34 +144,6 @@
           </div>
 
 <!-- register_process.php -->
-
-<?php
-// Include database connection code here
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
-    $fullname = $_POST["fullname"];
-    $dob = $_POST["dob"];
-    // Other form fields...
-
-    // Hash the password for security
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-
-    // Insert user data into the database
-    $sql = "INSERT INTO users (fullname, dob, username, password) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $fullname, $dob, $_POST["username"], $password);
-    $stmt->execute();
-
-    // Close statement and database connection
-    $stmt->close();
-    $conn->close();
-
-    // Redirect to login page after successful registration
-    header("Location: LoginPage.php");
-    exit();
-}
-?>
 
 
         </form>

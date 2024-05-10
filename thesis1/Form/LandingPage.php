@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -48,13 +50,12 @@
 
                 <div class="col">
                     <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.php" role="button">Professor</a>
-                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.php" role="button">HR</a>
+                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPageHR.php" role="button">HR</a>
                 </div>
             </div>
             <div class="overlay"></div> <!-- Add an overlay div for the black color -->
         </header>
         
-       
        
             </div>
         </section>
@@ -262,6 +263,8 @@
                 </div>
             </div>
         </footer>
+
+        
        
         
         <!-- Bootstrap core JS-->

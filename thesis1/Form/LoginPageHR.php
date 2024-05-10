@@ -55,14 +55,29 @@
           <!-- Submit button -->
           <button type="button" data-mdb-button-init data-mdb-ripple-init onclick="validateForm()" class="btn btn-success btn-block mb-4">Sign in</button>
           <!-- Register buttons -->
-          <div class="text-center">
-            <p class="mb-0">Don't have an account? <a href="register.php" class="text-success">Register</a></p>
+          
           </div>
         </form>
       </div>
     </div>
   </div>
   
+
+  <script>
+
+  function validateForm() {
+    var email = document.getElementById('email').value; // Corrected ID
+    var password = document.getElementById('password').value; // Corrected ID
+
+    if (email === 'ADMIN' && password === 'PASSWORD') {
+
+      window.location.href = 'LandingPage.php';
+    } else {
+      alert('Invalid email or password. Please try again.');
+    }
+  }
+
+
 
 </script>
 
