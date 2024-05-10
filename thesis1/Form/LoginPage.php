@@ -22,18 +22,19 @@
       </div>
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
-        <form>
-          <h4 class="text-center mb-5 mt-3">Log in to your Account</h4>
+        <form action="login_process.php" method="post">
+          
+
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example1">Email </label>
-            <input type="email" id="form2Example1" class="form-control" />
+            <input type="email"  placeholder="Enter Your Email" name="email" required id="email" class="form-control" />
           </div>
 
           <!-- Password input -->
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example2">Password</label>
-            <input type="password" id="form2Example2" class="form-control" />
+            <input type="password"  placeholder="Enter Your Password" name="password" required id="password"  class="form-control" />
           </div>
 
           <!-- 2 column grid layout for inline styling -->

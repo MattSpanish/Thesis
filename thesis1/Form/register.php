@@ -22,7 +22,9 @@
       </div>
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
+
         <form action="connection.php" method="post">
+        <form action="LoginPage.php" method="post">
           <h4 class="text-center mb-5 mt-3">Register your Account</h4>
           
           <div data-mdb-input-init class="form-outline mb-4">
@@ -65,12 +67,12 @@
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example6">Email</label>
-            <input type="email" id="form2Example6" name="email" class="form-control" />
+            <input type="email" name="email" required id="email" class="form-control" />
           </div>
 
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example7">Password</label>
-            <input type="password" id="form2Example7" name="password" class="form-control" />
+            <input type="password" name="password" required id="password" class="form-control" />
           </div>
 
           <div class="form-row mb-4">
@@ -97,6 +99,38 @@
           <div class="text-center">
             <p class="mb-0">Already Have an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
           </div>
+
+<!-- register_process.php -->
+
+<?php
+// Include database connection code here
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve form data
+    $fullname = $_POST["fullname"];
+    $dob = $_POST["dob"];
+    // Other form fields...
+
+    // Hash the password for security
+    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
+
+    // Insert user data into the database
+    $sql = "INSERT INTO users (fullname, dob, username, password) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $fullname, $dob, $_POST["username"], $password);
+    $stmt->execute();
+
+    // Close statement and database connection
+    $stmt->close();
+    $conn->close();
+
+    // Redirect to login page after successful registration
+    header("Location: LoginPage.php");
+    exit();
+}
+?>
+
+
         </form>
       </div>
     </div>
