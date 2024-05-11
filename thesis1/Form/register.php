@@ -1,40 +1,41 @@
 <?php
-// Include database connection code here
-// Database connection parameters
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "register";
+require 'config.php'; // Adjust the path as necessary
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if ($conn === false) {
+    die("Error: Could not connect. " . mysqli_connect_error());
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve username and password from form
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+// Rest of your code...
 
-    // Hash the password
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insert user data into the database
-    $sql = "INSERT INTO users (email, password) VALUES (?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $hashed_password);
 
-    if ($stmt->execute()) {
-        echo "Registration successful";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+if (isset($_POST["submit"])) {
+  $fullname = $_POST['fullname'];
+  $username = $_POST['username'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $confirmpassword = $_POST["confirmpassword"];
+  $duplicate = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username' OR email= '$email'");
+  if(mysqli_num_rows($duplicate) > 0){
+    echo
+    "<script> alert ('Email Has Already Taken'); </script>";
+  }
+
+  else{
+    if($password == $confirmpassword){
+      $query = "INSERT INTO users (fullname, username, email, password) VALUES ('$fullname', '$username', '$email', '$password')";
+      if(mysqli_query($conn, $query)){
+        echo "<script> alert('Registration successful') </script>";
+      } else {
+        echo "<script> alert('Error: Registration failed') </script>";
+      }
     }
+    else{
+      echo 
+    "<script> alert('Password Does not match') </script>";
+    }
+  }
 
-    $stmt->close();
-    $conn->close();
 }
 ?>
 
@@ -64,86 +65,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
 
-         <form action="login_proccess.php" method="post">
-        
+      <form class="" action="" method="post" autocomplete="off">
+    <h4 class="text-center mb-5 mt-3">Register your Account</h4>
+
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="fullname">FullName</label>
+        <input type="text" id="fullname" name="fullname" class="form-control" />
+    </div>
           
-          <h4 class="text-center mb-5 mt-3">Register your Account</h4>
-          
-          <div data-mdb-input-init class="form-outline mb-4">
-            <label class="form-label" for="form2Example1">Fullname</label>
-            <input type="text" id="form2Example1" name="fullname" class="form-control" />
-          </div>
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" id="username" name="username" class="form-control" />
+    </div>
 
-          <div class="form-row mb-4">
-            <div class="col">
-              <label class="form-label" for="form2Example2">Date of Birth</label>
-              <input type="date" id="form2Example2" name="dob" class="form-control" />
-            </div>
-            
-            <div class="col">
-              <label class="form-label" for="form2Example3">Age</label>
-              <input type="number" id="form2Example3" name="age" class="form-control" />
-            </div>
-          </div>
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" id="email" name="email" required value="" class="form-control" />
+    </div>
 
-          <div class="form-row"> 
-            <div class="col">
-              <div data-mdb-input-init class="form-outline mb-4">
-                <label class="form-label" for="form2Example4">Gender</label>
-                <select class="form-control" id="form2Example4" name="gender">
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="col">
-              <div data-mdb-input-init class="form-outline mb-4">
-                <label class="form-label" for="form2Example5">Nationality</label>
-                <input type="text" id="form2Example5" name="nationality" class="form-control" />
-              </div>
-            </div>
-          </div>
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" name="password" required value="" class="form-control" />
+    </div>
 
-          <div data-mdb-input-init class="form-outline mb-4">
-            <label class="form-label" for="form2Example6">Email</label>
-            <input type="email" name="email" required  class="form-control" />
-          </div>
+    <div data-mdb-input-init class="form-outline mb-4">
+        <label class="form-label" for="confirmpassword">Confirm Password</label>
+        <input type="password" id="confirmpassword" name="confirmpassword" required value="" class="form-control" />
+    </div>
 
-          <div data-mdb-input-init class="form-outline mb-4">
-            <label class="form-label" for="form2Example7">Password</label>
-            <input type="password" name="password" required id="password" class="form-control" />
-          </div>
+    <!-- Add an ID to the button and correct the name attribute -->
+    <button type="submit" name="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign up</button>
+    
+    <div class="text-center">
+        <p class="mb-0">Already Have an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
+    </div>
+</form>
 
-          <div class="form-row mb-4">
-            <div class="col">
-              <label class="form-label" for="form2Example8">Cellphone Number</label>
-              <input type="tel" id="form2Example8" name="cellphone" class="form-control" />
-            </div>
-            
-            <div class="col">
-              <label class="form-label" for="form2Example9">Viber Account</label>
-              <input type="text" id="form2Example9" name="viber_account" class="form-control" />
-            </div>
-          </div>
 
-          <div data-mdb-input-init class="form-outline mb-4">
-            <label class="form-label" for="form2Example10">Address</label>
-            <input type="text" id="form2Example10" name="address" class="form-control" />
-          </div>
-
-          <!-- Add an ID to the button -->
-          <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign up</button>
-
-          
-          
-          <div class="text-center">
-            <p class="mb-0">Already Have an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
-          </div>
-
-<!-- register_process.php -->
 
 
         </form>
@@ -156,4 +114,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 </body>
-</html>
+</html> 

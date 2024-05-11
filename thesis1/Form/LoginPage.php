@@ -1,3 +1,35 @@
+<?php
+session_start();
+require 'config.php'; // Adjust the path as necessary
+
+if(isset($_POST["submit"])){
+  $usernameemail = $_POST["usernameemail"];
+  $password = $_POST["password"];
+  $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$usernameemail' OR email = '$usernameemail'");
+  $row = mysqli_fetch_assoc($result);
+  if(mysqli_num_rows($result) > 0 ){
+    if($password == $row["password"]){
+      $_SESSION["login"] = true;
+      $_SESSION["id"] = $row["id"];
+      header("Location: LandingPage.php");
+
+  }
+
+  else{
+    echo
+    "<script> alert ('Wrong password'); </script>";
+  }
+  
+}
+  
+  else{
+    echo
+    "<script> alert (User not Registered'); </script>";
+  }
+}
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,17 +56,18 @@
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
 
 
-        <form method="POST" action="login_process.php"> <!-- Ensure the form action is set to your PHP file handling form submission -->
+      <form class="" action="" method="post" autocomplete="off">
+ <!-- Ensure the form action is set to your PHP file handling form submission -->
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
-            <label class="form-label" for="form2Example1">Email </label>
-            <input type="email" name="email" required id="email" class="form-control" />
+            <label class="usernameemail" for="form2Example1">Username or Email </label>
+            <input type="text" name="usernameemail" required value="" id="usernameemail" class="form-control" />
           </div>
 
           <!-- Password input -->
           <div data-mdb-input-init class="form-outline mb-4">
             <label class="form-label" for="form2Example2">Password</label>
-            <input type="password" name="password" required id="password" class="form-control" />
+            <input type="password" name="password" required value="" id="password" class="form-control" />
           </div>
 
           <!-- 2 column grid layout for inline styling -->
@@ -53,7 +86,8 @@
             </div>
           </div>
           <!-- Submit button -->
-          <button type="button" data-mdb-button-init data-mdb-ripple-init onclick="validateForm()" class="btn btn-success btn-block mb-4">Sign in</button>
+          <button data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign in</button>
+
           <!-- Register buttons -->
           <div class="text-center">
             <p class="mb-0">Don't have an account? <a href="register.php" class="text-success">Register</a></p>
