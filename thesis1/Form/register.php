@@ -83,9 +83,17 @@ if (isset($_POST["submit"])) {
                         <label class="form-label" for="confirmpassword">Confirm Password</label>
                         <input type="password" id="confirmpassword" name="confirmpassword" required value="" class="form-control" />
                     </div>
+                    <!-- Terms and Conditions -->
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" value="" id="termsCheckbox" required>
+                        <label class="form-check-label" for="termsCheckbox">
+                            I agree to the <a href="terms&Condition.php" target="_blank">Terms and Conditions</a>
+                        </label>
+                    </div>
+                    <!-- Submit button -->
                     <button type="submit" name="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign up</button>
                     <div class="text-center">
-                        <p class="mb-0">Already Have an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
+                        <p class="mb-0">Already Have x`an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
                     </div>
                 </form>
             </div>
@@ -95,4 +103,4 @@ if (isset($_POST["submit"])) {
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
-</html> 
+</html>
