@@ -26,15 +26,15 @@ if (isset($_POST["submit"])) {
       $query = "INSERT INTO users (fullname, username, email, password) VALUES ('$fullname', '$username', '$email', '$password')";
       if(mysqli_query($conn, $query)){
         echo "<script> alert('Registration successful') </script>";
-      } else {
+        // Redirect to login page
+        header("Location: LoginPage.php");
+        exit; // Make sure to exit after redirection
+    } else {
         echo "<script> alert('Error: Registration failed') </script>";
-      }
     }
-    else{
-      echo 
-    "<script> alert('Password Does not match') </script>";
-    }
+    
   }
+}
 
 }
 ?>
@@ -65,7 +65,7 @@ if (isset($_POST["submit"])) {
 
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
 
-      <form class="" action="" method="post" autocomplete="off">
+      <form class="" action="LoginPage.php" method="post" autocomplete="off">
     <h4 class="text-center mb-5 mt-3">Register your Account</h4>
 
     <div data-mdb-input-init class="form-outline mb-4">
