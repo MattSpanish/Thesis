@@ -93,7 +93,7 @@ if (isset($_POST["submit"])) {
                     <!-- Submit button -->
                     <button type="submit" name="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign up</button>
                     <div class="text-center">
-                        <p class="mb-0">Already Have x`an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
+                        <p class="mb-0">Already Have an Account? <a href="LoginPage.php" class="text-success">Login</a></p>
                     </div>
                 </form>
             </div>
