@@ -2,34 +2,52 @@
 session_start();
 require 'config.php'; // Adjust the path as necessary
 
-if(isset($_POST["submit"])){
-  $usernameemail = $_POST["usernameemail"];
-  $password = $_POST["password"];
-  $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$usernameemail' OR email = '$usernameemail'");
-  $row = mysqli_fetch_assoc($result);
-  if(mysqli_num_rows($result) > 0 ){
-    if($password == $row["password"]){
-      $_SESSION["login"] = true;
-      $_SESSION["id"] = $row["id"];
-      header("Location: LandingPage.php");
-
-  }
-
-  else{
-    echo
-    "<script> alert ('Wrong password'); </script>";
-  }
-  
+if(isset($_POST["submit"])) {
+    $usernameemail = $_POST["usernameemail"];
+    $password = $_POST["password"];
+    
+    // Check if username/email and password are provided
+    if(!empty($usernameemail) && !empty($password)) {
+        // Perform SQL injection prevention (if not using prepared statements)
+        $usernameemail = mysqli_real_escape_string($conn, $usernameemail);
+        $password = mysqli_real_escape_string($conn, $password);
+        
+        // Perform the query
+        $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$usernameemail' OR email = '$usernameemail'");
+        
+        if($result) {
+            // Check if any rows are returned
+            if(mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                
+                // Check if the password matches
+                if(password_verify($password, $row["password"])) {
+                    // Password is correct, set session variables
+                    $_SESSION["login"] = true;
+                    $_SESSION["id"] = $row["id"];
+                    
+                    // Redirect to landing page
+                    header("Location: LandingPage.php");
+                    exit;
+                } else {
+                    // Incorrect password
+                    echo "<script>alert('Wrong password');</script>";
+                }
+            } else {
+                // No user found with the provided username/email
+                echo "<script>alert('User not found');</script>";
+            }
+        } else {
+            // Error in SQL query
+            echo "<script>alert('Error: ". mysqli_error($conn) ."');</script>";
+        }
+    } else {
+        // Username/email or password not provided
+        echo "<script>alert('Please provide username/email and password');</script>";
+    }
 }
-  
-  else{
-    echo
-    "<script> alert (User not Registered'); </script>";
-  }
-}
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +74,7 @@ if(isset($_POST["submit"])){
       <div class="col-lg-4 offset-lg-2"> <!-- Adjust the column size as per your requirement -->
 
 
-      <form class="" action="" method="post" autocomplete="off">
+      <form class="" action="LoginPage.php" method="post" autocomplete="off">
  <!-- Ensure the form action is set to your PHP file handling form submission -->
           <!-- Email input -->
           <div data-mdb-input-init class="form-outline mb-4">
@@ -86,11 +104,13 @@ if(isset($_POST["submit"])){
             </div>
           </div>
           <!-- Submit button -->
-          <button data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign in</button>
+          <button type="submit" name="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-block mb-4">Sign in</button>
 
           <!-- Register buttons -->
           <div class="text-center">
-            <p class="mb-0">Don't have an account? <a href="register.php" class="text-success">Register</a></p>
+        <p class="mb-0">Don't have an account? <a href="register.php" class="text-success">Register</a></p>
+    </div>
+
           </div>
         </form>
       </div>
