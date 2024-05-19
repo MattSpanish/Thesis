@@ -55,7 +55,7 @@ if (isset($_POST["submit"])) {
         <div class="row" style="margin-top: 200px;">
             <div class="col-lg-4 offset-lg-1">
                 <p class="h1 ">LOGO HERE</p>
-                <p class="h2 font-weight-bold ">Let's Manage Your Time Right</p>
+                <p class="h2 font-weight-bold ">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
                 <p class="p- font-weight-normal align-bottom mt-4">
                     A Predictive Modeling for Optimal Workforce Allocation and Performance Rate Enhancement Website
                 </p>

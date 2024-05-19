@@ -40,15 +40,16 @@
         <!-- Masthead-->
         <header class="masthead position-relative">
             <div class="container">
-                <div class="masthead-heading text-uppercase mb-4">Let's Manage Your </div>
-                <div class="masthead-heading text-uppercase mb-5">Time Right</div>
-                <div class="masthead-subheading mb-9">A Predictive Modeling for Optimal Workforce Allocation and Performance Rate Enhancement Website</div>
+                <div class="masthead-heading text-uppercase mb-4">UNLEASH EFFICIENCY </div>
+                <div class="masthead-heading text-uppercase mb-5">EMPOWER YOUR</div>
+                <div class="masthead-heading text-uppercase mb-5">WORKFORCE</div>
+                <div class="masthead-subheading mb-9">YOUR SOLUTION FOR OPTIMIZE WORKFORCE ALLOCATION</div>
 
 
-                <p class="fs-5">Are you a Professor or Human Resource</p>
+                <p class="fs-4">LOG IN AS</p>
 
                 <div class="col">
-                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPage.php" role="button">Professor</a>
+                    <a class="btn btn-primary btn-xl text-uppercase col-2 " href="LoginPage.php" role="button">Professor</a>
                     <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPageHR.php" role="button">HR</a>
                 </div>
             </div>
@@ -174,7 +175,7 @@
 
 
                 <div class="row">
-                    <div class="col-lg-8 mx-auto text-center"><p class="large text-muted">A Web-based Balancing Act is a web-based system that allows organizations to efficiently allocate resources, ensuring that the right people with the appropriate skills are in the right place at the same time.</p></div>
+                    <div class="col-lg-8 mx-auto text-center"><p class="large text-muted">A Web-based Balancing Act is a web-based system that allows organizations to efficiently allocate, ensuring that the right people with the appropriate skills are in the right place at the same time.</p></div>
                 </div>
             </div>
         </section>

@@ -14,7 +14,7 @@
       
       <div class="col-lg-4 offset-lg-1"> <!-- Adjust the column size as per your requirement -->
         <p class="h1 ">LOGO HERE</p>
-        <p class="h2 font-weight-bold ">Lets Mange Your Time Right</p>
+        <p class="h2 font-weight-bold ">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
         <p class="p- font-weight-normal align-bottom mt-4">
           A Predictive Modeling for Optimal Workforce 
           Allocation and Performance Rate Enhancement Website
