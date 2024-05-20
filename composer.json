@@ -1,0 +1,19 @@
+{
+    "name": "mattspanish/thesis",
+    "description": "thesis",
+    "type": "project",
+    "require": {
+        "phpoffice/phpspreadsheet": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mattspanish\\Thesis\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MattSpanish",
+            "email": "matthewrules08@gmail.com"
+        }
+    ]
+}
