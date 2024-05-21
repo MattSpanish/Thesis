@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def calculate_professors_needed(students, total_minutes_per_professor, total_needed_per_professor):
     # Calculate the ratio of total needed minutes to available minutes per professor
     ratio = total_needed_per_professor / total_minutes_per_professor
