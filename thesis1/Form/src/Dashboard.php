@@ -297,29 +297,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
           <!-- New row for prediction output -->
           <div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Predicted Number of Professors Needed</h4>
-                <?php if (isset($prediction)): ?>
-                    <p>For <?php echo htmlspecialchars($students); ?> students, <?php echo htmlspecialchars($subjects); ?> subjects, and an average class size of <?php echo htmlspecialchars($average_class_size); ?>, the predicted number of professors needed is: <?php echo htmlspecialchars($prediction); ?></p>
-                <?php else: ?>
-                    <p>Please enter valid inputs.</p>
-                <?php endif; ?>
-                <a href="index.html">Go Back</a>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Predicted Number of Professors Needed</h4>
+                    <?php if (isset($prediction)): ?>
+                        <p>
+                            For <?php echo htmlspecialchars($students); ?> students,
+                            <?php echo htmlspecialchars($subjects); ?> subjects,
+                            and an average class size of <?php echo htmlspecialchars($average_class_size); ?>,
+                            the predicted number of professors needed is: <?php echo htmlspecialchars($prediction); ?>
+                        </p>
+                    <?php else: ?>
+                        <p>Please enter valid inputs.</p>
+                    <?php endif; ?>
+                    <a href="index.html">Go Back</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Regression Plot</h4>
+                    <!-- Add an image tag to display the regression plot -->
+                    <img src="regression_plot.png" class="img-fluid" alt="Regression Plot">
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Regression Plot</h4>
-                <!-- Add an image tag to display the regression plot -->
-                <img src="regression_plot.png" class="img-fluid" alt="Regression Plot">
-            </div>
-        </div>
-    </div>
-</div>
+
 
             
 
@@ -335,10 +341,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   </div>
                 </div>
               </div>
-
-          
-              
             </div>
+
           <div class="row">
               <div class="col-md-7 grid-margin stretch-card">
                 <div class="card">
