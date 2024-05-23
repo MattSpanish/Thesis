@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Allocation Forecast</title>
+</head>
+<body>
+    <h1>Predict Number of Professors Needed</h1>
+    <form action="predict.php" method="POST">
+        <label for="students">Number of Students:</label>
+        <input type="number" id="students" name="students" required>
+        <br>
+        <label for="subjects">Number of Subjects:</label>
+        <input type="number" id="subjects" name="subjects" required>
+        <br>
+        <label for="average_class_size">Average Class Size:</label>
+        <input type="number" id="average_class_size" name="average_class_size" required>
+        <br>
+        <input type="submit" value="Predict">
+    </form>
+</body>
+</html>

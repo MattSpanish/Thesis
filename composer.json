@@ -1,13 +1,13 @@
 {
-    "name": "mattspanish/thesis",
+    "name": "admin/thesis",
     "description": "thesis",
     "type": "project",
     "require": {
-        "phpoffice/phpspreadsheet": "^2.1"
+        "phpoffice/phpspreadsheet": "^2.1.0"
     },
     "autoload": {
         "psr-4": {
-            "Mattspanish\\Thesis\\": "src/"
+            "Admin\\Thesis\\": "src/"
         }
     },
     "authors": [

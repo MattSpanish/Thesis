@@ -1,18 +1,11 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $students = intval($_POST["students"]);
-    $subjects = intval($_POST["subjects"]);
-    $average_class_size = intval($_POST["average_class_size"]);
 
-    // Ensure the inputs are valid positive integers
-    if ($students > 0 && $subjects > 0 && $average_class_size > 0) {
-        // Run the Python script with the number of students, subjects, and average class size as arguments
-        $command = escapeshellcmd("python3 predict_professors.py " . $students . " " . $subjects . " " . $average_class_size);
-        shell_exec($command);
-
-        // Read the prediction result from the text file
-        $prediction = file_get_contents('prediction.txt');
-    }
+// Read the prediction result from the text file
+$prediction_file = 'prediction.txt';
+if (file_exists($prediction_file)) {
+    $prediction = file_get_contents($prediction_file);
+} else {
+    $prediction = "Prediction file not found.";
 }
 ?>
 
@@ -211,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="Dashboard.php">
+                  <a class="nav-link" href="Dashboard.php.">
                       <span class="menu-title">Dashboard</span>
                       <i class="mdi mdi-home menu-icon"></i>
                   </a>
@@ -294,39 +287,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
               </div>
             </div>
-            
-          <!-- New row for prediction output -->
-          <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Predicted Number of Professors Needed</h4>
-                    <?php if (isset($prediction)): ?>
-                        <p>
-                            For <?php echo htmlspecialchars($students); ?> students,
-                            <?php echo htmlspecialchars($subjects); ?> subjects,
-                            and an average class size of <?php echo htmlspecialchars($average_class_size); ?>,
-                            the predicted number of professors needed is: <?php echo htmlspecialchars($prediction); ?>
-                        </p>
-                    <?php else: ?>
-                        <p>Please enter valid inputs.</p>
-                    <?php endif; ?>
-                    <a href="index.html">Go Back</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">Regression Plot</h4>
-                    <!-- Add an image tag to display the regression plot -->
-                    <img src="regression_plot.png" class="img-fluid" alt="Regression Plot">
-                </div>
+  
+<!-- New row for prediction output -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Predicted Number of Professors Needed</h4>
+                <?php if (isset($prediction)): ?>
+                    <p>The predicted number of professors needed is: <?php echo htmlspecialchars($prediction); ?></p>
+                <?php else: ?>
+                    <p>Prediction not available.</p>
+                <?php endif; ?>
+                <a href="index.html">Go Back</a>
             </div>
         </div>
     </div>
-
-
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Regression Plot</h4>
+                <!-- Add an image tag to display the regression plot -->
+                <img src="regression_plot.png" class="img-fluid" alt="Regression Plot">
+            </div>
+        </div>
+    </div>
+</div>
             
 
             <div class="row">
@@ -341,8 +327,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   </div>
                 </div>
               </div>
+       
             </div>
-
           <div class="row">
               <div class="col-md-7 grid-margin stretch-card">
                 <div class="card">
