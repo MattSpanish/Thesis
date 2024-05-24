@@ -28,7 +28,7 @@
       <!-- partial:partials/_navbar.html -->
       <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
-          <a class="navbar-brand brand-logo" href="Dashboard.php"><img src="signin&singout/assets1/img/logo.png" alt="logo" /></a>
+          <a class="navbar-brand brand-logo" href="Dashboard.php"><img src="signin&signout/assets1/img/logo.png" alt="logo" /></a>
           <a class="navbar-brand brand-logo-mini" href="Dashboard.php"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-stretch">
@@ -158,7 +158,7 @@
               </div>
             </li>
             <li class="nav-item nav-logout d-none d-lg-block">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="../signin&signout/Landingpage.php">
                 <i class="mdi mdi-power"></i>
               </a>
             </li>
@@ -199,7 +199,7 @@
                   </a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="pages/time-tracking.html">
+                  <a class="nav-link" href="time.php">
                       <span class="menu-title">Time Tracking</span>
                       <i class="mdi mdi-clock menu-icon"></i>
                   </a>

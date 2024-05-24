@@ -27,7 +27,7 @@
 <div class="container mt-5">
     <div class="header-container">
         <a class="navbar-brand brand-logo" href="Dashboard.php">
-            <img src="signin&singout/assets1/img/logo.png" alt="logo" />
+            <img src="signin&signout/assets1/img/logo.png" alt="logo" />
         </a>
         <h1>Time Tracking</h1>
     </div>

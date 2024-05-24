@@ -12,7 +12,7 @@
         <div class="row mb-3">
             <div class="col-12 d-flex align-items-center fixed-top-custom">
             <div class="image">
-            <a class="navbar-brand brand-logo" href="Dashboard.php"><img src="signin&singout/assets1/img/logo.png" alt="logo" /></a>
+            <a class="navbar-brand brand-logo" href="Dashboard.php"><img src="signin&signout/assets1/img/logo.png" alt="logo" /></a>
         </div>
   </div>         
 </div>
