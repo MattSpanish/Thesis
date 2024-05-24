@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -102,7 +101,7 @@
                                 <br />
                                 Of Our
                                 <br />
-                                Story!
+                                System!
                             </h4>
                         </div>
                     </li>

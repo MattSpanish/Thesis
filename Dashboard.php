@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -60,7 +62,7 @@
                 <a class="dropdown-item" href="#">
                   <i class="mdi mdi-cached me-2 text-success"></i> Activity Log </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="../signin&signout/Landingpage.php"></a>
                   <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
               </div>
             </li>
@@ -158,7 +160,7 @@
               </div>
             </li>
             <li class="nav-item nav-logout d-none d-lg-block">
-              <a class="nav-link" href="../signin&signout/Landingpage.php">
+              <a class="nav-link" href="#!">
                 <i class="mdi mdi-power"></i>
               </a>
             </li>
@@ -247,7 +249,7 @@
                 <div class="card bg-gradient-danger card-img-holder text-white">
                   <div class="card-body">
                     <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                    <h4 class="font-weight-normal mb-3">Availble Professor
+                    <h4 class="font-weight-normal mb-3">Available Professor
                     </h4>
                     <h2 class="mb-5"> 25</h2>
                   </div>
