@@ -162,10 +162,7 @@
         </div>
 
 
-                <div class="row">
-                    <div class="col-lg-8 mx-auto text-center"><p class="large text-muted">A Web-based Balancing Act is a web-based system that allows organizations to efficiently allocate, ensuring that the right people with the appropriate skills are in the right place at the same time.</p></div>
-                </div>
-            </div>
+         
         </section>
 
 
