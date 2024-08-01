@@ -47,7 +47,7 @@
                 <p class="fs-4">LOG IN AS</p>
 
                 <div class="col">
-                    <a class="btn btn-primary btn-xl text-uppercase col-2 " href="LoginPage.php" role="button">Professor</a>
+                    <a class="btn btn-primary btn-xl text-uppercase col-2 " href="LoginPage.php" role="button">Faculty</a>
                     <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPageHR.php" role="button">HR</a>
                 </div>
             </div>
