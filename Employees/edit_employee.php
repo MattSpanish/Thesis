@@ -30,30 +30,49 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Employee</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h2>Edit Employee</h2>
-    <form method="POST">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" value="<?php echo $employee['name']; ?>" required><br>
+    <div class="container mt-5">
+        <h2 class="text-center">Edit Employee</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form method="POST" class="p-4 border rounded bg-light">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name" value="<?php echo $employee['name']; ?>" required>
+                    </div>
 
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" value="<?php echo $employee['email']; ?>" required><br>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $employee['email']; ?>" required>
+                    </div>
 
-        <label for="department">Department:</label><br>
-        <select id="department" name="department" required>
-            <option value="STEM" <?php if ($employee['department'] == 'STEM') echo 'selected'; ?>>STEM</option>
-            <option value="ABM" <?php if ($employee['department'] == 'ABM') echo 'selected'; ?>>ABM</option>
-            <option value="HUMSS" <?php if ($employee['department'] == 'HUMSS') echo 'selected'; ?>>HUMSS</option>
-        </select><br>
+                    <div class="form-group">
+                        <label for="department">Department:</label>
+                        <select class="form-control" id="department" name="department" required>
+                            <option value="STEM" <?php if ($employee['department'] == 'STEM') echo 'selected'; ?>>STEM</option>
+                            <option value="ABM" <?php if ($employee['department'] == 'ABM') echo 'selected'; ?>>ABM</option>
+                            <option value="HUMSS" <?php if ($employee['department'] == 'HUMSS') echo 'selected'; ?>>HUMSS</option>
+                        </select>
+                    </div>
 
-        <label for="status">Status:</label><br>
-        <select id="status" name="status" required>
-            <option value="FULL TIME" <?php if ($employee['status'] == 'FULL TIME') echo 'selected'; ?>>Full Time</option>
-            <option value="PART TIME" <?php if ($employee['status'] == 'PART TIME') echo 'selected'; ?>>Part Time</option>
-        </select><br><br>
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="FULL TIME" <?php if ($employee['status'] == 'FULL TIME') echo 'selected'; ?>>Full Time</option>
+                            <option value="PART TIME" <?php if ($employee['status'] == 'PART TIME') echo 'selected'; ?>>Part Time</option>
+                        </select>
+                    </div>
 
-        <input type="submit" value="Update Employee">
-    </form>
+                    <button type="submit" class="btn btn-primary btn-block">Update Employee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

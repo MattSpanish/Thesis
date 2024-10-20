@@ -8,17 +8,17 @@
     <title>Employee Management</title>
     <style>
         .container {
-            margin-top: 20px; /* Adjusted margin for better spacing */
+            margin-top: 20px;
         }
         .card {
             border: none;
             transition: 0.3s;
-            cursor: pointer; /* Change cursor to pointer */
-            margin: 10px 0; /* Spacing between cards */
+            cursor: pointer;
+            margin: 10px 0;
         }
         .card:hover {
-            background-color: #28a745; /* Green color */
-            color: white; /* Change text color to white */
+            background-color: #28a745;
+            color: white;
         }
         .card-title {
             font-size: 18px;
@@ -26,31 +26,46 @@
         }
         .card-icon {
             font-size: 40px;
-            color: #28a745; /* Green color */
+            color: #28a745;
         }
         .header {
             display: flex;
-            align-items: center; /* Center items vertically */
-            margin-bottom: 20px; /* Spacing below the header */
+            align-items: center;
+            margin-bottom: 20px;
         }
         .back-link {
-            font-size: 30px; /* Increased font size for thickness */
+            font-size: 30px;
             text-decoration: none;
-            color: #000; /* Color for the arrow */
-            margin-right: 10px; /* Space between the arrow and the logo */
+            color: #000;
+            margin-right: 10px;
         }
         .back-link:hover {
-            text-decoration: underline; /* Underline on hover */
+            text-decoration: underline;
         }
         .logo {
-            height: 50px; /* Adjust logo height */
+            height: 50px;
+        }
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 16px;
+            }
+            .card-icon {
+                font-size: 35px;
+            }
         }
         @media (max-width: 576px) {
             .card-title {
-                font-size: 16px; /* Smaller font size on small screens */
+                font-size: 14px;
             }
             .card-icon {
-                font-size: 30px; /* Smaller icon on small screens */
+                font-size: 30px;
+            }
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .logo {
+                height: 40px;
             }
         }
     </style>
@@ -65,7 +80,7 @@
         </div>
         <h1>Employees</h1>
         <div class="row mt-5">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-3">
                 <a href="../Time/time.php" class="card p-4 text-decoration-none">
                     <div class="card-body">
                         <div class="card-title">
@@ -74,7 +89,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 mb-3">
                 <a href="../Employees/index.php" class="card p-4 text-decoration-none">
                     <div class="card-body">
                         <div class="card-title">
