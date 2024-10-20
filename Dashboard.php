@@ -285,7 +285,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
-        <img src="prediction_plot.png" alt="Regression Plot" class="img-fluid">
+        <img src="prediction/prediction_plot.png" alt="Regression Plot" class="img-fluid">
       </div>
     </div>
   </div>
@@ -296,7 +296,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
-      <img src="average_ratings_by_criterion.png" alt="Average Ratings by Criterion">
+      <img src="prediction/average_ratings_by_criterion.png" alt="Average Ratings by Criterion">
       </div>
     </div>
   </div>
@@ -307,7 +307,7 @@
               <div class="col-md-7 grid-margin stretch-card">
                 
                   <div class="card-body">
-                  <img src="overall_average_rating.png" alt="Overall Average Rating">
+                  <img src="prediction/overall_average_rating.png" alt="Overall Average Rating">
                     </div>
                  
                 </div>
