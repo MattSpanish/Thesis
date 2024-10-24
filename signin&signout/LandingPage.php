@@ -138,10 +138,10 @@
                     <div class="col-lg-3">
                         <div class="team-member">
                             <img class="mx-auto rounded-circle" src="assets1/img/team/jam.jpeg" alt="..." />
-                            <h4>Jamaica Riomulin</h4>
-                            <p class="text-muted">Lead Developer</p>
+                            <h4>Mark Lopez</h4>
+                            <p class="text-muted">Backend Developer</p>
                             <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/saltedcaramel4lyf/?hl=en" aria-label="Jamaica Riomulin Twitter Profile"><i class="fa-brands fa-instagram"></i></a>
-                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/jamaica.riomulin" aria-label="Jamaica Riomulin Facebook Profile"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/gurifisu14" aria-label="Mark Lopez Facebook Profile"><i class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/jamaica-riomulin-3a205030b/?trk=onboarding-landing&fbclid=IwZXh0bgNhZW0CMTAAAR2Jky3f5bu8NYpXiQJgGlzJIkLAYlDr8rXMwCQMf4Y02yjKf7EGB54qhvo_aem_AZa09kVoIfZ-svYlEmmnBWsmhqHiXBM0_A4SCVrBL_ZC0YK3fVDlBsLfB3lxRaj_FfhUtYduvS7TGQw0kaaI5Eph" aria-label="Jamaica Riomulin LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
                         </div>
                     </div>
