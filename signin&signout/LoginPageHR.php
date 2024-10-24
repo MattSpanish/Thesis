@@ -75,7 +75,7 @@
 
     if (email === 'ADMIN' && password === 'PASSWORD') {
 
-      window.location.href = '../Dashboard.php';
+      window.location.href = '../hr_dashboard.php';
     } else {
       alert('Invalid email or password. Please try again.');
     }
