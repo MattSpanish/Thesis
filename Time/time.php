@@ -1,3 +1,12 @@
+<?php
+// Include database connection
+include '../Employees/db.php';
+
+// Fetch employee records from the database
+$sql = "SELECT * FROM employees";
+$result = $conn->query($sql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,52 +16,15 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="timestyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
-    <style>
-        .header-container {
-            display: flex;
-            align-items: center; /* Align items vertically */
-            margin-bottom: 20px;
-        }
-        .header-container img {
-            height: 50px; /* Adjust the height as needed */
-            margin-right: 10px; /* Space between the logo and the arrow */
-        }
-        .header-container h1 {
-            margin: 0;
-        }
-        .back-link {
-            font-size: 30px; /* Font size for the arrow */
-            color: #000; /* Color for the arrow */
-            margin-right: 10px; /* Space between the arrow and the logo */
-            text-decoration: none; /* Remove underline */
-        }
-        .back-link:hover {
-            text-decoration: underline; /* Underline on hover */
-        }
-        .container {
-            padding: 15px; /* Add padding for better fitting */
-        }
-        @media (max-width: 768px) {
-            .header-container h1 {
-                font-size: 20px; /* Adjust header size for smaller screens */
-            }
-            .back-link {
-                font-size: 24px; /* Adjust back arrow size for smaller screens */
-            }
-            .form-group {
-                margin-bottom: 15px; /* Adjust spacing for smaller screens */
-            }
-        }
-    </style>
 </head>
 <body>
 
 <div class="container-fluid mt-5">
     <div class="header-container">
         <a href="../Employees.php" class="back-link">
-            <i class="fas fa-arrow-left"></i> <!-- Font Awesome back arrow -->
+            <i class="fas fa-arrow-left"></i>
         </a>
-        <a class="navbar-brand brand-logo" href="hr_dashboard.php">
+        <a class="navbar-brand brand-logo" href="../Employees.php">
             <img src="../signin&signout/assets1/img/logo.png" alt="logo" />
         </a>
     </div>
@@ -61,8 +33,16 @@
     </div>
 
     <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" class="form-control" required>
+    </div>
+    <div class="form-group">
         <label for="timePeriod">Time Period :</label>
-        <input type="text" id="timePeriod" class="form-control" value="1st June - 31st July 2024" readonly>
+        <input type="text" id="timePeriod" class="form-control" readonly>
     </div>
 
     <div class="input-group mb-3">
@@ -72,7 +52,7 @@
         </div>
     </div>
 
-    <div class="table-responsive"> <!-- Responsive table wrapper -->
+    <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -86,43 +66,17 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="employee">
-                    <td class="employee-name"><i class="fas fa-user"></i> Nic Parreno</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="employee">
-                    <td class="employee-name"><i class="fas fa-user"></i> Jam Riomulin</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="employee">
-                    <td class="employee-name"><i class="fas fa-user"></i> Matthew Espanol</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr class="employee">
-                    <td class="employee-name"><i class="fas fa-user"></i> Daryl Garcia</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <!-- Duplicate rows are removed for brevity -->
+                <?php while ($row = $result->fetch_assoc()) { ?>
+                    <tr class="employee">
+                        <td class="employee-name"><i class="fas fa-user"></i> <?php echo htmlspecialchars($row['name']); ?></td>
+                        <td><input type="number" class="hours-input" id="regular-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
+                        <td><input type="number" class="hours-input" id="overtime-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
+                        <td><input type="number" class="hours-input" id="sick-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
+                        <td><input type="number" class="hours-input" id="pto-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
+                        <td><input type="number" class="hours-input" id="holiday-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
+                        <td id="total-<?php echo $row['id']; ?>">0</td>
+                    </tr>
+                <?php } ?>
             </tbody>
         </table>
     </div>
@@ -136,8 +90,11 @@
     document.addEventListener("DOMContentLoaded", function() {
         const searchInput = document.getElementById("searchInput");
         const clearButton = document.getElementById("clearButton");
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        const timePeriodInput = document.getElementById("timePeriod");
 
-        // Function to filter results based on search input
+        // Function to filter employee results
         function filterResults() {
             const searchTerm = searchInput.value.trim().toLowerCase();
             const employeeList = document.querySelectorAll('.employee-name');
@@ -151,15 +108,49 @@
             });
         }
 
-        // Event listener for input change
+        // Event listener for search input
         searchInput.addEventListener("input", filterResults);
-
-        // Event listener for clear button click
         clearButton.addEventListener("click", function() {
-            searchInput.value = ""; // Clear the search input
-            filterResults(); // Update the results (optional)
+            searchInput.value = "";
+            filterResults();
         });
+
+        // Function to update time period based on selected dates
+        function updateTimePeriod() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+                const options = { month: 'long', day: 'numeric', year: 'numeric' };
+                const startDateFormatted = startDate.toLocaleDateString(undefined, options);
+                const endDateFormatted = endDate.toLocaleDateString(undefined, options);
+                timePeriodInput.value = `${startDateFormatted} - ${endDateFormatted}`;
+            } else {
+                timePeriodInput.value = ''; // Clear the field if dates are invalid
+            }
+        }
+
+        // Event listeners for date inputs
+        startDateInput.addEventListener("change", updateTimePeriod);
+        endDateInput.addEventListener("change", updateTimePeriod);
     });
+
+    // Function to calculate total hours
+    function calculateTotal(employeeId) {
+        const regular = parseFloat(document.getElementById(`regular-${employeeId}`).value) || 0;
+        const overtime = parseFloat(document.getElementById(`overtime-${employeeId}`).value) || 0;
+        const sick = parseFloat(document.getElementById(`sick-${employeeId}`).value) || 0;
+        const pto = parseFloat(document.getElementById(`pto-${employeeId}`).value) || 0;
+        const holiday = parseFloat(document.getElementById(`holiday-${employeeId}`).value) || 0;
+        
+        const total = regular + overtime + sick + pto + holiday;
+        document.getElementById(`total-${employeeId}`).textContent = total.toFixed(2);
+    }
 </script>
+
 </body>
 </html>
+
+<?php
+$conn->close();
+?>

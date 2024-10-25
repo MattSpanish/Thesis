@@ -7,17 +7,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $department = $_POST['department'];
     $status = $_POST['status'];
 
-    $sql = "INSERT INTO employees (name, email, department, status) VALUES ('$name', '$email', '$department', '$status')";
+    // Insert employee into the employees table
+    $sql_employee = "INSERT INTO employees (name, email, department, status) VALUES ('$name', '$email', '$department', '$status')";
 
-    if ($conn->query($sql) === TRUE) {
-        header('Location: index.php');
+    if ($conn->query($sql_employee) === TRUE) {
+        // Get the last inserted employee ID
+        $employee_id = $conn->insert_id;
+
+        // Insert initial time tracking record for the new employee
+        $sql_time = "INSERT INTO time_tracking (employee_id, regular, overtime, sick_leave, pto, paid_holiday, total_hours) VALUES ('$employee_id', 0, 0, 0, 0, 0, 0)";
+        
+        if ($conn->query($sql_time) === TRUE) {
+            // Redirect to employee list page
+            header('Location: index.php');
+            exit;
+        } else {
+            echo "Error with time tracking record: " . $sql_time . "<br>" . $conn->error;
+        }
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error adding employee: " . $sql_employee . "<br>" . $conn->error;
     }
 }
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

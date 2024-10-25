@@ -129,7 +129,7 @@
                         <div class="team-member">
                             <img class="mx-auto rounded-circle" src="assets1/img/team/matt.png" alt="..." />
                             <h4>Mathew Español</h4>
-                            <p class="text-muted">Project Manager</p>   
+                            <p class="text-muted">Lead Developer</p>   
                             <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/mattspanish/?hl=en" aria-label="Mathew Español Twitter Profile"><i class="fa-brands fa-instagram"></i></a>
                             <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/matthewrules8" aria-label="Mathew Español Facebook Profile"><i class="fab fa-facebook-f"></i></a>
                             <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/mathew-espa%C3%B1ol-725136303/" aria-label="Mathew Español LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
@@ -137,12 +137,12 @@
                     </div>
                     <div class="col-lg-3">
                         <div class="team-member">
-                            <img class="mx-auto rounded-circle" src="assets1/img/team/jam.jpeg" alt="..." />
+                            <img class="mx-auto rounded-circle" src="assets1/img/team/mark.jpg" alt="..." />
                             <h4>Mark Lopez</h4>
                             <p class="text-muted">Backend Developer</p>
-                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/saltedcaramel4lyf/?hl=en" aria-label="Jamaica Riomulin Twitter Profile"><i class="fa-brands fa-instagram"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/justguriii/" aria-label="Mark Lopez Instagram Profile"><i class="fa-brands fa-instagram"></i></a>
                             <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/gurifisu14" aria-label="Mark Lopez Facebook Profile"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/jamaica-riomulin-3a205030b/?trk=onboarding-landing&fbclid=IwZXh0bgNhZW0CMTAAAR2Jky3f5bu8NYpXiQJgGlzJIkLAYlDr8rXMwCQMf4Y02yjKf7EGB54qhvo_aem_AZa09kVoIfZ-svYlEmmnBWsmhqHiXBM0_A4SCVrBL_ZC0YK3fVDlBsLfB3lxRaj_FfhUtYduvS7TGQw0kaaI5Eph" aria-label="Jamaica Riomulin LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/gurii-lopez-000512308/" aria-label="Mark Lopez LinkedIn Profile"><i class="fab fa-linkedin-in"></i></a>
                         </div>
                     </div>
                 <div class="col-lg-3">
