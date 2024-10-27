@@ -3,8 +3,52 @@
 include '../Employees/db.php';
 
 // Fetch employee records from the database
-$sql = "SELECT * FROM employees";
+$sql = "
+    SELECT 
+        e.id AS employee_id,
+        e.name,
+        tt.date_added,
+        tt.regular,
+        tt.overtime,
+        tt.sick_leave,
+        tt.pto,
+        tt.paid_holiday
+    FROM employees e
+    LEFT JOIN time_tracking tt ON e.id = tt.employee_id
+";
 $result = $conn->query($sql);
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get the values from the form inputs
+    $employee_id = $_POST['employee_id'];
+    $regular = $_POST['regular'];
+    $overtime = $_POST['overtime'];
+    $sick_leave = $_POST['sick_leave'];
+    $pto = $_POST['pto'];
+    $paid_holiday = $_POST['paid_holiday'];
+    
+    // Get the current date
+    $date_added = date('Y-m-d'); // Set the date to today
+
+    // Prepare the insert query
+    $insert_sql = "INSERT INTO time_tracking (employee_id, regular, overtime, sick_leave, pto, paid_holiday, date_added)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)";
+    
+    // Prepare and bind the statement
+    $stmt = $conn->prepare($insert_sql);
+    $stmt->bind_param("iiiiiii", $employee_id, $regular, $overtime, $sick_leave, $pto, $paid_holiday, $date_added);
+
+    // Execute the statement
+    if ($stmt->execute()) {
+        echo "Time tracking entry added successfully.";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+    
+    // Close the statement
+    $stmt->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,7 +59,7 @@ $result = $conn->query($sql);
     <title>Time Tracking</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="timestyles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 
@@ -41,7 +85,7 @@ $result = $conn->query($sql);
         <input type="date" id="endDate" class="form-control" required>
     </div>
     <div class="form-group">
-        <label for="timePeriod">Time Period :</label>
+        <label for="timePeriod">Time Period:</label>
         <input type="text" id="timePeriod" class="form-control" readonly>
     </div>
 
@@ -56,6 +100,7 @@ $result = $conn->query($sql);
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>Date Added</th>
                     <th>Employee Name</th>
                     <th>Regular</th>
                     <th>Overtime</th>
@@ -68,13 +113,20 @@ $result = $conn->query($sql);
             <tbody>
                 <?php while ($row = $result->fetch_assoc()) { ?>
                     <tr class="employee">
+                        <td><?php echo htmlspecialchars($row['date_added'] ?? 'N/A'); ?></td>
                         <td class="employee-name"><i class="fas fa-user"></i> <?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><input type="number" class="hours-input" id="regular-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
-                        <td><input type="number" class="hours-input" id="overtime-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
-                        <td><input type="number" class="hours-input" id="sick-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
-                        <td><input type="number" class="hours-input" id="pto-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
-                        <td><input type="number" class="hours-input" id="holiday-<?php echo $row['id']; ?>" placeholder="0" oninput="calculateTotal(<?php echo $row['id']; ?>)"></td>
-                        <td id="total-<?php echo $row['id']; ?>">0</td>
+                        <td><?php echo htmlspecialchars($row['regular']); ?></td>
+                        <td><?php echo htmlspecialchars($row['overtime']); ?></td>
+                        <td><?php echo htmlspecialchars($row['sick_leave']); ?></td>
+                        <td><?php echo htmlspecialchars($row['pto']); ?></td>
+                        <td><?php echo htmlspecialchars($row['paid_holiday']); ?></td>
+                        <td>
+                            <?php
+                            // Calculate total hours and display
+                            $total = ($row['regular'] ?? 0) + ($row['overtime'] ?? 0) + ($row['sick_leave'] ?? 0) + ($row['pto'] ?? 0) + ($row['paid_holiday'] ?? 0);
+                            echo number_format($total, 2);
+                            ?>
+                        </td>
                     </tr>
                 <?php } ?>
             </tbody>
@@ -94,7 +146,6 @@ $result = $conn->query($sql);
         const endDateInput = document.getElementById("endDate");
         const timePeriodInput = document.getElementById("timePeriod");
 
-        // Function to filter employee results
         function filterResults() {
             const searchTerm = searchInput.value.trim().toLowerCase();
             const employeeList = document.querySelectorAll('.employee-name');
@@ -108,14 +159,12 @@ $result = $conn->query($sql);
             });
         }
 
-        // Event listener for search input
         searchInput.addEventListener("input", filterResults);
         clearButton.addEventListener("click", function() {
             searchInput.value = "";
             filterResults();
         });
 
-        // Function to update time period based on selected dates
         function updateTimePeriod() {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
@@ -126,26 +175,13 @@ $result = $conn->query($sql);
                 const endDateFormatted = endDate.toLocaleDateString(undefined, options);
                 timePeriodInput.value = `${startDateFormatted} - ${endDateFormatted}`;
             } else {
-                timePeriodInput.value = ''; // Clear the field if dates are invalid
+                timePeriodInput.value = '';
             }
         }
 
-        // Event listeners for date inputs
         startDateInput.addEventListener("change", updateTimePeriod);
         endDateInput.addEventListener("change", updateTimePeriod);
     });
-
-    // Function to calculate total hours
-    function calculateTotal(employeeId) {
-        const regular = parseFloat(document.getElementById(`regular-${employeeId}`).value) || 0;
-        const overtime = parseFloat(document.getElementById(`overtime-${employeeId}`).value) || 0;
-        const sick = parseFloat(document.getElementById(`sick-${employeeId}`).value) || 0;
-        const pto = parseFloat(document.getElementById(`pto-${employeeId}`).value) || 0;
-        const holiday = parseFloat(document.getElementById(`holiday-${employeeId}`).value) || 0;
-        
-        const total = regular + overtime + sick + pto + holiday;
-        document.getElementById(`total-${employeeId}`).textContent = total.toFixed(2);
-    }
 </script>
 
 </body>
