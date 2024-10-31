@@ -18,6 +18,9 @@ $sql = "
 ";
 $result = $conn->query($sql);
 
+if (!$result) {
+    die("Error executing query: " . $conn->error);
+}
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the values from the form inputs

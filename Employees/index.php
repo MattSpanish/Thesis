@@ -14,11 +14,11 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Records</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Updated Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* Basic styling for the employee table */
         table {
-            width: 100%; /* Full width for responsiveness */
+            width: 100%;
             border-collapse: collapse;
         }
         th, td {
@@ -34,24 +34,24 @@ $result = $conn->query($sql);
             font-weight: bold;
         }
         .btn {
-            margin-right: 5px; /* Space between buttons */
+            margin-right: 5px;
         }
         .header {
             display: flex;
-            align-items: center; /* Center items vertically */
-            margin-bottom: 20px; /* Spacing below the header */
+            align-items: center;
+            margin-bottom: 20px;
         }
         .back-link {
-            font-size: 20px; /* Adjust font size */
+            font-size: 20px;
             text-decoration: none;
-            color: #000; /* Color of the back arrow */
-            margin-right: 10px; /* Space between the arrow and the logo */
+            color: #000;
+            margin-right: 10px;
         }
         .logo {
-            height: 50px; /* Adjust logo height */
+            height: 50px;
         }
         .fas {
-            font-size: 24px; /* Increased icon size for visibility */
+            font-size: 24px;
         }
     </style>
 </head>
@@ -59,21 +59,23 @@ $result = $conn->query($sql);
     <div class="container mt-5">
         <div class="header mb-4">
             <a href="../Employees.php" class="back-link">
-                <i class="fas fa-arrow-left"></i> <!-- Font Awesome back arrow -->
+                <i class="fas fa-arrow-left"></i>
             </a>
-            <img src="../signin&signout/assets1/img/logo.png" alt="Company Logo" class="logo"> <!-- Logo -->
+            <img src="../signin&signout/assets1/img/logo.png" alt="Company Logo" class="logo">
         </div>
 
         <h2 class="mb-4">Employee Records</h2>
         <a href="add_employee.php" class="btn btn-primary mb-3">Add Employee</a>
         
-        <div class="table-responsive"> <!-- Responsive table wrapper -->
+        <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
                     <tr>
                         <th>Employee</th>
                         <th>Email</th>
                         <th>Department</th>
+                        <th>Subjects</th> <!-- New Column for Subjects -->
+                        <th>Gender</th> <!-- New Column for Gender -->
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -84,6 +86,8 @@ $result = $conn->query($sql);
                             <td><?php echo htmlspecialchars($row['name']); ?></td>
                             <td><?php echo htmlspecialchars($row['email']); ?></td>
                             <td><?php echo htmlspecialchars($row['department']); ?></td>
+                            <td><?php echo htmlspecialchars($row['subjects']); ?></td> <!-- Display Subjects -->
+                            <td><?php echo htmlspecialchars($row['gender']); ?></td> <!-- Display Gender -->
                             <td class="<?php echo $row['status'] == 'FULL TIME' ? 'status-full-time' : 'status-part-time'; ?>">
                                 <?php echo htmlspecialchars($row['status']); ?>
                             </td>

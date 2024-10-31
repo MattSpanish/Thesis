@@ -165,7 +165,7 @@ $evaluations = 20; // Replace with dynamic value from the database
             <li><a href="#" class="active">Dashboard</a></li>
             <li><a href="task.php">Task</a></li>
             <li><a href="Employees.php">Employees</a></li>
-            <li><a href="#">Evaluation</a></li>
+            <li><a href="">Files</a></li>
         </ul>
     </div>
 
@@ -192,7 +192,7 @@ $evaluations = 20; // Replace with dynamic value from the database
                 <p><?php echo $departments; ?></p>
             </div>
             <div class="card evaluations">
-                <h3>Evaluations</h3>
+                <h3>Files</h3>
                 <p><?php echo $evaluations; ?></p>
             </div>
         </div>
