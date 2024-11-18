@@ -93,6 +93,18 @@ $evaluations = 20; // Replace with dynamic value from the database
         }
         .dashboard-cards .card {
             border-left: 5px solid transparent;
+            position: relative; /* Enable positioning for the overlay link */
+            cursor: pointer; /* Pointer cursor for indication */
+        }
+        .dashboard-cards .card a {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1; /* Ensure the link is above other content */
+            text-indent: -9999px; /* Hide link text if any */
+            background-color: transparent; /* Transparent background */
         }
         .dashboard-cards .card.professors {
             border-left-color: #00aced; /* Blue for professors */
@@ -137,23 +149,7 @@ $evaluations = 20; // Replace with dynamic value from the database
             padding: 20px;
             overflow-y: auto; /* Scroll if content overflows */
         }
-        .messages h3 {
-            margin-bottom: 10px;
-        }
-        .messages .message {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-        }
-        .message img {
-            width: 50px; /* Adjust size to match the profile image */
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .message span {
-            font-size: 16px;
-        }
+      
     </style>
 </head>
 <body>
@@ -172,30 +168,39 @@ $evaluations = 20; // Replace with dynamic value from the database
     <!-- Main content -->
     <div class="content">
 
-        <!-- Header -->
-        <div class="header">
-            <h1>Dashboard</h1>
-            <div>
-                <img src="https://via.placeholder.com/50" alt="Profile Picture">
-                <span>John Doe Smith</span>
-            </div>
-        </div>
+    <!-- Header -->
+<div class="header">
+    <h1>Dashboard</h1>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://via.placeholder.com/50" alt="Profile Picture">
+        <span>ADMIN</span>
+        <a href="../signin&signout/LandingPage.php" 
+           style="text-decoration: none; padding: 8px 15px; background-color: #ff4d4d; color: white; border-radius: 5px; font-size: 14px;">
+            Logout
+        </a>
+    </div>
+</div>
+
 
         <!-- Dashboard Cards -->
         <div class="dashboard-cards">
-            <div class="card professors">
-                <h3>Available Professors</h3>
-                <p><?php echo $professors; ?></p>
-            </div>
-            <div class="card departments">
-                <h3>Departments</h3>
-                <p><?php echo $departments; ?></p>
-            </div>
-            <div class="card evaluations">
-                <h3>Files</h3>
-                <p><?php echo $evaluations; ?></p>
-            </div>
-        </div>
+    <div class="card professors">
+        <a href="professors.php"></a> <!-- Link covering the card -->
+        <h3>Available Professors</h3>
+        <p><?php echo $professors; ?></p>
+    </div>
+    <div class="card departments">
+        <a href="DepartmentRecords.php"></a> <!-- Link covering the card -->
+        <h3>Departments</h3>
+        <p><?php echo $departments; ?></p>
+    </div>
+    <div class="card evaluations">
+        <a href="files.php"></a> <!-- Link covering the card -->
+        <h3>Files</h3>
+        <p><?php echo $evaluations; ?></p>
+    </div>
+</div>
+
 
         <!-- Performance Chart -->
         <div class="performance-chart">
@@ -221,24 +226,7 @@ $evaluations = 20; // Replace with dynamic value from the database
 
     </div>
 
-    <!-- Right Sidebar for Messages -->
-    <div class="right-sidebar">
-        <div class="messages">
-            <h3>Messages</h3>
-            <div class="message">
-                <img src="https://via.placeholder.com/50" alt="Profile">
-                <span>Steve S.: Hey, are you in school?</span>
-            </div>
-            <div class="message">
-                <img src="https://via.placeholder.com/50" alt="Profile">
-                <span>Harvey J.: Hey, are you in school?</span>
-            </div>
-            <div class="message">
-                <img src="https://via.placeholder.com/50" alt="Profile">
-                <span>Sarah M.: Hey, are you in school?</span>
-            </div>
-        </div>
-    </div>
+  
 
     <!-- JavaScript to handle active sidebar link -->
     <script>

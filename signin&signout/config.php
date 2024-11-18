@@ -1,12 +1,11 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "register";
+$host = 'localhost';
+$dbname = 'register';
+$username = '';  // Add your database username
+$password = '';  // Add your database password
 
-$conn = mysqli_connect($servername, $username, $password, $database);
+$conn = mysqli_connect($host, $username, $password, $dbname);
 
 if ($conn === false) {
     die("Error: Could not connect. " . mysqli_connect_error());
 }
-?>

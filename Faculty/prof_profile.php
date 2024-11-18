@@ -1,3 +1,30 @@
+<?php
+session_start();
+
+// Check if the user is logged in
+if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
+    header("Location: ../signin&signout/LoginPage.php");
+    exit;
+}
+
+$user_id = $_SESSION["id"];
+require '../signin&signout/config.php'; // Database connection
+
+// Retrieve profile picture from the database
+$stmt = $conn->prepare("SELECT profile_pic FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($profile_pic);
+$stmt->fetch();
+$stmt->close();
+
+// Set the profile picture path
+$_SESSION['profile_pic'] = $profile_pic ? $profile_pic : 'default.jpg'; // Use a default image if none is set
+
+$conn->close();
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,11 +117,12 @@
 <div class="container mt-5">
   <!-- Instructor Info Section -->
   <div class="info-section">
-    <div class="info-left">
-      <img src="pic1.jpg" alt="John Mathew Espanol" class="profile-pic rounded-circle">
-      <h3>John Mathew Espanol</h3>
-      <span class="badge badge-custom">FACULTY</span>
-    </div>
+  <div class="info-left">
+  <img src="../<?php echo $_SESSION['profile_pic']; ?>" alt="John Mathew Espanol" class="profile-pic rounded-circle">
+  <h3>John Mathew Espanol</h3>
+  <span class="badge badge-custom">FACULTY</span>
+</div>
+
     <div class="info-details">
       <p><strong>Email :</strong> <a href="mailto:jrespanol485@gmail.com">jrespanol485@gmail.com</a></p>
       <p><strong>Gender :</strong> Male</p>

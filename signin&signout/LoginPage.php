@@ -2,51 +2,51 @@
 session_start();
 require 'config.php'; // Adjust the path as necessary
 
-if(isset($_POST["submit"])) {
+if (isset($_POST["submit"])) {
     $usernameemail = $_POST["usernameemail"];
     $password = $_POST["password"];
-    
-    // Check if username/email and password are provided
-    if(!empty($usernameemail) && !empty($password)) {
-        // Perform SQL injection prevention (if not using prepared statements)
-        $usernameemail = mysqli_real_escape_string($conn, $usernameemail);
-        $password = mysqli_real_escape_string($conn, $password);
-        
-        // Perform the query
-        $result = mysqli_query($conn, "SELECT * FROM users WHERE username = '$usernameemail' OR email = '$usernameemail'");
-        
-        if($result) {
-            // Check if any rows are returned
-            if(mysqli_num_rows($result) > 0) {
-                $row = mysqli_fetch_assoc($result);
-                
-                // Check if the password matches
-                if(password_verify($password, $row["password"])) {
-                    // Password is correct, set session variables
-                    $_SESSION["login"] = true;
-                    $_SESSION["id"] = $row["id"];
-                    
-                    // Redirect to landing page
-                    header("Location: LandingPage.php");
-                    exit;
-                } else {
-                    // Incorrect password
-                    echo "<script>alert('Wrong password');</script>";
-                }
+
+    // Validate input
+    if (!empty($usernameemail) && !empty($password)) {
+        // Prepare the SQL statement
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+        $stmt->bind_param("ss", $usernameemail, $usernameemail); // Bind parameters (username or email)
+
+        // Execute the query
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+
+            // Verify the password
+            if (password_verify($password, $row["password"])) {
+                // Set session variables
+                $_SESSION["login"] = true;
+                $_SESSION["id"] = $row["id"]; // Store user ID in session
+
+                // Redirect to dashboard
+                header("Location: ../Faculty/profDASHBOARD.php");
+                exit;
             } else {
-                // No user found with the provided username/email
-                echo "<script>alert('User not found');</script>";
+                // Incorrect password
+                echo "<script>alert('Incorrect password. Please try again.');</script>";
             }
         } else {
-            // Error in SQL query
-            echo "<script>alert('Error: ". mysqli_error($conn) ."');</script>";
+            // No user found
+            echo "<script>alert('No account found with the provided username/email.');</script>";
         }
+
+        $stmt->close(); // Close the statement
     } else {
-        // Username/email or password not provided
-        echo "<script>alert('Please provide username/email and password');</script>";
+        echo "<script>alert('Please enter both username/email and password.');</script>";
     }
 }
+
+// Close the database connection
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
