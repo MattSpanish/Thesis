@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UploadFile</title>
@@ -11,12 +10,12 @@
             padding: 0;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f4f6f8;
+
         }
         .container {
             display: flex;
@@ -26,115 +25,142 @@
             padding: 20px;
         }
         .sidebar {
-            width: 200px;
-            padding-top: 20px;
+            width: 220px;
+            padding: 20px;
         }
-        .logo {
-            font-size: 1.5em;
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-        .back-link {
+        .sidebar .back-link {
             display: flex;
             align-items: center;
-            font-size: 1.2em;
-            color: #333;
+            font-size: 1.3em;
+            color: #0F2A1D;
             text-decoration: none;
-            margin-top: 10px;
-            padding-left: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
         }
-        .back-link svg {
-            margin-right: 8px;
-            color: #333;
+        .sidebar .back-link:hover {
+            background-color: #AEC3B0;
+        }
+        .sidebar .back-link svg {
+            margin-right: 10px;
+            color: #0F2A1D;
         }
         .content {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
+            margin-top: 50px;
         }
         .upload-container {
-            background: #ffffff;
-            padding: 30px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: #AEC3B0;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
             margin-top: 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 1000px;
             text-align: left;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .upload-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
         }
         h2 {
-            margin-top: 0;
-            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #0F2A1D;
         }
         .drag-drop-area {
-            border: 2px dashed #007bff;
-            border-radius: 5px;
-            padding: 20px;
+            border: 3px dashed #375534;
+            border-radius: 10px;
+            padding: 25px;
             cursor: pointer;
-            margin: 20px 0;
-            background-color: #f7f9fc;
-            transition: background-color 0.2s ease;
+            background: #6B9071;
+            transition: all 0.3s ease;
             text-align: center;
+            color: #0F2A1D;
         }
-        .drag-drop-area.dragging {
-            background-color: #e0f0ff;
+        .drag-drop-area:hover {
+            background: #375534;
+            border-color: #0F2A1D;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             position: relative;
         }
         .form-group label {
             display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #375534;
+            margin-bottom: 8px;
         }
         .form-group input[type="text"],
         .form-group input[type="number"],
         .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #6B9071;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #E3EED4;
+            transition: border-color 0.3s ease;
+            color: #0F2A1D;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #375534;
+            outline: none;
         }
         .remove-button {
             position: absolute;
             right: 10px;
-            top: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
-            color: red;
-            font-weight: bold;
-            border: none;
+            color: #ff4d4d;
             background: none;
-            font-size: 18px;
+            border: none;
+            font-size: 20px;
         }
         .add-button {
             margin: 10px 0;
+            display: inline-block;
+            color: #375534;
+            text-decoration: none;
             cursor: pointer;
-            color: #007bff;
-            text-decoration: underline;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+        .add-button:hover {
+            color: #0F2A1D;
         }
         button {
-            margin-top: 15px;
-            padding: 10px 20px;
+            margin-top: 20px;
+            padding: 12px 25px;
             font-size: 1rem;
-            cursor: pointer;
+            font-weight: bold;
             color: white;
-            background-color: #007bff;
+            background: #375534;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background: #0F2A1D;
         }
     </style>
+
 </head>
 <body>
 
 <div class="container">
     <!-- Sidebar for the Logo and Upload Link -->
     <div class="sidebar">
-        <div class="logo">My School Logo</div>
-        <a href="#" class="back-link">
+        <a href="hr_dashboard.php" class="back-link">
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M15 18l-6-6 6-6"></path>
             </svg>

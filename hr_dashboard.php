@@ -16,74 +16,81 @@ $evaluations = 20; // Replace with dynamic value from the database
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #E9F0E5; /* Light greenish tone for body background */
             display: flex;
             min-height: 100vh; /* Ensures full height */
         }
+
         .sidebar {
             width: 250px;
             height: 100vh;
-            background-color: #e7f0ec;
+            background-color: #0F2A1D; /* Muted pastel green for sidebar */
             padding: 20px;
             position: fixed;
             overflow-y: auto; /* Scroll if content overflows */
         }
+
         .sidebar img {
             max-width: 100%; /* Makes the image responsive */
             height: auto; /* Maintains aspect ratio */
             margin-bottom: 20px; /* Spacing after the image */
         }
+
         .sidebar ul {
             list-style: none;
             padding: 0;
         }
+
         .sidebar ul li {
             margin: 20px 0;
         }
+
         .sidebar ul li a {
             text-decoration: none;
-            color: #333;
+            color: #E3EED4; /* Dark olive green for text */
             font-size: 18px;
             padding: 10px;
             display: block;
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
+
         .sidebar ul li a:hover {
-            background-color: #cce2d9; /* Hover background color */
-            color: #000; /* Hover text color */
+            background-color: #506C5A; /* Soft muted green for hover */
+            color: #E9F0E5; /* Light text for hover */
         }
-        .sidebar ul li a.active {
-            background-color: green; /* Active background color */
-            color: white; /* Active text color */
-        }
+
         .content {
             margin-left: 270px; /* Space for left sidebar */
             margin-right: 270px; /* Space for right sidebar */
             padding: 20px;
-            background-color: #fff; /* Background color for the content area */
+            background-color: #FFFFFF; /* White for the main content area */
             border-radius: 10px; /* Rounded corners */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for depth */
             flex-grow: 1; /* Allows content to take remaining space */
         }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .header img {
             border-radius: 50%;
             width: 50px; /* Set a fixed size for consistency */
             height: 50px; /* Same as width for perfect circle */
         }
+
         .dashboard-cards {
             display: flex;
             justify-content: space-between; /* Space out cards */
             margin-bottom: 20px;
         }
+
         .dashboard-cards div {
-            background-color: white;
+            background-color: #FFFFFF; /* White for card background */
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -91,65 +98,64 @@ $evaluations = 20; // Replace with dynamic value from the database
             flex: 1; /* Equal size for cards */
             margin: 0 10px; /* Spacing between cards */
         }
+
         .dashboard-cards .card {
             border-left: 5px solid transparent;
             position: relative; /* Enable positioning for the overlay link */
             cursor: pointer; /* Pointer cursor for indication */
         }
-        .dashboard-cards .card a {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1; /* Ensure the link is above other content */
-            text-indent: -9999px; /* Hide link text if any */
-            background-color: transparent; /* Transparent background */
-        }
+
         .dashboard-cards .card.professors {
-            border-left-color: #00aced; /* Blue for professors */
+            border-left-color: #6E8F6D; /* Medium sage green for professors */
         }
+
         .dashboard-cards .card.departments {
-            border-left-color: #e91e63; /* Pink for departments */
+            border-left-color: #4A6847; /* Darker green for departments */
         }
+
         .dashboard-cards .card.evaluations {
-            border-left-color: #9c27b0; /* Purple for evaluations */
+            border-left-color: #506C5A; /* Muted green for evaluations */
         }
+
         .dashboard-cards h3 {
             font-size: 18px;
             margin-bottom: 5px;
         }
+
         .dashboard-cards p {
             font-size: 24px;
-            color: #333;
+            color: #3B4F3D; /* Dark olive green for card text */
         }
+
         .performance-chart, .calendar, .pie-chart {
-            background-color: white;
+            background-color: #FFFFFF; /* White for charts and calendar */
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .calendar-pie {
             display: flex;
             justify-content: space-between; /* Space out pie chart and calendar */
             margin-bottom: 20px;
         }
+
         .pie-chart, .calendar {
             flex: 1;
             margin: 0 10px; /* Spacing between pie chart and calendar */
         }
+
         .right-sidebar {
             width: 250px;
             height: 100vh;
-            background-color: #e7f0ec;
+            background-color: #A8C3A5; /* Muted pastel green for right sidebar */
             position: fixed;
             right: 0; /* Position to the right */
             top: 0;
             padding: 20px;
             overflow-y: auto; /* Scroll if content overflows */
         }
-      
     </style>
 </head>
 <body>
@@ -161,7 +167,7 @@ $evaluations = 20; // Replace with dynamic value from the database
             <li><a href="#" class="active">Dashboard</a></li>
             <li><a href="task.php">Task</a></li>
             <li><a href="Employees.php">Employees</a></li>
-            <li><a href="">Files</a></li>
+            <li><a href="UploadingFiles.php">Files</a></li>
         </ul>
     </div>
 
@@ -195,7 +201,7 @@ $evaluations = 20; // Replace with dynamic value from the database
         <p><?php echo $departments; ?></p>
     </div>
     <div class="card evaluations">
-        <a href="files.php"></a> <!-- Link covering the card -->
+        <a href="#"></a> <!-- Link covering the card -->
         <h3>Files</h3>
         <p><?php echo $evaluations; ?></p>
     </div>
