@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "task_management"; // Replace with your actual database name
+$dbname = "employee_management"; // Replace with your actual database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

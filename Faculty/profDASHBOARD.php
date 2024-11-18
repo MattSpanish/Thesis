@@ -9,7 +9,7 @@ if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
 
 // Fetch user information from the database
 $user_id = $_SESSION["id"];
-require '..//signin&signout/config.php'; // Database connection
+require '../signin&signout/config.php'; // Database connection
 
 // Prepare SQL statement
 $stmt = $conn->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
@@ -39,18 +39,11 @@ $conn->close();
 
 // Check if the fields are returned as expected
 $user_image = isset($user['profile_pic']) && !empty($user['profile_pic']) 
-    ? '../Faculty/uploads/' . htmlspecialchars($user['profile_pic']) 
+    ? '../Faculty/uploads/' . htmlspecialchars($user['profile_pic'], ENT_QUOTES, 'UTF-8') 
     : 'default-profile.jpg';
 
-$user_name = isset($user['username']) ? $user['username'] : 'Unknown User';
+$user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8') : 'Unknown User';
 
-// Ensure both are strings before passing to htmlspecialchars()
-if (is_array($user_image)) {
-    $user_image = ''; // Handle unexpected array if needed
-}
-if (is_array($user_name)) {
-    $user_name = ''; // Handle unexpected array if needed
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,149 +53,149 @@ if (is_array($user_name)) {
     <title>Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* General Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f5f7fa;
-            display: flex;
-        }
-        /* Sidebar Styles */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #4CAF50, #2e7d32);
-            color: white;
-            height: 100vh;
-            padding: 30px 20px;
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            align-items: start;
-        }
-        .sidebar h1 {
-            font-size: 24px;
-            margin-bottom: 50px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            color: white;
-            text-decoration: none;
-            margin: 20px 0;
-            font-size: 18px;
-            font-weight: 500;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background 0.3s ease-in-out;
-        }
-        .sidebar a i {
-            margin-right: 15px;
-        }
-        .sidebar a:hover, .sidebar a.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
+    /* General Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: 'Roboto', sans-serif;
+        display: flex;
+    }
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background: linear-gradient(180deg, #0F2A1D, #0F2A1D); /* Primary to Secondary */
+        color: white;
+        height: 100vh;
+        padding: 30px 20px;
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+    .sidebar h1 {
+        font-size: 24px;
+        margin-bottom: 50px;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    .sidebar a {
+        display: flex;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+        margin: 20px 0;
+        font-size: 18px;
+        font-weight: 500;
+        padding: 10px;
+        border-radius: 8px;
+        transition: background 0.3s ease-in-out;
+    }
+    .sidebar a i {
+        margin-right: 15px;
+    }
 
-        /* Content Styles */
-        .content {
-            margin-left: 280px;
-            padding: 30px;
-            width: calc(100% - 280px);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #fff;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .header .user-info {
-            display: flex;
-            align-items: center;
-        }
-        .header img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-        }
-        .header .user-info span {
-            margin-left: 10px;
-            font-size: 18px;
-            font-weight: 500;
-        }
+    /* Content Styles */
+    .content {
+        margin-left: 280px;
+        padding: 30px;
+        width: calc(100% - 280px);
+    }
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
 
-        /* Stats Section */
-        .stats-section {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .stat-card {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 20px;
-            flex: 1;
-            text-align: center;
-            min-width: 200px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        .stat-card h4 {
-            color: #4CAF50;
-            margin-bottom: 10px;
-        }
-        .stat-card p {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
+        border: 1px solid #AEC3B0; /* Highlight */
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .header .user-info {
+        display: flex;
+        align-items: center;
+    }
+    .header img {
+        width: 75px;
+        height: 70px;
+        border-radius: 50%;
+        border: 3px solid #375534; /* Secondary Color */
+    }
+    .header .user-info span {
+        margin-left: 10px;
+        font-size: 18px;
+        font-weight: 500;
+    }
 
-        /* Notifications Section */
-        .notifications-section ul {
-            list-style: none;
-            padding: 0;
-        }
-        .notifications-section li {
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .notifications-section li .badge {
-            background: #4CAF50;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-    </style>
+    /* Stats Section */
+    .stats-section {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+    .stat-card {
+        background: #E3EED4; /* Light Accent */
+        border: 1px solid #AEC3B0; /* Highlight */
+        border-radius: 12px;
+        padding: 20px;
+        flex: 1;
+        text-align: center;
+        min-width: 200px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    .stat-card h4 {
+        color: #375534; /* Secondary Color */
+        margin-bottom: 10px;
+    }
+    .stat-card p {
+        font-size: 24px;
+        font-weight: bold;
+        color: #0F2A1D; /* Primary Color */
+    }
+
+    /* Notifications Section */
+    .notifications-section ul {
+        list-style: none;
+        padding: 0;
+    }
+    .notifications-section li {
+        padding: 15px;
+        background: #AEC3B0; /* Highlight Color */
+        border: 1px solid #6B9071; /* Neutral */
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .notifications-section li .badge {
+        background: #0F2A1D; /* Primary Color */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+</style>
+
+
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
         <h1>My Dashboard</h1>
-        <a href="#" class="active"><i>🏠</i>Dashboard</a>
-        <a href="prof_profile.php"><i>👤</i>Profile</a>
-        <a href="#"><i>📋</i>Tasks</a>
-        <a href="#"><i>⚙️</i>Settings</a>
+        <a href="#" class="active"><i></i>Dashboard</a>
+        <a href="prof_profile.php"><i></i>Profile</a>
+        <a href="#"><i></i>Tasks</a>
+        <a href="#"><i></i>Settings</a>
     </div>
 
     <!-- Content Area -->
