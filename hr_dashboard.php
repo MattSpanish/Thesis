@@ -62,7 +62,6 @@ $evaluations = 20; // Replace with dynamic value from the database
 
         .content {
             margin-left: 270px; /* Space for left sidebar */
-            margin-right: 270px; /* Space for right sidebar */
             padding: 20px;
             background-color: #FFFFFF; /* White for the main content area */
             border-radius: 10px; /* Rounded corners */
