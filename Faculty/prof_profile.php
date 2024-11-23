@@ -2,7 +2,7 @@
 session_start();
 // Check if the user is logged in
 if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
-    header("Location: ../signin&signout/LoginPage.php");
+    header(header: "Location: ../signin&signout/LoginPage.php");
     exit;
 }
 

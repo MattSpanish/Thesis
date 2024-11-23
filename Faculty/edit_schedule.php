@@ -1,36 +1,65 @@
 <?php
-// Include the database connection
+session_start();
+if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
+    header("Location: ../signin&signout/LoginPage.php");
+    exit;
+}
+
 require '../signin&signout/config.php';
 
-// Check if the schedule ID is passed via GET
+// Fetch user information for the logged-in user
+$user_id = $_SESSION["id"];
+$stmt_user = $conn->prepare("SELECT username, profile_pic FROM users WHERE id = ?");
+$stmt_user->bind_param("i", $user_id);
+$stmt_user->execute();
+$result_user = $stmt_user->get_result();
+
+if ($result_user->num_rows > 0) {
+    $user = $result_user->fetch_assoc();
+    $user_name = $user['username']; // Now, $user_name is defined
+    $profile_pic = $user['profile_pic'] ? 'Faculty/uploads/' . htmlspecialchars($user['profile_pic'], ENT_QUOTES, 'UTF-8') : 'default-profile.jpg';
+} else {
+    $user_name = 'Unknown User'; // In case the user is not found in the database
+    $profile_pic = 'default-profile.jpg';
+}
+
+$stmt_user->close();
+
+// Fetch the schedule data for the given schedule ID
 if (isset($_GET['schedule_id'])) {
     $schedule_id = $_GET['schedule_id'];
 
-    // Fetch the current schedule details
+    // Fetch the current schedule data for the given schedule ID
     $sql = "SELECT * FROM schedule WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $schedule_id);
     $stmt->execute();
-    $schedule = $stmt->get_result()->fetch_assoc();
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Get updated values from the form
-        $strand = $_POST['strand'];
-        $time = $_POST['time'];
-        $days = $_POST['days'];
-
-        // Update the schedule in the database
-        $update_sql = "UPDATE schedule SET strand = ?, time = ?, days = ? WHERE id = ?";
-        $update_stmt = $conn->prepare($update_sql);
-        $update_stmt->bind_param("sssi", $strand, $time, $days, $schedule_id);
-        $update_stmt->execute();
-
-        // Redirect back to the dashboard or schedule page
-        header("Location: your_dashboard.php");
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $schedule = $result->fetch_assoc();
+    } else {
+        echo "Schedule not found.";
         exit;
     }
 } else {
-    echo "Schedule ID not provided.";
+    echo "Invalid schedule ID.";
+    exit;
+}
+
+// Update the schedule when the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $strand = $_POST['strand'];
+    $time = $_POST['time'];
+    $days = $_POST['days'];
+
+    // Update the schedule in the database
+    $update_sql = "UPDATE schedule SET strand = ?, time = ?, days = ? WHERE id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bind_param("sssi", $strand, $time, $days, $schedule_id);
+    $update_stmt->execute();
+
+    header("Location: ../Faculty/prof_profile.php"); // Redirect back to the dashboard
     exit;
 }
 ?>
@@ -227,14 +256,15 @@ if (isset($_GET['schedule_id'])) {
 <div class="container mt-5">
   <!-- Instructor Info Section -->
   <div class="info-section">
-    <div class="info-left">
-      <a href="prof_profile.php">
-        <button class="back-arrow"><i class="fa-solid fa-arrow-left"></i></button>
-      </a>
-      <img src="../<?php echo $_SESSION['profile_pic']; ?>" alt="<?php echo htmlspecialchars($user_name, ENT_QUOTES, 'UTF-8'); ?>" class="profile-pic rounded-circle">
-      <h3><?php echo $user_name; ?></h3>
-      <span class="badge badge-custom">FACULTY</span>
-    </div>
+  <div class="info-left">
+  <a href="prof_profile.php">
+    <button class="back-arrow"><i class="fa-solid fa-arrow-left"></i></button>
+  </a>
+  <img src="../<?php echo $profile_pic; ?>" alt="<?php echo $user_name; ?>" class="profile-pic rounded-circle">
+  <h3><?php echo $user_name; ?></h3>
+  <span class="badge badge-custom">FACULTY</span>
+</div>
+
 
     <div class="info-details">
       <p><strong>Email :</strong> <a href="mailto:jrespanol485@gmail.com">jrespanol485@gmail.com</a></p>

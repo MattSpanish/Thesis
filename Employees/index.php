@@ -13,45 +13,97 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Records</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Basic styling for the employee table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #E3EED4; /* Light Accent */
         }
-        th, td {
-            padding: 10px;
-            text-align: left;
+
+        .container {
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 1500px;
+            margin-bottom: 40px;
         }
-        .status-full-time {
-            color: green;
-            font-weight: bold;
-        }
-        .status-part-time {
-            color: red;
-            font-weight: bold;
-        }
-        .btn {
-            margin-right: 5px;
-        }
+
         .header {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .back-link {
             font-size: 20px;
             text-decoration: none;
-            color: #000;
+            color: #0F2A1D;
             margin-right: 10px;
         }
+
         .logo {
             height: 50px;
         }
-        .fas {
-            font-size: 24px;
+
+        .table-responsive {
+            background-color: #F8F9FA;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #AEC3B0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .thead-dark {
+            background-color: #375534;
+            color: white;
+        }
+
+        .status-full-time {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-part-time {
+            color: red;
+            font-weight: bold;
+        }
+
+        .btn {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #375534;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0F2A1D;
+        }
+
+        .btn-warning {
+            background-color: #F8C23E;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #D9534F;
+            color: white;
         }
     </style>
 </head>

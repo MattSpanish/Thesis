@@ -195,7 +195,6 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         <a href="#" class="active"><i></i>Dashboard</a>
         <a href="prof_profile.php"><i></i>Profile</a>
         <a href="#"><i></i>Tasks</a>
-        <a href="#"><i></i>Settings</a>
     </div>
 
     <!-- Content Area -->
