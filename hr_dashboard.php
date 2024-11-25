@@ -3,6 +3,40 @@
 $professors = 10; // Replace with dynamic value from the database
 $departments = 3; // Replace with dynamic value from the database
 $evaluations = 20; // Replace with dynamic value from the database
+
+// Database connection
+$db = new mysqli('localhost', 'root', '', 'hr_data');
+
+// Fetch admin data (including profile picture)
+$result = $db->query("SELECT * FROM ADMIN_CREDENTIALS WHERE id = 1");
+$ADMIN_CREDENTIALS = $result->fetch_assoc();
+
+// Default profile picture if none is set
+$profilePicture = $ADMIN_CREDENTIALS['profile_picture'] ?? 'default-profile.png';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['profilePicture'];
+        $targetDir = "UploadHrProfile/";
+        $fileName = time() . "_" . basename($file["name"]);
+        $targetFilePath = $targetDir . $fileName;
+
+        if (move_uploaded_file($file["tmp_name"], $targetFilePath)) {
+            // Update profile picture in database
+            $db->query("UPDATE ADMIN_CREDENTIALS SET profile_picture = '$fileName' WHERE id = 1");
+            $_SESSION['message'] = "Profile picture updated successfully.";
+            // Update profile picture path for immediate display
+            $profilePicture = $fileName;
+
+            // Redirect to avoid resubmission
+            header("Location: hr_dashboard.php");
+            exit; // Ensure script stops after redirect
+        } else {
+            $_SESSION['error'] = "Failed to upload the profile picture.";
+        }
+    }
+}
+$db->close();
 ?>
 
 <!DOCTYPE html>
@@ -155,6 +189,11 @@ $evaluations = 20; // Replace with dynamic value from the database
             padding: 20px;
             overflow-y: auto; /* Scroll if content overflows */
         }
+        #dropdownMenu a:hover {
+            background-color: #f4f4f4; /* Light gray on hover */
+            color: #000; /* Black text on hover */
+        }
+
     </style>
 </head>
 <body>
@@ -174,38 +213,64 @@ $evaluations = 20; // Replace with dynamic value from the database
     <div class="content">
 
     <!-- Header -->
-<div class="header">
-    <h1>Dashboard</h1>
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="https://via.placeholder.com/50" alt="Profile Picture">
-        <span>ADMIN</span>
-        <a href="../signin&signout/LandingPage.php" 
-           style="text-decoration: none; padding: 8px 15px; background-color: #ff4d4d; color: white; border-radius: 5px; font-size: 14px;">
-            Logout
-        </a>
+    <div class="header">
+        <h1>Dashboard</h1>
+        <div style="position: relative;">
+            <button id="profileDropdown" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                <img id="profilePicture" 
+                    src="UploadHrProfile/<?php echo htmlspecialchars($profilePicture); ?>" 
+                    alt="Profile Picture" 
+                    style="cursor: pointer; border-radius: 50%; width: 50px; height: 50px;">
+                <span>ADMIN</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+            <!-- Drop-down content -->
+            <div id="dropdownMenu" 
+                style="display: none; position: absolute; right: 0; top: 60px; background-color: white; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); border-radius: 5px; overflow: hidden; z-index: 1000;">
+                <a href="/signin&signout/change_password.php" 
+                style="text-decoration: none; padding: 10px 15px; display: block; color: #333; background-color: #fff; transition: background-color 0.3s;">
+                    Change Password
+                </a>
+                <a href="../signin&signout/LandingPage.php" 
+                style="text-decoration: none; padding: 10px 15px; display: block; color: white; background-color: #ff4d4d; transition: background-color 0.3s;">
+                    Logout
+                </a>
+            </div>
+        </div>
     </div>
-</div>
 
+    <!-- Profile Picture Modal -->
+    <div id="profileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 20px; border-radius: 10px; width: 300px; text-align: center;">
+            <h3>Change Profile Picture</h3>
+            <form action="" method="POST" enctype="multipart/form-data">
+                <input type="file" name="profilePicture" accept="image/*" required>
+                <button type="submit" style="margin-top: 10px; padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 5px;">Upload</button>
+            </form>
+            <button onclick="closeModal()" style="margin-top: 10px; padding: 8px 15px; background-color: #ff4d4d; color: white; border: none; border-radius: 5px;">Cancel</button>
+        </div>
+    </div>
 
-        <!-- Dashboard Cards -->
-        <div class="dashboard-cards">
-    <div class="card professors">
-        <a href="professors.php"></a> <!-- Link covering the card -->
-        <h3>Available Professors</h3>
-        <p><?php echo $professors; ?></p>
+    <!-- Dashboard Cards -->
+    <div class="dashboard-cards">
+        <div class="card professors">
+            <a href="#" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Available Professors</a>
+            <h3>Available Professors</h3>
+            <p><?php echo $professors; ?></p>
+        </div>
+        <div class="card departments">
+            <a href="DepartmentRecords.php" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Departments</a>
+            <h3>Departments</h3>
+            <p><?php echo $departments; ?></p>
+        </div>
+        <div class="card evaluations">
+            <a href="#" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Files</a>
+            <h3>Files</h3>
+            <p><?php echo $evaluations; ?></p>
+        </div>
     </div>
-    <div class="card departments">
-        <a href="DepartmentRecords.php"></a> <!-- Link covering the card -->
-        <h3>Departments</h3>
-        <p><?php echo $departments; ?></p>
-    </div>
-    <div class="card evaluations">
-        <a href="#"></a> <!-- Link covering the card -->
-        <h3>Files</h3>
-        <p><?php echo $evaluations; ?></p>
-    </div>
-</div>
-
 
         <!-- Performance Chart -->
         <div class="performance-chart">
@@ -231,8 +296,6 @@ $evaluations = 20; // Replace with dynamic value from the database
 
     </div>
 
-  
-
     <!-- JavaScript to handle active sidebar link -->
     <script>
         const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
@@ -245,6 +308,43 @@ $evaluations = 20; // Replace with dynamic value from the database
                 this.classList.add('active');
             });
         });
+        document.addEventListener('DOMContentLoaded', () => {
+        const profilePicture = document.getElementById('profilePicture');
+        const modal = document.getElementById('profileModal');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        // Function to open the modal
+        profilePicture.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent event from propagating to the dropdown
+            modal.style.display = 'flex'; // Show the modal
+        });
+
+        // Function to close the modal
+        window.closeModal = () => {
+            modal.style.display = 'none'; // Hide the modal
+        };
+
+        // Close the modal when clicking outside the modal content
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Toggle the dropdown menu
+        profileDropdown.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent modal event interference
+            dropdownMenu.style.display = dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '' ? 'block' : 'none';
+        });
+
+        // Close the dropdown menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+    });
     </script>
 
 </body>
