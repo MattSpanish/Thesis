@@ -7,63 +7,97 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <title>Employee Management</title>
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #E3EED4; /* Light Accent */
+        }
+
         .container {
             margin-top: 20px;
         }
+
         .card {
             border: none;
             transition: 0.3s;
             cursor: pointer;
             margin: 10px 0;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .card:hover {
             background-color: #28a745;
             color: white;
         }
+
         .card-title {
             font-size: 18px;
             font-weight: bold;
+            color: #375534; /* Dark Green */
         }
+
         .card-icon {
             font-size: 40px;
             color: #28a745;
         }
+
         .header {
             display: flex;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .back-link {
             font-size: 30px;
             text-decoration: none;
-            color: #000;
+            color: #0F2A1D;
             margin-right: 10px;
         }
+
         .back-link:hover {
             text-decoration: underline;
         }
+
         .logo {
             height: 50px;
         }
+
+        .btn-primary {
+            background-color: #375534;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #0F2A1D;
+        }
+
         @media (max-width: 768px) {
             .card-title {
                 font-size: 16px;
             }
+
             .card-icon {
                 font-size: 35px;
             }
         }
+
         @media (max-width: 576px) {
             .card-title {
                 font-size: 14px;
             }
+
             .card-icon {
                 font-size: 30px;
             }
+
             .container {
                 padding-left: 10px;
                 padding-right: 10px;
             }
+
             .logo {
                 height: 40px;
             }
@@ -100,6 +134,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

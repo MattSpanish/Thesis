@@ -29,21 +29,58 @@ while ($row = $result->fetch_assoc()) {
     <title>Task</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <style>
-        /* Custom media query for small devices */
-        @media (max-width: 576px) {
-            .status {
-                font-size: 0.8rem;
-            }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #E3EED4; /* Light Accent */
         }
 
-        /* Additional badge styles for responsiveness */
-        .badge {
-            font-size: 1rem;
-            padding: 0.5em;
+        .container-fluid {
+            margin-top: 20px;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .back-button {
+            margin-right: 10px;
+        }
+
+        .logo {
+            height: 50px;
+        }
+
+        /* Task Summary Cards */
+        .card {
+            border: none;
+            transition: 0.3s;
             cursor: pointer;
+            margin: 10px 0;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .card:hover {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #375534; /* Dark Green */
+        }
+
+        .card-text {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        /* Task Status Badges */
         .badge-complete {
             background-color: #28a745;
             color: white;
@@ -59,20 +96,39 @@ while ($row = $result->fetch_assoc()) {
             color: white;
         }
 
-        /* Flexbox for logo and back button */
-        .header-container {
-            display: flex;
-            align-items: center;
+        /* Table Styling */
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
         }
 
-        .back-button {
-            margin-right: 10px;
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .card-title {
+                font-size: 16px;
+            }
+
+            .card-text {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-title {
+                font-size: 14px;
+            }
+
+            .card-text {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Main Container -->
-    <div class="container-fluid mt-4">
+    <div class="container-fluid">
         <!-- Logo and Back Arrow Section -->
         <div class="row mb-3">
             <div class="col-12">
@@ -85,19 +141,10 @@ while ($row = $result->fetch_assoc()) {
                         </svg>
                     </a>
                     <!-- Logo -->
-                    <div class="image">
-                        <a class="navbar-brand brand-logo" href="hr_dashboard.php">
-                            <img src="signin&signout/assets1/img/logo.png" alt="logo" class="img-fluid" />
-                        </a>
-                    </div>
+                    <img src="../signin&signout/assets1/img/logo.png" alt="MindVenture Logo" class="logo">
                 </div>
             </div>
         </div>
-
-        <!-- Task Header -->
-        <header class="mb-4 text-left">
-            <h1>Task</h1>
-        </header>
 
         <!-- Task Summary Cards -->
         <div class="row text-center mb-4">
@@ -171,11 +218,10 @@ while ($row = $result->fetch_assoc()) {
             </table>
         </div>
 
-        <!-- Script for Adding Employee and Toggle Status -->
+        <!-- Script for Task Management -->
         <script>
             // Function to toggle task status
             function toggleStatus(element) {
-                // Get current status and change accordingly
                 if (element.classList.contains('badge-pending')) {
                     element.classList.remove('badge-pending');
                     element.classList.add('badge-complete');
@@ -189,26 +235,21 @@ while ($row = $result->fetch_assoc()) {
                     element.classList.add('badge-pending');
                     element.textContent = 'Pending';
                 }
-
-                // Update task summary counts
                 updateTaskSummary();
             }
 
-            // Function to update task summary counts
             function updateTaskSummary() {
                 let totalTasks = document.querySelectorAll('#employeeTable tr').length;
                 let completeTasks = document.querySelectorAll('.badge-complete').length;
                 let pendingTasks = document.querySelectorAll('.badge-pending').length;
                 let dueTasks = document.querySelectorAll('.badge-due').length;
 
-                // Set task summary values
                 document.getElementById('task-left').textContent = pendingTasks + dueTasks;
                 document.getElementById('complete-task').textContent = completeTasks;
                 document.getElementById('pending-task').textContent = pendingTasks;
                 document.getElementById('due-task').textContent = dueTasks;
             }
 
-            // Initial task summary count
             updateTaskSummary();
         </script>
     </div>
