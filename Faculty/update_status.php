@@ -1,46 +1,36 @@
 <?php
+// update_status.php
 require_once '../signin&signout/config.php';
 session_start();
 
-// Check if the user is logged in
 if (!isset($_SESSION['id'])) {
-    http_response_code(403);
-    echo json_encode(['status' => 'error', 'message' => 'Unauthorized access.']);
+    echo json_encode(['status' => 'error', 'message' => 'User not logged in']);
     exit;
 }
 
-// Validate POST data
-if (isset($_POST['task_id']) && isset($_POST['status'])) {
-    $task_id = mysqli_real_escape_string($conn, $_POST['task_id']);
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
+$task_id = $_POST['task_id'];
+$status = $_POST['status'];
 
-    // Ensure task_id is numeric
-    if (!is_numeric($task_id)) {
-        http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Invalid task ID.']);
-        exit;
-    }
+// Sanitize the inputs
+$task_id = mysqli_real_escape_string($conn, $task_id);
+$status = mysqli_real_escape_string($conn, $status);
 
-    // Ensure status is a valid value
-    $validStatuses = ['complete', 'pending', 'due'];
-    if (!in_array($status, $validStatuses)) {
-        http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Invalid status value.']);
-        exit;
-    }
-
-    // Update the task status in the database
-    $query = "UPDATE tasks SET status = '$status' WHERE id = '$task_id' AND employee_id = '{$_SESSION['id']}'";
-    if (mysqli_query($conn, $query)) {
-        echo json_encode(['status' => 'success', 'message' => 'Task status updated successfully.']);
-    } else {
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'Failed to update task status.']);
-    }
-} else {
-    http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request.']);
+// Ensure status is valid
+$valid_statuses = ['complete', 'pending', 'due'];
+if (!in_array($status, $valid_statuses)) {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid status']);
+    exit;
 }
 
-// Close the database connection
-mysqli_close($conn);
+// Update the task status in the database
+$query = "UPDATE tasks SET status = ? WHERE id = ? AND employee_id = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, 'sii', $status, $task_id, $_SESSION['id']);
+$success = mysqli_stmt_execute($stmt);
+
+if ($success) {
+    echo json_encode(['status' => 'success', 'message' => 'Task status updated']);
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Failed to update status']);
+}
+mysqli_stmt_close($stmt);

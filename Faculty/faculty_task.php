@@ -63,9 +63,7 @@ mysqli_close($conn);
         .back-button {
             margin-right: 10px;
         }
-        .logo {
-            height: 50px;
-        }
+       
         .card {
             border: none;
             transition: 0.3s;
@@ -117,7 +115,6 @@ mysqli_close($conn);
                     <a href="profDASHBOARD.php" class="btn btn-white back-button">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                    <img src="../signin&signout/assets1/img/logo.png" alt="MindVenture Logo" class="logo">
                 </div>
             </div>
         </div>

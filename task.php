@@ -53,9 +53,7 @@ mysqli_free_result($tasksResult);
         .back-button {
             margin-right: 10px;
         }
-        .logo {
-            height: 50px;
-        }
+       
         .card {
             border: none;
             transition: 0.3s;
@@ -107,7 +105,6 @@ mysqli_free_result($tasksResult);
                     <a href="hr_dashboard.php" class="btn btn-white back-button">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                    <img src="../signin&signout/assets1/img/logo.png" alt="MindVenture Logo" class="logo">
                 </div>
             </div>
         </div>
