@@ -184,6 +184,25 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         font-size: 12px;
         font-weight: bold;
     }
+
+    .logout-btn {
+    margin-left: 20px;
+    padding: 10px 20px;
+    background-color: #375534; /* Secondary Color */
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.logout-btn:hover {
+    background-color: #0F2A1D; /* Darker Shade */
+}
+
 </style>
 
 
@@ -194,19 +213,20 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         <h1>My Dashboard</h1>
         <a href="#" class="active"><i></i>Dashboard</a>
         <a href="prof_profile.php"><i></i>Profile</a>
-        <a href="#"><i></i>Tasks</a>
+        <a href="faculty_task.php"><i></i>Tasks</a>
     </div>
 
     <!-- Content Area -->
     <div class="content">
-        <!-- Header -->
-        <div class="header">
-            <h2>Welcome, <?= $user_name ?></h2>
-            <div class="user-info">
-                <img src="<?= $user_image ?>" alt="Profile Picture">
-                <span><?= $user_name ?></span>
-            </div>
-        </div>
+    <div class="header">
+    <h2>Welcome, <?= $user_name ?></h2>
+    <div class="user-info">
+        <img src="<?= $user_image ?>" alt="Profile Picture">
+        <span><?= $user_name ?></span>
+        <a href="../Faculty/logout.php" class="logout-btn">Logout</a>
+    </div>
+</div>
+
 
         <!-- Stats Section -->
         <div class="stats-section">

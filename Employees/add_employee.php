@@ -20,20 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql_time = "INSERT INTO time_tracking (employee_id, regular, overtime, sick_leave, pto, paid_holiday) VALUES ('$employee_id', 0, 0, 0, 0, 0)";
         
         if ($conn->query($sql_time) === TRUE) {
-            // Insert an initial task for the new employee
-            $default_task_name = "Initial Task"; // Default task name
-            $default_due_date = date('Y-m-d', strtotime('+7 days')); // Default due date set to one week from now
-            $default_status = "Pending"; // Default status
-
-            $sql_task = "INSERT INTO tasks (employee_id, task_name, due_date, status) VALUES ('$employee_id', '$default_task_name', '$default_due_date', '$default_status')";
-            
-            if ($conn->query($sql_task) === TRUE) {
-                // Redirect to employee list page
-                header('Location: index.php');
-                exit;
-            } else {
-                echo "Error adding initial task: " . $sql_task . "<br>" . $conn->error;
-            }
+            // Redirect to employee list page
+            header('Location: index.php');
+            exit;
         } else {
             echo "Error with time tracking record: " . $sql_time . "<br>" . $conn->error;
         }

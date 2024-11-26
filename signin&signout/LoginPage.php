@@ -62,10 +62,14 @@ $conn->close();
     <div class="row" style="margin-top: 50px;">
       
       <div class="col-lg-4 offset-lg-1"> <!-- Adjust the column size as per your requirement -->
-        <a href="LandingPage.php">
-          <img src="assets1/img/logo.png" alt="Logo" class="img-fluid">
-        </a>
-        <p class="h2 font-weight-bold">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
+        
+          <!-- Back Arrow -->
+          <a href="../signin&signout/LandingPage.php">
+        <button class="back-arrow"><i class="fa-solid fa-arrow-left"></i></button>
+      </a>
+      
+         
+        <p class="h2 font-weight-bold mt-4">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
         <p class="p- font-weight-normal align-bottom mt-4">
           A Predictive Modeling for Optimal Workforce 
           Allocation and Performance Rate Enhancement Website
@@ -120,3 +124,4 @@ $conn->close();
 
 </body>
 </html>
+
