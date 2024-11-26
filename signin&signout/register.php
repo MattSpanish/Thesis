@@ -28,9 +28,22 @@ if (isset($_POST["submit"])) {
             $query = "INSERT INTO users (fullname, username, email, password) VALUES ('$fullname', '$username', '$email', '$hashed_password')";
             if (mysqli_query($conn, $query)) {
                 echo "<script> alert('Registration successful') </script>";
-                // Redirect to login page
-                header("Location: LoginPage.php");
-                exit; // Make sure to exit after redirection
+                
+                // Get the newly registered user's ID
+                $new_user_id = mysqli_insert_id($conn);
+
+                // Auto-assign a default task
+                $default_task_query = "INSERT INTO tasks (task_name, employee_id, due_date, status) VALUES 
+                ('Welcome Task', '$new_user_id', CURDATE() + INTERVAL 7 DAY, 'pending')";
+    
+                if (mysqli_query($conn, $default_task_query)) {
+                    echo "<script>alert('Registration successful and default task assigned!');</script>";
+                    // Redirect to login page
+                    header("Location: LoginPage.php");
+                    exit();
+                } else {
+                    echo "<script>alert('Registration successful but default task assignment failed.');</script>";
+                }
             } else {
                 echo "<script> alert('Error: Registration failed') </script>";
             }
@@ -38,27 +51,11 @@ if (isset($_POST["submit"])) {
             echo "<script> alert('Passwords do not match') </script>";
         }
     }
-
-    if (mysqli_query($conn, $query)) {
-        $new_user_id = mysqli_insert_id($conn); // Get the newly registered user's ID
-    
-        // Auto-assign a default task
-        $default_task_query = "INSERT INTO tasks (task_name, employee_id, due_date, status) VALUES 
-        ('Welcome Task', '$new_user_id', CURDATE() + INTERVAL 7 DAY, 'pending')";
-    
-        if (mysqli_query($conn, $default_task_query)) {
-            echo "<script>alert('Registration successful and default task assigned!');</script>";
-            header("Location: LoginPage.php");
-            exit();
-        } else {
-            echo "<script>alert('Registration successful but default task assignment failed.');</script>";
-        }
-    } else {
-        echo "<script>alert('Error: Registration failed.');</script>";
-    }
-    
 }
 ?>
+
+<!-- HTML form remains the same -->
+
 
 <!DOCTYPE html>
 <html lang="en">
