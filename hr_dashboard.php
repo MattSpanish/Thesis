@@ -229,7 +229,7 @@ $db->close();
             <!-- Drop-down content -->
             <div id="dropdownMenu" 
                 style="display: none; position: absolute; right: 0; top: 60px; background-color: white; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); border-radius: 5px; overflow: hidden; z-index: 1000;">
-                <a href="/signin&signout/change_password.php" 
+                <a href="../signin&signout/change_password.php" 
                 style="text-decoration: none; padding: 10px 15px; display: block; color: #333; background-color: #fff; transition: background-color 0.3s;">
                     Change Password
                 </a>
