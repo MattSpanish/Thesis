@@ -10,6 +10,7 @@
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #E3EED4; /* Light Accent */
+            position: relative;
         }
 
         .container {
@@ -42,36 +43,27 @@
             color: #28a745;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .back-link {
-            font-size: 20px;
-            text-decoration: none;
-            color: #0F2A1D;
-            margin-right: 10px;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-
-        .logo {
+        /* Align back button to the left */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
             height: 50px;
-        }
-
-        .btn-primary {
             background-color: #375534;
             color: white;
-            border: none;
-            font-weight: bold;
+            border-radius: 8px; /* Rounded corners */
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
         }
 
-        .btn-primary:hover {
-            background-color: #0F2A1D;
+        .back-button:hover {
+            background-color: #2a442e;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 768px) {
@@ -97,20 +89,15 @@
                 padding-left: 10px;
                 padding-right: 10px;
             }
-
-            .logo {
-                height: 40px;
-            }
         }
     </style>
 </head>
 <body>
+    <a href="hr_dashboard.php" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
     <div class="container text-center">
-        <div class="header">
-            <a href="hr_dashboard.php" class="back-link">
-                <i class="fas fa-arrow-left"></i> <!-- Font Awesome back arrow -->
-            </a>
-        </div>
         <h1>Employees</h1>
         <div class="row mt-5">
             <div class="col-12 col-md-6 mb-3">
@@ -139,3 +126,4 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
