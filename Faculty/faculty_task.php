@@ -1,34 +1,4 @@
-<?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "employee_management"; // Replace with your actual database name
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Check if connection was successful
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-
-// Fetch tasks from the database
-$result = $conn->query("SELECT employees.name AS employee_name, tasks.task_name, tasks.due_date, tasks.status FROM tasks JOIN employees ON tasks.employee_id = employees.id");
-
-// Fetch tasks into a variable to display them in the table
-$tasks = [];
-while ($row = $result->fetch_assoc()) {
-    $tasks[] = $row;
-}
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -98,7 +68,7 @@ while ($row = $result->fetch_assoc()) {
             <div class="col-12">
                 <div class="header-container">
                     <!-- Back Button (Arrow) -->
-                    <a href="hr_dashboard.php" class="btn btn-white back-button">
+                    <a href="profDASHBOARD.php" class="btn btn-white back-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16" stroke-width="2">
                             <path fill-rule="evenodd" d="M5.854 4.146a.5.5 0 0 1 0 .708L2.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0z"/>
                             <path fill-rule="evenodd" d="M10 8a.5.5 0 0 1-.5.5H2a.5.5 0 0 1 0-1h7.5A.5.5 0 0 1 10 8z"/>
@@ -173,21 +143,7 @@ while ($row = $result->fetch_assoc()) {
                         <th>DUE DATE</th>
                         <th>STATUS</th>
                     </tr>
-                </thead>
-                <tbody id="employeeTable">
-                    <?php foreach ($tasks as $task): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($task['employee_name']); ?></td>
-                        <td><?php echo htmlspecialchars($task['task_name']); ?></td>
-                        <td><?php echo htmlspecialchars($task['due_date']); ?></td>
-                        <td class="status">
-                            <span class="badge <?php echo ($task['status'] == 'Complete' ? 'badge-complete' : ($task['status'] == 'Due' ? 'badge-due' : 'badge-pending')); ?>" onclick="toggleStatus(this)">
-                                <?php echo htmlspecialchars($task['status']); ?>
-                            </span>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
+              
             </table>
         </div>
 

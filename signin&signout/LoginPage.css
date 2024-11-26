@@ -40,3 +40,28 @@ p {
     
 }
 
+
+
+.back-arrow {
+    position: fixed;  /* Use fixed positioning to place it on the left side */
+    top: 20px;        /* Adjust the top value to align vertically */
+    left: 20px;       /* Position the button on the left side */
+    font-size: 18px;  /* Make the icon a little bigger */
+    padding: 10px 15px; /* Add some padding for better appearance */
+    background-color: #375534;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
+}
+
+.back-arrow i {
+    margin-right: 5px; /* Space between icon and text */
+}
+
+.back-arrow:hover {
+    background-color: #0F2A1D;  /* Hover color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhance hover effect */
+}
