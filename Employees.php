@@ -49,7 +49,7 @@
         }
 
         .back-link {
-            font-size: 30px;
+            font-size: 20px;
             text-decoration: none;
             color: #0F2A1D;
             margin-right: 10px;
@@ -110,7 +110,6 @@
             <a href="hr_dashboard.php" class="back-link">
                 <i class="fas fa-arrow-left"></i> <!-- Font Awesome back arrow -->
             </a>
-            <img src="../signin&signout/assets1/img/logo.png" alt="MindVenture Logo" class="logo"> <!-- Logo -->
         </div>
         <h1>Employees</h1>
         <div class="row mt-5">
