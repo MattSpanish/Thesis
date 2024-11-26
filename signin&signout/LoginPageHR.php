@@ -12,9 +12,17 @@ if ($conn->connect_error) {
 }
 
 $error = '';
+$rememberedPassword = '';
+
+// Check if the password is stored in a cookie
+if (isset($_COOKIE['remember_password'])) {
+    $rememberedPassword = $_COOKIE['remember_password'];
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inputUsername = $_POST['username'];
     $inputPassword = $_POST['password'];
+    $rememberMe = isset($_POST['remember_me']);
 
     // Validate credentials
     $stmt = $conn->prepare("SELECT * FROM admin_credentials WHERE username = ? AND password = SHA2(?, 256)");
@@ -24,6 +32,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result->num_rows === 1) {
         $_SESSION['admin'] = $inputUsername; // Start a session for ADMIN
+
+        // Handle the Remember Me functionality
+        if ($rememberMe) {
+            setcookie('remember_password', $inputPassword, time() + (86400 * 30), "/"); // Store the password for 30 days
+        } else {
+            setcookie('remember_password', '', time() - 3600, "/"); // Clear the cookie
+        }
+
         header("Location: /hr_dashboard.php"); // Redirect to the dashboard
         exit();
     } else {
@@ -47,54 +63,55 @@ $conn->close();
 
 <div class="container-fluid">
     <div class="row" style="margin-top: 50px;">
-      
-      <div class="col-lg-4 offset-lg-1">
-        <a href="LandingPage.php">
-          <img src="assets1/img/logo.png" alt="Logo" class="img-fluid">
-        </a>
-        <p class="h2 font-weight-bold">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
-        <p class="p- font-weight-normal align-bottom mt-4">
-          A Predictive Modeling for Optimal Workforce 
-          Allocation and Performance Rate Enhancement Website
-        </p>
-      </div>
+        <div class="col-lg-4 offset-lg-1">
+            <a href="LandingPage.php">
+                <img src="assets1/img/logo.png" alt="Logo" class="img-fluid">
+            </a>
+            <p class="h2 font-weight-bold">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
+            <p class="p- font-weight-normal align-bottom mt-4">
+                A Predictive Modeling for Optimal Workforce 
+                Allocation and Performance Rate Enhancement Website
+            </p>
+        </div>
 
-      <div class="col-lg-4 offset-lg-2">
-        <form method="POST" action="">
-          <!-- Username input -->
-          <div class="form-outline mb-4">
-            <label class="form-label" for="username">Username</label>
-            <input type="text" name="username" id="username" value="ADMIN" class="form-control" readonly />
-          </div>
+        <div class="col-lg-4 offset-lg-2">
+            <form method="POST" action="">
+                <!-- Username input -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" name="username" id="username" value="ADMIN" class="form-control" readonly />
+                </div>
 
-          <!-- Password input -->
-          <div class="form-outline mb-4">
-            <label class="form-label" for="password">Password</label>
-            <input type="password" name="password" required id="password" class="form-control" />
-          </div>
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" name="password" required id="password" class="form-control" 
+                           value="<?php echo htmlspecialchars($rememberedPassword); ?>" />
+                </div>
 
-          <!-- Error Message -->
-          <?php if (!empty($error)): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-          <?php endif; ?>
+                <!-- Error Message -->
+                <?php if (!empty($error)): ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php endif; ?>
 
-          <!-- Remember me and forgot password -->
-          <div class="row mb-4">
-            <div class="col d-flex justify-content-center">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="remember_me" checked />
-                <label class="form-check-label" for="remember_me"> Remember me </label>
-              </div>
-            </div>
-            <div class="col">
-              <a href="#!" class="text-success">Forgot password?</a>
-            </div>
-          </div>
+                <!-- Remember me and forgot password -->
+                <div class="row mb-4">
+                    <div class="col d-flex justify-content-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remember_me" value="1" id="remember_me" 
+                                   <?php echo isset($_COOKIE['remember_password']) ? 'checked' : ''; ?> />
+                            <label class="form-check-label" for="remember_me"> Remember me </label>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <a href="#!" class="text-success">Forgot password?</a>
+                    </div>
+                </div>
 
-          <!-- Submit button -->
-          <button type="submit" class="btn btn-success btn-block mb-4">Sign in</button>
-        </form>
-      </div>
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-success btn-block mb-4">Sign in</button>
+            </form>
+        </div>
     </div>
 </div>
 
