@@ -128,13 +128,13 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         font-size: 18px;
         font-weight: 500;
     }
-
     /* Stats Section */
     .stats-section {
-        display: flex;
-        gap: 20px;
-        margin-top: 20px;
-        flex-wrap: wrap;
+    display: flex;
+    gap: 20px;
+    margin-top: 30px; /* Space from the header */
+    flex-wrap: wrap;
+    justify-content: space-between; /* Distribute evenly across the available space */
     }
     .stat-card {
         background: #E3EED4; /* Light Accent */
@@ -162,10 +162,25 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     }
 
     /* Notifications Section */
+        .notifications-section {
+        margin-top: 40px; /* Space from the stats section */
+        padding: 20px;
+        background: #F5F5F5; /* Light background for clarity */
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .notifications-section h3 {
+        margin-bottom: 20px;
+        color: #375534; /* Secondary color */
+        font-weight: bold;
+    }
+
     .notifications-section ul {
         list-style: none;
         padding: 0;
     }
+
     .notifications-section li {
         padding: 15px;
         background: #AEC3B0; /* Highlight Color */
@@ -176,6 +191,7 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         justify-content: space-between;
         align-items: center;
     }
+
     .notifications-section li .badge {
         background: #0F2A1D; /* Primary Color */
         color: white;
@@ -185,23 +201,23 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         font-weight: bold;
     }
 
-    .logout-btn {
-    margin-left: 20px;
-    padding: 10px 20px;
-    background-color: #375534; /* Secondary Color */
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-}
+        .logout-btn {
+        margin-left: 20px;
+        padding: 10px 20px;
+        background-color: #375534; /* Secondary Color */
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
 
-.logout-btn:hover {
-    background-color: #0F2A1D; /* Darker Shade */
-}
+    .logout-btn:hover {
+        background-color: #0F2A1D; /* Darker Shade */
+    }
 
 </style>
 
@@ -216,17 +232,40 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         <a href="faculty_task.php"><i></i>Tasks</a>
     </div>
 
-    <!-- Content Area -->
-    <div class="content">
-    <div class="header">
-    <h2>Welcome, <?= $user_name ?></h2>
-    <div class="user-info">
-        <img src="<?= $user_image ?>" alt="Profile Picture">
-        <span><?= $user_name ?></span>
-        <a href="../Faculty/logout.php" class="logout-btn">Logout</a>
+        <!-- Content Area -->
+        <div class="content">
+        <div class="header">
+        <h2>Welcome, <?= $user_name ?></h2>
+        <div class="user-info" style="position: relative;">
+            <img src="<?= $user_image ?>" alt="Profile Picture">
+            <span><?= $user_name ?></span>
+        
+        <!-- Dropdown Button -->
+        <div style="position: relative; cursor: pointer;">
+            <button onclick="toggleDropdown()" class="logout-btn" style="background: none; border: none; padding: 0; cursor: pointer;">
+                <!-- SVG Arrow -->
+                <svg width="15" height="13">
+                    <path d="M3.5 5.5a.5.5 0 0 1 .707-.707L8 8.793l3.793-3.998a.5.5 0 1 1 .707.707l-4 4.25a.5.5 0 0 1-.707 0l-4-4.25a.5.5 0 0 1-.707-.707z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Drop-down content -->
+        <div id="dropdownMenu" 
+            style="display: none; position: absolute; right: 0; top: 75px; background-color: white; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); border-radius: 5px; overflow: hidden; z-index: 1000;">
+            
+            <a href="#" 
+                style="text-decoration: none; padding: 10px 15px; display: block; color: #333; background-color: #fff; transition: background-color 0.3s;">
+                Change Password
+            </a>
+            
+            <a href="../signin&signout/LandingPage.php" 
+                style="text-decoration: none; padding: 10px 15px; display: block; color: white; background-color: #ff4d4d; transition: background-color 0.3s;">
+                Logout
+            </a>
+        </div>
     </div>
 </div>
-
 
         <!-- Stats Section -->
         <div class="stats-section">
@@ -263,5 +302,19 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
             </ul>
         </div>
     </div>
+    <script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById("dropdownMenu");
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("dropdownMenu");
+        if (!event.target.closest(".user-info")) {
+            dropdown.style.display = "none";
+        }
+    });
+</script>
 </body>
 </html>
