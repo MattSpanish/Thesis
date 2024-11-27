@@ -64,9 +64,6 @@ $conn->close();
 <div class="container-fluid">
     <div class="row" style="margin-top: 50px;">
         <div class="col-lg-4 offset-lg-1">
-            <a href="LandingPage.php">
-                <img src="assets1/img/logo.png" alt="Logo" class="img-fluid">
-            </a>
             <p class="h2 font-weight-bold">UNLEASH EFFICIENCY EMPOWER YOUR WORKFORCE</p>
             <p class="p- font-weight-normal align-bottom mt-4">
                 A Predictive Modeling for Optimal Workforce 
