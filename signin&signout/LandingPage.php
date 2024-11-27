@@ -29,7 +29,6 @@
                 <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="#team">Team</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                <a class="btn btn-primary btn-s" href="register.php" role="button">Sign-up</a>
             </ul>
         </div>
     </div>
@@ -44,12 +43,15 @@
                 <div class="masthead-subheading mb-9">YOUR SOLUTION FOR OPTIMIZE WORKFORCE ALLOCATION</div>
 
 
-                <p class="fs-4">LOG IN AS</p>
-
                 <div class="col">
-                    <a class="btn btn-primary btn-xl text-uppercase col-2 " href="LoginPage.php" role="button">Faculty</a>
-                    <a class="btn btn-primary btn-xl text-uppercase col-2" href="LoginPageHR.php" role="button">HR</a>
-                </div>
+    <div class="d-flex flex-column align-items-center">
+        <p class="fs-4 mb-3 text-center">REGISTER AS FACULTY / LOGIN AS</p>
+        <div class="d-flex justify-content-center">
+            <a class="btn btn-primary btn-xl text-uppercase w-100 me-1" href="LoginPage.php" role="button">Faculty</a>
+            <a class="btn btn-primary btn-xl text-uppercase w-100 ms-1" href="LoginPageHR.php" role="button">HR</a>
+        </div>
+    </div>
+</div>
             </div>
             <div class="overlay"></div> <!-- Add an overlay div for the black color -->
         </header>
