@@ -241,7 +241,6 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     <a href="faculty_task.php"><i></i>Tasks</a>
 </div>
 
-
         <!-- Content Area -->
         <div class="content">
         <div class="header">
