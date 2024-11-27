@@ -71,9 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="../Employees.php" class="back-link">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <a class="navbar-brand brand-logo" href="../Employees.php">
-            <img src="../signin&signout/assets1/img/logo.png" alt="logo" />
-        </a>
+
     </div>
     <div>
         <h1>Time Tracking</h1>

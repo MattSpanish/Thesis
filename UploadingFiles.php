@@ -2,6 +2,8 @@
 <html lang="en">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <title>UploadFile</title>
     <style>
         * {
@@ -151,21 +153,38 @@
         button:hover {
             background: #0F2A1D;
         }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #375534;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+        }
+        .back-button:hover {
+            background-color: #2a442e;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        .back-button i {
+            font-size: 18px;
+        }
     </style>
 
 </head>
 <body>
 
-<div class="container">
-    <!-- Sidebar for the Logo and Upload Link -->
-    <div class="sidebar">
-        <a href="hr_dashboard.php" class="back-link">
-            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M15 18l-6-6 6-6"></path>
-            </svg>
-            UploadFile
-        </a>
-    </div>
+<!-- Back Button -->
+<a href="hr_dashboard.php" class="back-button">
+    <i class="fas fa-arrow-left"></i>
+</a>
 
     <!-- Main Content Area -->
     <div class="content">

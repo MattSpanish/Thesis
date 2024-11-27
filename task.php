@@ -51,9 +51,26 @@ mysqli_free_result($tasksResult);
             align-items: center;
         }
         .back-button {
+            background-color: #375534; /* Dark green */
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
             margin-right: 10px;
+            border-radius: 4px; /* Square with slight rounding */
         }
-       
+        .back-button:hover {
+            background-color: #2b4435; /* Slightly darker shade */
+            transform: scale(1.05); /* Slight zoom effect */
+        }
+        .back-button i {
+            font-size: 16px;
+        }
         .card {
             border: none;
             transition: 0.3s;
@@ -102,7 +119,7 @@ mysqli_free_result($tasksResult);
         <div class="row mb-3">
             <div class="col-12">
                 <div class="header-container">
-                    <a href="hr_dashboard.php" class="btn btn-white back-button">
+                    <a href="hr_dashboard.php" class="back-button">
                         <i class="fas fa-arrow-left"></i>
                     </a>
                 </div>
@@ -231,35 +248,12 @@ mysqli_free_result($tasksResult);
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const tasks = <?= json_encode($tasks); ?>;
-            updateTaskSummary(tasks);
-        });
-
-        function updateTaskSummary(tasks) {
-            let complete = 0, pending = 0, due = 0;
-
-            tasks.forEach(task => {
-                if (task.status === 'complete') {
-                    complete++;
-                } else if (task.status === 'pending') {
-                    pending++;
-                } else if (task.status === 'due') {
-                    due++;
-                }
-            });
-
-            document.getElementById("complete-task").innerText = complete;
-            document.getElementById("pending-task").innerText = pending;
-            document.getElementById("due-task").innerText = due;
-            document.getElementById("task-left").innerText = tasks.length - (complete + pending + due);
-        }
-    </script>
 </body>
 </html>
+
+
 
