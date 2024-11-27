@@ -97,6 +97,16 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         margin-right: 15px;
     }
 
+    /* Sidebar logo */
+.sidebar .logo {
+    width: 100%;
+    height: 120px; /* Adjust as needed */
+    background: url('../signin&signout/assets1/img/logo.png') no-repeat center center;
+    background-size: contain;
+    margin-bottom: 1px; /* Spacing below the logo */
+}
+
+
     /* Content Styles */
     .content {
         margin-left: 280px;
@@ -224,13 +234,12 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
 
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h1>My Dashboard</h1>
-        <a href="#" class="active"><i></i>Dashboard</a>
-        <a href="prof_profile.php"><i></i>Profile</a>
-        <a href="faculty_task.php"><i></i>Tasks</a>
-    </div>
+<<div class="sidebar">
+    <div class="logo"></div>
+    <a href="#" class="active"><i></i>Dashboard</a>
+    <a href="prof_profile.php"><i></i>Profile</a>
+    <a href="faculty_task.php"><i></i>Tasks</a>
+</div>
 
         <!-- Content Area -->
         <div class="content">
@@ -254,7 +263,7 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         <div id="dropdownMenu" 
             style="display: none; position: absolute; right: 0; top: 75px; background-color: white; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); border-radius: 5px; overflow: hidden; z-index: 1000;">
             
-            <a href="#" 
+            <a href="../Faculty/change_password2.php" 
                 style="text-decoration: none; padding: 10px 15px; display: block; color: #333; background-color: #fff; transition: background-color 0.3s;">
                 Change Password
             </a>
