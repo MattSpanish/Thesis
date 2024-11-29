@@ -2,8 +2,12 @@
 // Include your database connection
 require 'config.php';
 
-// Initialize variables to handle errors and success
-$error = $success = "";
+// Initialize variables to handle errors, success, and reset link
+$error = $success = $resetLink = "";
+
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Check if the token is provided in the URL
 if (isset($_GET['token'])) {
@@ -11,69 +15,72 @@ if (isset($_GET['token'])) {
 
     // Check if the token exists and is valid in the database
     $stmt = $conn->prepare("SELECT user_id, expiry FROM password_resets WHERE token = ?");
-    $stmt->bind_param("s", $token);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if ($stmt) {
+        $stmt->bind_param("s", $token);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $user_id = $row['user_id'];
-        $expiry = $row['expiry'];
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $user_id = $row['user_id'];
+                $expiry = $row['expiry'];
 
-        // Check if the token has expired
-        if (strtotime($expiry) < time()) {
-            $error = "The token has expired. Please request a new password reset.";
+                // Check if the token has expired
+                if (strtotime($expiry) < time()) {
+                    $error = "The token has expired. Please request a new password reset.";
+                } else {
+                    // Token is valid, proceed with password reset
+                }
+            } else {
+                $error = "Invalid token.";
+            }
+        } else {
+            $error = "Database query error: " . $stmt->error;
         }
+        $stmt->close();
     } else {
-        $error = "Invalid token.";
+        $error = "Database error: Unable to prepare statement.";
     }
 } else {
     $error = "No token provided.";
 }
 
-// Process the form when submitted
+// Process form submission for password reset
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($error)) {
-    // Get current password, new password, and confirm password from the form
-    $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Validate the new password and confirmation
     if ($new_password === $confirm_password) {
-        // Get the user's current password from the database
-        $stmt = $conn->prepare("SELECT password FROM users WHERE id = ?");
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        // Hash the new password
+        $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
 
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $hashed_password = $row['password'];
+        // Update the password in the users table
+        $stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $stmt->bind_param("si", $new_hashed_password, $user_id);
 
-            // Verify the current password
-            if (password_verify($current_password, $hashed_password)) {
-                // Hash the new password
-                $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-
-                // Update the password in the users table
-                $stmt = $conn->prepare("UPDATE users SET password = ? WHERE id = ?");
-                $stmt->bind_param("si", $new_hashed_password, $user_id);
-                $stmt->execute();
+        if ($stmt->execute()) {
+            // Check if rows were affected (meaning the password was updated)
+            if ($stmt->affected_rows > 0) {
+                $success = "Password updated successfully!";
 
                 // Delete the token from the password_resets table
                 $stmt = $conn->prepare("DELETE FROM password_resets WHERE token = ?");
                 $stmt->bind_param("s", $token);
-                $stmt->execute();
 
-                $success = "Your password has been reset successfully.";
+                if ($stmt->execute()) {
+                    // Token deleted successfully, nothing more to do
+                } else {
+                    $error = "Error deleting token: " . $stmt->error;
+                }
             } else {
-                $error = "The current password is incorrect.";
+                $error = "Password update failed: No rows affected. Ensure the user exists.";
             }
         } else {
-            $error = "User not found.";
+            $error = "Error updating password: " . $stmt->error;
         }
+        $stmt->close();
     } else {
-        $error = "New password and confirmation do not match.";
+        $error = "Passwords do not match.";
     }
 }
 ?>
@@ -213,27 +220,24 @@ p {
     <div class="container">
     <form action="" method="POST">
     <h2>Reset Password</h2>
-  
-        <div class="form-group">
-            <label for="current_password">Current Password:</label>
-            <input type="password" name="current_password" id="current_password" required>
-        </div>
-        <div class="form-group">
-            <label for="new_password">New Password:</label>
-            <input type="password" name="new_password" id="new_password" required>
-        </div>
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password:</label>
-            <input type="password" name="confirm_password" id="confirm_password" required>
-        </div>
-        <button type="submit">Reset Password</button>
-        <?php if ($error): ?>
-        <p class="error"><?= $error ?></p>
-        <?php endif; ?>
-        <?php if ($success): ?>
-        <p class="success"><?= $success ?></p>
-        <?php endif; ?>
-    </form>
+    <div class="form-group">
+        <label for="new_password">New Password:</label>
+        <input type="password" name="new_password" id="new_password" required>
+    </div>
+    <div class="form-group">
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
+    </div>
+    <button type="submit">Reset Password</button>
+
+    <?php if ($error): ?>
+        <p class="error" style="color: red;"><?= $error ?></p>
+    <?php endif; ?>
+    <?php if ($success): ?>
+        <p class="success" style="color: green;"><?= $success ?></p>
+    <?php endif; ?>
+
+</form>
     </div>
 </body>
 </html>

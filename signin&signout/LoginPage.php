@@ -2,68 +2,100 @@
 session_start();
 require 'config.php'; // Adjust the path as necessary
 
-// Initialize variables to hold remembered username and password
-$rememberedUsername = isset($_COOKIE['remember_username']) ? $_COOKIE['remember_username'] : '';
-$rememberedPassword = isset($_COOKIE['remember_password']) ? $_COOKIE['remember_password'] : '';
+// Encryption key (use a secure, private key for your application)
+define('ENCRYPTION_KEY', 'your-secure-key-here');
 
-if (isset($_POST["submit"])) {
-    $usernameemail = $_POST["usernameemail"];
-    $password = $_POST["password"];
-    $rememberMe = isset($_POST['remember_me']); // Check if "Remember Me" is checked
+// Function to encrypt data
+function encryptData($data, $key) {
+    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+    $encrypted = openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv);
+    return base64_encode($iv . $encrypted);
+}
 
-    // Validate input
-    if (!empty($usernameemail) && !empty($password)) {
-        // Prepare the SQL statement
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
-        $stmt->bind_param("ss", $usernameemail, $usernameemail);
+// Function to decrypt data
+function decryptData($data, $key) {
+    $decoded = base64_decode($data);
+    $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+    $iv = substr($decoded, 0, $ivLength);
+    $encrypted = substr($decoded, $ivLength);
+    return openssl_decrypt($encrypted, 'aes-256-cbc', $key, 0, $iv);
+}
 
-        // Execute the query
-        $stmt->execute();
-        $result = $stmt->get_result();
+// Initialize variables for remembered credentials
+$rememberedEmail = isset($_COOKIE['remember_email']) ? htmlspecialchars($_COOKIE['remember_email']) : '';
+$rememberedPassword = isset($_COOKIE['remember_password']) ? decryptData($_COOKIE['remember_password'], ENCRYPTION_KEY) : '';
 
-        if ($result && $result->num_rows > 0) {
-            $row = $result->fetch_assoc();
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["submit"])) {
+    $email = trim($_POST["email"]);
+    $password = trim($_POST["password"]);
+    $rememberMe = isset($_POST['remember_me']);
 
-            // Verify the password
-            if (password_verify($password, $row["password"])) {
-                // Set session variables
-                $_SESSION["login"] = true;
-                $_SESSION["id"] = $row["id"];
+    if (!empty($email) && !empty($password)) {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
 
-                // Handle the "Remember Me" functionality
-                if ($rememberMe) {
-                    setcookie('remember_username', $usernameemail, time() + (86400 * 30), "/"); // 30 days
-                    setcookie('remember_password', $password, time() + (86400 * 30), "/"); // 30 days
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+
+                // Verify password
+                if (password_verify($password, $row["password"])) {
+                    // Set session variables
+                    $_SESSION["login"] = true;
+                    $_SESSION["id"] = $row["id"];
+
+                    // Handle "Remember Me" functionality
+                    if ($rememberMe) {
+                        setcookie('remember_email', $email, time() + (86400 * 30), "/", "", true, true);
+                        setcookie('remember_password', encryptData($password, ENCRYPTION_KEY), time() + (86400 * 30), "/", "", true, true);
+                    } else {
+                        setcookie('remember_email', '', time() - 3600, "/", "", true, true);
+                        setcookie('remember_password', '', time() - 3600, "/", "", true, true);
+                    }
+
+                    // Generate OTP
+                    $otp = rand(100000, 999999);
+                    $_SESSION['otp'] = $otp; // Store OTP in session
+
+                    // Send OTP to user's email
+                    $subject = "Your OTP for Login";
+                    $message = "Your OTP for login is: $otp";
+                    $headers = "From: no-reply@yourwebsite.com";
+
+                    if (mail($email, $subject, $message, $headers)) {
+                        header("Location: otp_verification.php"); // Redirect to OTP verification page
+                        exit;
+                    } else {
+                        $error = "Failed to send OTP. Please try again.";
+                    }
                 } else {
-                    setcookie('remember_username', '', time() - 3600, "/"); // Clear username cookie
-                    setcookie('remember_password', '', time() - 3600, "/"); // Clear password cookie
+                    $error = "Invalid email or password.";
                 }
-
-                // Redirect to dashboard
-                header("Location: ../Faculty/profDASHBOARD.php");
-                exit;
             } else {
-                echo "<script>alert('Incorrect password. Please try again.');</script>";
+                $error = "No account found with the provided email.";
             }
         } else {
-            echo "<script>alert('No account found with the provided username/email.');</script>";
+            $error = "Database error. Please try again later.";
         }
 
         $stmt->close();
     } else {
-        echo "<script>alert('Please enter both username/email and password.');</script>";
+        $error = "Please fill in both email and password.";
     }
 }
 
 $conn->close();
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thesis</title>
+    <title>Login Faculty</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"/>
     <link rel="stylesheet" href="./LoginPage.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -87,41 +119,46 @@ $conn->close();
 </a>
 
         <div class="col-lg-4 offset-lg-2">
-            <form action="LoginPage.php" method="post" autocomplete="off">
-                <!-- Username input -->
-                <div class="form-outline mb-4">
-                    <label class="usernameemail" for="form2Example1">Username or Email</label>
-                    <input type="text" name="usernameemail" required value="<?php echo htmlspecialchars($rememberedUsername); ?>" id="usernameemail" class="form-control" />
-                </div>
+        <form action="LoginPage.php" method="post" autocomplete="off">
+    <!-- Email input -->
+    <div class="form-outline mb-4">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" name="email" required value="<?php echo htmlspecialchars($rememberedEmail); ?>" id="email" class="form-control" />
+    </div>
 
-                <!-- Password input -->
-                <div class="form-outline mb-4">
-                    <label class="form-label" for="form2Example2">Password</label>
-                    <input type="password" name="password" required value="<?php echo htmlspecialchars($rememberedPassword); ?>" id="password" class="form-control" />
-                </div>
+    <!-- Password input -->
+    <div class="form-outline mb-4">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" name="password" required value="<?php echo htmlspecialchars($rememberedPassword); ?>" id="password" class="form-control" />
+    </div>
 
-                <!-- Remember Me -->
-                <div class="row mb-4">
-                    <div class="col d-flex justify-content-center">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember_me" id="form2Example31"
-                                <?php echo isset($_COOKIE['remember_username']) ? 'checked' : ''; ?> />
-                            <label class="form-check-label" for="form2Example31"> Remember me </label>
-                        </div>
-                    </div>
-                    <div class="col">
-                    <a href="forgot_password.php" class="text-success">Forgot password?</a>
-                    </div>
-                </div>
+    <!-- Error Message -->
+    <?php if (!empty($error)): ?>
+        <div class="alert alert-danger"><?php echo $error; ?></div>
+    <?php endif; ?>
 
-                <!-- Submit button -->
-                <button type="submit" name="submit" class="btn btn-success btn-block mb-4">Sign in</button>
+    <!-- Remember Me -->
+    <div class="row mb-4">
+        <div class="col d-flex justify-content-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me" <?php echo isset($_COOKIE['remember_email']) ? 'checked' : ''; ?> />
+                <label class="form-check-label" for="remember_me"> Remember me </label>
+            </div>
+        </div>
+        <div class="col">
+            <a href="forgot_password.php" class="text-success">Forgot password?</a>
+        </div>
+    </div>
 
-                <!-- Register -->
-                <div class="text-center">
-                    <p class="mb-0">Don't have an account? <a href="register.php" class="text-success">Register</a></p>
-                </div>
-            </form>
+    <!-- Submit button -->
+    <button type="submit" name="submit" class="btn btn-success btn-block mb-4">Sign in</button>
+
+    <!-- Register -->
+    <div class="text-center">
+        <p class="mb-0">Don't have an account? <a href="register.php" class="text-success">Register</a></p>
+    </div>
+</form>
+
         </div>
     </div>
 </div>
