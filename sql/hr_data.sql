@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2024 at 09:53 AM
+-- Generation Time: Nov 29, 2024 at 10:31 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -31,15 +31,16 @@ CREATE TABLE `admin_credentials` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `profile_picture` varchar(255) DEFAULT NULL
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `remember_token` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admin_credentials`
 --
 
-INSERT INTO `admin_credentials` (`id`, `username`, `password`, `profile_picture`) VALUES
-(1, 'ADMIN', '489cd5dbc708c7e541de4d7cd91ce6d0f1613573b7fc5b40d3942ccb9555cf35', '1732624048_nic.jpg');
+INSERT INTO `admin_credentials` (`id`, `username`, `password`, `profile_picture`, `remember_token`) VALUES
+(1, 'ADMIN', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '1732624048_nic.jpg', NULL);
 
 --
 -- Indexes for dumped tables
