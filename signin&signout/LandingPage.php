@@ -42,7 +42,6 @@
                 <div class="masthead-heading text-uppercase mb-5">WORKFORCE</div>
                 <div class="masthead-subheading mb-9">YOUR SOLUTION FOR OPTIMIZE WORKFORCE ALLOCATION</div>
 
-
                 <div class="col">
     <div class="d-flex flex-column align-items-center">
         <p class="fs-4 mb-3 text-center">REGISTER AS FACULTY / LOGIN AS</p>
