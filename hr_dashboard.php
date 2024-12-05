@@ -36,6 +36,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+$flaskApiUrl = 'http://127.0.0.1:5000/api/get_chart_data';
+$chartImage = null;
+$mse = 'No data available'; // Default message if no data is retrieved
+
+try {
+    $apiResponse = @file_get_contents($flaskApiUrl); // Suppress warnings with '@'
+    if ($apiResponse !== false) {
+        $data = json_decode($apiResponse, true);
+        if (isset($data['error'])) {
+            // Handle error from the API
+            $mse = htmlspecialchars($data['error']);
+        } else {
+            // Successfully fetched data
+            $chartImage = $data['chart'];
+            $mse = $data['mse'];
+        }
+    } else {
+        // API connection failed
+        $mse = "Unable to connect to the API.";
+    }
+} catch (Exception $e) {
+    // Catch unexpected errors
+    $mse = "An error occurred while fetching data.";
+}
+
+// Close the database connection
+if (isset($db)) {
+    
+}
 $db->close();
 ?>
 
@@ -194,6 +223,23 @@ $db->close();
             color: #000; /* Black text on hover */
         }
 
+        .chart-container {
+            margin: 20px auto;
+            width: 80%;
+            text-align: center;
+            padding: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .mse {
+            font-size: 1.2em;
+            color: #555;
+            text-align: center;
+            padding: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -281,20 +327,20 @@ $db->close();
             </div>
         </div>
 
-        <!-- Pie Chart and Calendar -->
-        <div class="calendar-pie">
-            <div class="pie-chart">
-                <h3>Data Details</h3>
-                <p>Full time / Part time</p>
-                <img src="https://via.placeholder.com/150" alt="Pie Chart">
-            </div>
-            <div class="calendar">
-                <h3>March 2024</h3>
-                <img src="https://via.placeholder.com/250" alt="Calendar">
-            </div>
-        </div>
-
+        <div class="chart-container">
+    <div>
+        <?php if ($chartImage): ?>
+            <!-- Display the chart if available -->
+            <img src="data:image/png;base64,<?php echo $chartImage; ?>" alt="Performance Chart">
+        <?php else: ?>
+            <!-- Fallback content if no chart is available -->
+            <img src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
+                <p>No chart data available. Please check the API connection or database.</p>
+                <p>MSE: <?php echo htmlspecialchars($mse); ?></p>
+        <?php endif; ?>
     </div>
+</div>
+
 
     <!-- JavaScript to handle active sidebar link -->
     <script>

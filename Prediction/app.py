@@ -1,13 +1,15 @@
+import matplotlib
 import numpy as np
 from scipy.interpolate import interp1d
-import matplotlib
+
 matplotlib.use('Agg')  # Use a non-GUI backend
-import matplotlib.pyplot as plt
-from flask import Flask, render_template, redirect, url_for
-import mysql.connector
+import base64
 import os
 from io import BytesIO
-import base64
+
+import matplotlib.pyplot as plt
+import mysql.connector
+from flask import Flask, jsonify, redirect, render_template, url_for
 
 app = Flask(__name__)
 
@@ -69,26 +71,33 @@ def create_chart(years, totals):
     plt.close()
     return encoded_image
 
-@app.route('/')
-def index():
+from flask import jsonify
+
+
+@app.route('/api/get_chart_data', methods=['GET'])
+def get_chart_data():
     try:
         # Fetch data from the database
         data = get_data_from_db()
         if not data:
-            return "No data available in the database.", 404
+            return jsonify({'error': 'No data available in the database.'}), 404
 
         # Preprocess data
         years, totals = preprocess_data(data)
         if len(years) < 2:
-            return "Not enough data to create a chart.", 400
+            return jsonify({'error': 'Not enough data to create a chart.'}), 400
 
-        # Generate chart with exact matching
+        # Generate the chart image
         chart = create_chart(years, totals)
 
-        # Render the HTML with the chart
-        return render_template('index.html', chart=chart, mse="Perfect Match")
+        # Return data as JSON
+        return jsonify({
+            'chart': chart,
+            'mse': 'Perfect Match'
+        })
     except Exception as e:
-        return f"An error occurred: {e}", 500
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/phpmyadmin')
 def phpmyadmin():
