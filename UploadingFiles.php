@@ -218,7 +218,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 18px;
         }
     </style>
-
 </head>
 <body>
 
@@ -292,53 +291,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <!-- Total Hours -->
                 <div class="form-group">
-                    <label for="totalHours">Total Hours</label>
-                    <input type="text" id="totalHours" name="totalHours" readonly>
+                    <label for="total">Total</label>
+                    <input type="text" id="total" name="total" placeholder="e.g., 3, etc.">
                 </div>
                 
-                <!-- Drag and Drop Area for File Upload -->
-                <div class="drag-drop-area" id="facultyDragDropArea">
-                    Drag and Drop Excel File Here
-                    <input type="file" id="facultyFileInput" name="facultyExcelFile" style="display: none;" accept=".xls,.xlsx">
-                </div>
-                
-                <button type="submit" name="uploadFaculty">Upload</button>
+                <button type="submit">Submit</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-    // Drag and Drop Setup
-    const teacherDragDropArea = document.getElementById('teacherDragDropArea');
-    const teacherFileInput = document.getElementById('teacherFileInput');
-    const facultyDragDropArea = document.getElementById('facultyDragDropArea');
-    const facultyFileInput = document.getElementById('facultyFileInput');
-
-    teacherDragDropArea.addEventListener('click', () => teacherFileInput.click());
-    facultyDragDropArea.addEventListener('click', () => facultyFileInput.click());
-
-    teacherDragDropArea.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        teacherDragDropArea.classList.add('dragging');
-    });
-    facultyDragDropArea.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        facultyDragDropArea.classList.add('dragging');
-    });
-
-    teacherDragDropArea.addEventListener('dragleave', () => teacherDragDropArea.classList.remove('dragging'));
-    facultyDragDropArea.addEventListener('dragleave', () => facultyDragDropArea.classList.remove('dragging'));
-
-    teacherDragDropArea.addEventListener('drop', handleFileDrop.bind(null, teacherFileInput));
-    facultyDragDropArea.addEventListener('drop', handleFileDrop.bind(null, facultyFileInput));
-
-    function handleFileDrop(input, event) {
-        event.preventDefault();
-        event.target.classList.remove('dragging');
-        input.files = event.dataTransfer.files;
-    }
-
     // Add and Remove Elements
     function addSubjectSection() {
         const container = document.getElementById('subject-section-container');
