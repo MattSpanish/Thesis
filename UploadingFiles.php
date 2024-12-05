@@ -1,3 +1,44 @@
+<?php
+// Database connection settings
+$servername = "localhost"; // Change if using a remote server
+$username = "root";        // Your database username
+$password = "";            // Your database password
+$dbname = "enrollment_db"; // Your database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Collect and sanitize user inputs
+    $program = mysqli_real_escape_string($conn, $_POST['program']);
+    $total = mysqli_real_escape_string($conn, $_POST['total']);
+    $year = mysqli_real_escape_string($conn, $_POST['year']);
+
+    // SQL query to insert data into student_data table
+    $sql = "INSERT INTO student_data (program, total, year) VALUES ('$program', '$total', '$year')";
+
+    // Execute the query and check for success
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>
+                alert('New record created successfully!');
+                window.location.href = window.location.href; // Refresh the page
+              </script>";
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+
+    // Close the database connection
+    $conn->close();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
     <meta charset="UTF-8">
@@ -193,38 +234,16 @@
             <h2>Student Enrollment List</h2>
             <form id="studentEnrollmentForm" action="" method="POST">
                 <div class="form-group">
-                    <label for="enrollmentYear">Year</label>
-                    <select id="enrollmentYear" name="enrollmentYear" required>
-                        <option value="" disabled selected>Select Year</option>
-                        <option value="2021">2021</option>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label for="program">Program</label>
-                    <select id="program" name="program" required>
-                        <option value="" disabled selected>Select Program</option>
-                        <option value="STEM">STEM</option>
-                        <option value="ABM">ABM</option>
-                        <option value="HUMSS">HUMSS</option>
-                    </select>
+                    <input type="text" id="program" name="program" placeholder="e.g., SHS-STEM, SHS-ABM PLUS, etc.">
                 </div>
                 <div class="form-group">
-                    <label for="yearLevel">Year Level</label>
-                    <select id="yearLevel" name="yearLevel" required>
-                        <option value="" disabled selected>Select Year Level</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                    </select>
+                    <label for="total">Total</label>
+                    <input type="text" id="total" name="total" placeholder="e.g., 30, 45, etc.">
                 </div>
                 <div class="form-group">
-                    <label for="section">Section</label>
-                    <input type="text" id="section" name="section" placeholder="e.g., A, B, etc." required>
-                </div>
-                <div class="form-group">
-                    <label for="totalEnrolled">Total Enrolled Students</label>
-                    <input type="number" id="totalEnrolled" name="totalEnrolled" readonly>
+                    <label for="year">Year</label>
+                    <input type="text" id="year" name="year" placeholder="e.g., 2021, 2024-2025, etc.">
                 </div>
                 <button type="submit">Submit</button>
             </form>
@@ -352,6 +371,16 @@
     function calculateTotalHours() {
         // Implement your logic for calculating total hours here
     }
+    // Automatically format the Program input field
+    const programInput = document.getElementById('program');
+
+    programInput.addEventListener('input', () => {
+        let value = programInput.value.toUpperCase(); // Convert input to uppercase
+        if (!value.startsWith("SHS-")) {
+            value = "SHS-" + value.replace(/^SHS-*/, ""); // Remove any extra SHS- and add one
+        }
+        programInput.value = value; // Update the input value
+    });
 </script>
 
 </body>

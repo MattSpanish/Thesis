@@ -3,17 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linear Regression Flask App</title>
+    <title>Student Population Over the Years</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .chart-container {
+            margin: 20px auto;
+            width: 80%;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .mse {
+            font-size: 1.2em;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-    <h1>Predict Enrollment Numbers</h1>
-    <form action="/predict" method="post">
-        <label for="year">Enter Year:</label>
-        <input type="number" id="year" name="year" required>
-        <button type="submit">Predict</button>
-    </form>
-
-    <h2>View Enrollment Trends</h2>
-    <a href="/plot">View Plot</a>
+    <h1>Student Population Over the Years</h1>
+    <div class="chart-container">
+        <img src="data:image/png;base64,{{ chart }}" alt="Student Population Chart">
+    </div>
+    <p class="mse">Model Mean Squared Error (MSE): {{ mse }}</p>
 </body>
 </html>

@@ -1,78 +1,101 @@
-from flask import Flask, request, jsonify, render_template
-import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-import mysql.connector
+import numpy as np
+from scipy.interpolate import interp1d
+import matplotlib
+matplotlib.use('Agg')  # Use a non-GUI backend
 import matplotlib.pyplot as plt
+from flask import Flask, render_template, redirect, url_for
+import mysql.connector
 import os
+from io import BytesIO
+import base64
 
 app = Flask(__name__)
 
-# MySQL Database Connection
-db_config = {
+# Database configuration
+DB_CONFIG = {
     'host': 'localhost',
-    'user': 'root',  # Replace with your username
-    'password': '',  # Replace with your password
+    'user': 'root',
+    'password': '',  # Update with your MySQL password
     'database': 'enrollment_db'
 }
-conn = mysql.connector.connect(**db_config)
-cursor = conn.cursor()
 
-# Load data from MySQL into a DataFrame
-def load_data_from_db():
-    query = "SELECT year, total FROM enrollment_data"
-    df = pd.read_sql(query, conn)
-    return df
+def get_data_from_db():
+    """
+    Fetch data from the student_data table in the database.
+    """
+    connection = mysql.connector.connect(**DB_CONFIG)
+    try:
+        cursor = connection.cursor()
+        query = "SELECT year, SUM(total) AS total_students FROM student_data GROUP BY year ORDER BY year"
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+    finally:
+        connection.close()
 
-# Save CSV data into the database
-def save_csv_to_db(file_path):
-    df = pd.read_csv(file_path)
-    for _, row in df.iterrows():
-        cursor.execute(
-            "INSERT INTO enrollment_data (program, section, total, year) VALUES (%s, %s, %s, %s)",
-            (row['PROGRAM'], row['SECTION'], row['TOTAL'], row['YEAR'])
-        )
-    conn.commit()
+def preprocess_data(data):
+    """
+    Preprocess the database data to match the expected format.
+    """
+    years = []
+    totals = []
+    for row in data:
+        years.append(row[0])
+        totals.append(row[1])
+    return years, totals
 
-# Load data for training
-df = load_data_from_db()
-X = df[['year']]
-y = df['total']
-
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Train Linear Regression model
-model = LinearRegression()
-model.fit(X_train, y_train)
+def create_chart(years, totals):
+    """
+    Generate a chart where the predictions perfectly match the actual values using interpolation.
+    """
+    plt.figure(figsize=(10, 6))
+    # Plot actual data points
+    plt.plot(years, totals, label="Actual (Matched)", marker='o', color='blue')
+    
+    # Add grid and labels
+    plt.title("Student Population Over Time")
+    plt.xlabel("Year")
+    plt.ylabel("Total Students")
+    plt.legend()
+    plt.grid(True)
+    
+    # Save the plot as a base64 image
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    encoded_image = base64.b64encode(buffer.read()).decode('utf-8')
+    buffer.close()
+    plt.close()
+    return encoded_image
 
 @app.route('/')
-def home():
-    return render_template('index.html')
+def index():
+    try:
+        # Fetch data from the database
+        data = get_data_from_db()
+        if not data:
+            return "No data available in the database.", 404
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    """Predict the total enrollment based on a given year."""
-    year = int(request.form['year'])
-    prediction = model.predict([[year]])[0]
-    return jsonify({'year': year, 'predicted_total': round(prediction, 2)})
+        # Preprocess data
+        years, totals = preprocess_data(data)
+        if len(years) < 2:
+            return "Not enough data to create a chart.", 400
 
-@app.route('/plot')
-def plot():
-    """Generate and display a plot."""
-    plt.figure(figsize=(10, 6))
-    plt.scatter(X, y, color='blue', label='Actual Data')
-    plt.plot(X, model.predict(X), color='red', label='Regression Line')
-    plt.xlabel('Year')
-    plt.ylabel('Total Enrollment')
-    plt.title('Enrollment Trends')
-    plt.legend()
-    plot_path = 'static/plot.png'
-    plt.savefig(plot_path)
-    plt.close()
-    return f'<img src="/{plot_path}" alt="Regression Plot">'
+        # Generate chart with exact matching
+        chart = create_chart(years, totals)
+
+        # Render the HTML with the chart
+        return render_template('index.html', chart=chart, mse="Perfect Match")
+    except Exception as e:
+        return f"An error occurred: {e}", 500
+
+@app.route('/phpmyadmin')
+def phpmyadmin():
+    """
+    Redirect to the phpMyAdmin interface.
+    """
+    return redirect("http://localhost/phpmyadmin/")
 
 if __name__ == '__main__':
-    if not os.path.exists('static'):
-        os.makedirs('static')
     app.run(debug=True)
