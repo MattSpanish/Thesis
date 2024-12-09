@@ -113,9 +113,10 @@
                 
                 <select name="year" class="form-control year-dropdown ml-3">
                     <option value="">Year</option>
-                    <option value="2023" <?php echo ($year == "2023") ? 'selected' : ''; ?>>2023</option>
-                    <option value="2024" <?php echo ($year == "2023") ? 'selected' : ''; ?>>2024</option>
-                    <option value="2022" <?php echo ($year == "2022") ? 'selected' : ''; ?>>2022</option>
+                    <option value="2024-2025" <?php echo ($year == "2024-2025") ? 'selected' : ''; ?>>2024-2025</option>
+                    <option value="2023-2024" <?php echo ($year == "2023-2024") ? 'selected' : ''; ?>>2023-2024</option>
+                    <option value="2022-2023" <?php echo ($year == "2022-2023") ? 'selected' : ''; ?>>2022-2023</option>
+                    <option value="2021-2022" <?php echo ($year == "2021-2022") ? 'selected' : ''; ?>>2021-2022</option>
                     <option value="2021" <?php echo ($year == "2021") ? 'selected' : ''; ?>>2021</option>
                 </select>
 
