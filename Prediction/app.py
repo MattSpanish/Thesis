@@ -1,6 +1,7 @@
 import matplotlib
 import numpy as np
 from scipy.interpolate import interp1d
+from sklearn.linear_model import LinearRegression
 
 matplotlib.use('Agg')  # Use a non-GUI backend
 import base64

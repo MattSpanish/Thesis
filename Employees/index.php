@@ -2,9 +2,21 @@
 // Include database connection
 include 'db.php';
 
+$servername = "localhost"; // Change to your server name
+$username = "root";        // Change to your database username
+$password = "";            // Change to your database password
+$dbname = "enrollment_db"; // Change to your database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
 // Fetch employee records from the database
-$sql = "SELECT * FROM employees";
+$sql = "SELECT id_no, last_name, first_name, middle_name, department, position, date_hired, years_of_service, ranking, status FROM historical_data";
 $result = $conn->query($sql);
+
+if (!$result) {
+    die("SQL error: " . $conn->error);
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +24,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Records</title>
+    <title>HISTORICAL DATA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
@@ -72,16 +84,6 @@ $result = $conn->query($sql);
             color: white;
         }
 
-        .status-full-time {
-            color: green;
-            font-weight: bold;
-        }
-
-        .status-part-time {
-            color: red;
-            font-weight: bold;
-        }
-
         .btn {
             font-weight: bold;
         }
@@ -116,18 +118,21 @@ $result = $conn->query($sql);
             <img src="../signin&signout/assets1/img/logo.png" alt="Company Logo" class="logo">
         </div>
 
-        <h2 class="mb-4">Employee Records</h2>
-        <a href="add_employee.php" class="btn btn-primary mb-3">Add Employee</a>
+        <h2 class="mb-4">FACULTY HISTORICAL DATA</h2>
         
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Employee</th>
-                        <th>Email</th>
+                        <th>ID No.</th>
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Middle Name</th>
                         <th>Department</th>
-                        <th>Subjects</th> <!-- New Column for Subjects -->
-                        <th>Gender</th> <!-- New Column for Gender -->
+                        <th>Position</th>
+                        <th>Date Hired</th>
+                        <th>Years of Service</th>
+                        <th>Ranking</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -135,17 +140,21 @@ $result = $conn->query($sql);
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()) { ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($row['name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo htmlspecialchars($row['id_no']); ?></td>
+                            <td><?php echo htmlspecialchars($row['last_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['first_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['middle_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['department']); ?></td>
-                            <td><?php echo htmlspecialchars($row['subjects']); ?></td> <!-- Display Subjects -->
-                            <td><?php echo htmlspecialchars($row['gender']); ?></td> <!-- Display Gender -->
-                            <td class="<?php echo $row['status'] == 'FULL TIME' ? 'status-full-time' : 'status-part-time'; ?>">
+                            <td><?php echo htmlspecialchars($row['position']); ?></td>
+                            <td><?php echo htmlspecialchars($row['date_hired']); ?></td>
+                            <td><?php echo htmlspecialchars($row['years_of_service']); ?></td>
+                            <td><?php echo htmlspecialchars($row['ranking']); ?></td>
+                            <td style="color: <?php echo trim($row['status']) === 'ACTIVE' ? 'green' : 'red'; ?>;">
                                 <?php echo htmlspecialchars($row['status']); ?>
                             </td>
                             <td>
-                                <a href="edit_employee.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
-                                <a href="delete_employee.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+                                <a href="edit_employee.php?id=<?php echo $row['id_no']; ?>" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="delete_employee.php?id=<?php echo $row['id_no']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
                             </td>
                         </tr>
                     <?php } ?>

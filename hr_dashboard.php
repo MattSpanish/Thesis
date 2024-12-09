@@ -341,7 +341,6 @@ $db->close();
     </div>
 </div>
 
-
     <!-- JavaScript to handle active sidebar link -->
     <script>
         const sidebarLinks = document.querySelectorAll('.sidebar ul li a');

@@ -113,7 +113,7 @@
                 <a href="../Employees/index.php" class="card p-4 text-decoration-none">
                     <div class="card-body">
                         <div class="card-title">
-                            <span class="card-icon">📄</span> EMPLOYEE RECORDS
+                            <span class="card-icon">📄</span> FACULTY HISTORICAL DATA
                         </div>
                     </div>
                 </a>

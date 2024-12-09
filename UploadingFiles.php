@@ -13,8 +13,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Handle Student Enrollment Form Submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['uploadTeacher'])) {
     // Collect and sanitize user inputs
     $program = mysqli_real_escape_string($conn, $_POST['program']);
     $total = mysqli_real_escape_string($conn, $_POST['total']);
@@ -33,10 +33,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
-
-    // Close the database connection
-    $conn->close();
 }
+
+// Handle Teacher Data Upload Form Submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['uploadTeacher'])) {
+    // Collect and sanitize user inputs
+    $teacherIdNo = mysqli_real_escape_string($conn, $_POST['teacherIdNo']);
+    $teacherLastName = mysqli_real_escape_string($conn, $_POST['teacherLastName']);
+    $teacherFirstName = mysqli_real_escape_string($conn, $_POST['teacherFirstName']);
+    $teacherMiddleName = mysqli_real_escape_string($conn, $_POST['teacherMiddleName']);
+    $teacherDepartment = mysqli_real_escape_string($conn, $_POST['teacherDepartment']);
+    $teacherPosition = mysqli_real_escape_string($conn, $_POST['teacherPosition']);
+    $teacherDateHired = mysqli_real_escape_string($conn, $_POST['teacherDateHired']);
+    $teacherYearsOfService = mysqli_real_escape_string($conn, $_POST['teacherYearsOfService']);
+    $teacherRanking = mysqli_real_escape_string($conn, $_POST['teacherRanking']);
+    $teacherStatus = mysqli_real_escape_string($conn, $_POST['teacherStatus']); // New field for status
+
+    // SQL query to insert data into historical_data table
+    $sql = "INSERT INTO historical_data (id_no, last_name, first_name, middle_name, department, position, date_hired, years_of_service, ranking, status) 
+            VALUES ('$teacherIdNo', '$teacherLastName', '$teacherFirstName', '$teacherMiddleName', '$teacherDepartment', '$teacherPosition', '$teacherDateHired', '$teacherYearsOfService', '$teacherRanking', '$teacherStatus')";
+
+    // Execute the query and check for success
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>
+                alert('Teacher data uploaded successfully!');
+                window.location.href = window.location.href; // Refresh the page
+              </script>";
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// Close the database connection
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -248,17 +278,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </form>
         </div>
 
-        <!-- Teacher Data Upload Section -->
-        <div class="upload-container">
-            <h2>Upload Faculty Historical Data</h2>
-            <form id="teacherUploadForm" action="" method="POST" enctype="multipart/form-data">
-                <div class="drag-drop-area" id="teacherDragDropArea">
-                    Drag and Drop Excel File Here
-                    <input type="file" id="teacherFileInput" name="teacherExcelFile" style="display: none;" accept=".xls,.xlsx">
-                </div>
-                <button type="submit" name="uploadTeacher">Upload</button>
-            </form>
+    <!-- Teacher Data Upload Section -->
+    <div class="upload-container">
+        <h2>Upload Faculty Historical Data</h2>
+        <form id="teacherUploadForm" action="" method="POST">
+            <div class="form-group">
+                <label for="teacherIdNo">ID No.</label>
+                <input type="text" id="teacherIdNo" name="teacherIdNo" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherLastName">Last Name</label>
+                <input type="text" id="teacherLastName" name="teacherLastName" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherFirstName">First Name</label>
+                <input type="text" id="teacherFirstName" name="teacherFirstName" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherMiddleName">Middle Name</label>
+                <input type="text" id="teacherMiddleName" name="teacherMiddleName" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherDepartment">Department</label>
+                <input type="text" id="teacherDepartment" name="teacherDepartment" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherPosition">Position</label>
+                <input type="text" id="teacherPosition" name="teacherPosition" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherDateHired">Date Hired</label>
+                <input type="date" id="teacherDateHired" name="teacherDateHired" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherYearsOfService">Years of Service</label>
+                <input type="number" id="teacherYearsOfService" name="teacherYearsOfService" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="teacherRanking">Ranking</label>
+                <input type="text" id="teacherRanking" name="teacherRanking" required>
+            </div>
+            <div class="form-group">
+            <label for="teacherStatus">Status</label>
+            <select id="teacherStatus" name="teacherStatus" required>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="INACTIVE">INACTIVE</option>
+            </select>
         </div>
+            <button type="submit" name="uploadTeacher">Upload</button>
+        </form>
+    </div>
 
         <!-- Faculty File Upload Section -->
         <div class="upload-container">
