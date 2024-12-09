@@ -367,11 +367,11 @@ $conn->close();
                 <label for="program">Program</label>
                 <input type="text" name="program" id="program" class="form-control" required>
             </div>
-
-            <div class="form-group">
-                <label for="year">Year</label>
-                <select name="year" id="year" class="form-control" required>
-                    <option value="">Select Year</option>
+            
+                <div class="form-group">
+            <label for="year">Year</label>
+            <select id="year" name="year" required>
+            <option disabled selected>Please select a year</option>
                     <option value="2024-2025">2024-2025</option>
                     <option value="2023-2024">2023-2024</option>
                     <option value="2022-2023">2022-2023</option>
