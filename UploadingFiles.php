@@ -19,19 +19,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['uploadTeacher'])) {
     $program = mysqli_real_escape_string($conn, $_POST['program']);
     $total = mysqli_real_escape_string($conn, $_POST['total']);
     $year = mysqli_real_escape_string($conn, $_POST['year']);
+    $section = mysqli_real_escape_string($conn, $_POST['section']);
+    $total_students = mysqli_real_escape_string($conn, $_POST['total_students']);
 
-    // SQL query to insert data into student_data table
-    $sql = "INSERT INTO student_data (program, total, year) VALUES ('$program', '$total', '$year')";
+    // SQL queries to insert data into the database
+    $sql1 = "INSERT INTO student_data (program, total, year) VALUES ('$program', '$total', '$year')";
+    $sql2 = "INSERT INTO student_records (year, program, section, total) VALUES ('$year', '$program', '$section', '$total_students')";
 
-    // Execute the query and check for success
-    if ($conn->query($sql) === TRUE) {
+    // Execute the queries and check for success
+    if ($conn->query($sql1) === TRUE && $conn->query($sql2) === TRUE) {
         echo "<script>
                 alert('New record created successfully!');
                 window.location.href = window.location.href; // Refresh the page
               </script>";
         exit();
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error: " . $conn->error;
     }
 }
 
@@ -71,13 +74,14 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <title>UploadFile</title>
     <style>
-        * {
+             * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -173,6 +177,7 @@ $conn->close();
         .form-group input[type="number"],
         .form-group select {
             width: 100%;
+            
             padding: 12px;
             border: 1px solid #6B9071;
             border-radius: 6px;
@@ -256,27 +261,27 @@ $conn->close();
     <i class="fas fa-arrow-left"></i>
 </a>
 
-    <!-- Main Content Area -->
-    <div class="content">
-        <!-- Student Enrollment List Section -->
-        <div class="upload-container">
-            <h2>Student Enrollment List</h2>
-            <form id="studentEnrollmentForm" action="" method="POST">
-                <div class="form-group">
-                    <label for="program">Program</label>
-                    <input type="text" id="program" name="program" placeholder="e.g., SHS-STEM, SHS-ABM PLUS, etc.">
-                </div>
-                <div class="form-group">
-                    <label for="total">Total</label>
-                    <input type="text" id="total" name="total" placeholder="e.g., 30, 45, etc.">
-                </div>
-                <div class="form-group">
-                    <label for="year">Year</label>
-                    <input type="text" id="year" name="year" placeholder="e.g., 2021, 2024-2025, etc.">
-                </div>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
+<!-- Main Content Area -->
+<div class="content">
+    <!-- Student Enrollment List Section -->
+    <div class="upload-container">
+        <h2>Student Enrollment List</h2>
+        <form id="studentEnrollmentForm" action="" method="POST">
+            <div class="form-group">
+                <label for="program">Program</label>
+                <input type="text" id="program" name="program" placeholder="e.g., SHS-STEM, SHS-ABM PLUS, etc.">
+            </div>
+            <div class="form-group">
+                <label for="total">Total</label>
+                <input type="text" id="total" name="total" placeholder="e.g., 30, 45, etc.">
+            </div>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input type="text" id="year" name="year" placeholder="e.g., 2021, 2024-2025, etc.">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 
     <!-- Teacher Data Upload Section -->
     <div class="upload-container">
@@ -328,45 +333,78 @@ $conn->close();
             <button type="submit" name="uploadTeacher">Upload</button>
         </form>
     </div>
+    <!-- Student Historical Data Section -->
+    <div class="upload-container">
+        <h2>Student Historical Data</h2>
+        <form id="historicalDataForm" action="" method="POST">
+            <div class="form-group">
+                <label for="program">Program</label>
+                <input type="text" name="program" id="program" class="form-control" required>
+            </div>
 
-        <!-- Faculty File Upload Section -->
-        <div class="upload-container">
-            <h2>Upload Faculty Schedule</h2>
-            <form id="facultyUploadForm" action="" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="facultyName">Faculty Name</label>
-                    <input type="text" id="facultyName" name="facultyName" required>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <select name="year" id="year" class="form-control" required>
+                    <option value="">Select Year</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="section">Section</label>
+                <input type="text" name="section" id="section" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="total_students">Total Students</label>
+                <input type="number" name="total_students" id="total_students" class="form-control" required>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+
+    <!-- Faculty File Upload Section -->
+    <div class="upload-container">
+        <h2>Upload Faculty Schedule</h2>
+        <form id="facultyUploadForm" action="" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="facultyName">Faculty Name</label>
+                <input type="text" id="facultyName" name="facultyName" required>
+            </div>
+
+            <!-- Subject - Section Fields -->
+            <div id="subject-section-container">
+                <div class="form-group subject-section-group">
+                    <label>Subject - Section</label>
+                    <input type="text" name="subject_section[]" placeholder="e.g., Gen Chem - STEM 11-Y1-2" required>
+                    <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
                 </div>
-                
-                <!-- Subject - Section Fields -->
-                <div id="subject-section-container">
-                    <div class="form-group subject-section-group">
-                        <label>Subject - Section</label>
-                        <input type="text" name="subject_section[]" placeholder="e.g., Gen Chem - STEM 11-Y1-2" required>
-                        <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
-                    </div>
+            </div>
+            <div class="add-button" onclick="addSubjectSection()">+ Add Another Subject - Section</div>
+
+            <!-- Day - Time Fields -->
+            <div id="day-time-container">
+                <div class="form-group day-time-group">
+                    <label>Day - Time</label>
+                    <input type="text" name="day_time[]" placeholder="e.g., Monday - 1:30 - 4:30" required onchange="calculateTotalHours()">
+                    <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
                 </div>
-                <div class="add-button" onclick="addSubjectSection()">+ Add Another Subject - Section</div>
-                
-                <!-- Day - Time Fields -->
-                <div id="day-time-container">
-                    <div class="form-group day-time-group">
-                        <label>Day - Time</label>
-                        <input type="text" name="day_time[]" placeholder="e.g., Monday - 1:30 - 4:30" required onchange="calculateTotalHours()">
-                        <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
-                    </div>
-                </div>
-                <div class="add-button" onclick="addDayTime()">+ Add Another Day - Time</div>
-                
-                <!-- Total Hours -->
-                <div class="form-group">
-                    <label for="total">Total</label>
-                    <input type="text" id="total" name="total" placeholder="e.g., 3, etc.">
-                </div>
-                
-                <button type="submit">Submit</button>
-            </form>
-        </div>
+            </div>
+            <div class="add-button" onclick="addDayTime()">+ Add Another Day - Time</div>
+
+            <!-- Total Hours -->
+            <div class="form-group">
+                <label for="total">Total</label>
+                <input type="text" id="total" name="total" placeholder="e.g., 3, etc.">
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
     </div>
 </div>
 
@@ -403,6 +441,7 @@ $conn->close();
     function calculateTotalHours() {
         // Implement your logic for calculating total hours here
     }
+
     // Automatically format the Program input field
     const programInput = document.getElementById('program');
 
