@@ -252,6 +252,31 @@ $conn->close();
         .back-button i {
             font-size: 18px;
         }
+        /* Style for Date Input */
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #6B9071;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #E3EED4;
+            color: #0F2A1D;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .form-group input[type="date"]:focus {
+            border-color: #375534;
+            box-shadow: 0 0 5px rgba(55, 85, 52, 0.5);
+            outline: none;
+        }
+
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+            color: #375534;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -333,6 +358,7 @@ $conn->close();
             <button type="submit" name="uploadTeacher">Upload</button>
         </form>
     </div>
+
     <!-- Student Historical Data Section -->
     <div class="upload-container">
         <h2>Student Historical Data</h2>
@@ -362,11 +388,9 @@ $conn->close();
                 <label for="total_students">Total Students</label>
                 <input type="number" name="total_students" id="total_students" class="form-control" required>
             </div>
-
             <button type="submit">Submit</button>
         </form>
     </div>
-
 
     <!-- Faculty File Upload Section -->
     <div class="upload-container">
