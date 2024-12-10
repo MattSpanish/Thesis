@@ -109,7 +109,7 @@ $conn->close();
                         </div>
                     </div>
                     <div class="col">
-                        <a href="#!" class="text-success">Forgot password?</a>
+                        <a href="./forgot_passwordHR.php" class="text-success">Forgot password?</a>
                     </div>
                 </div>
 
