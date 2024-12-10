@@ -100,6 +100,7 @@ def get_chart_data():
         return jsonify({'error': str(e)}), 500
 
 
+
 @app.route('/phpmyadmin')
 def phpmyadmin():
     """
