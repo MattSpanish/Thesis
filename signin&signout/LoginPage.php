@@ -2,28 +2,36 @@
 session_start();
 require 'config.php'; // Adjust the path as necessary
 
-// Encryption key (use a secure, private key for your application)
-define('ENCRYPTION_KEY', 'your-secure-key-here');
+// Encryption key (ensure this is securely stored and never exposed publicly)
+define('ENCRYPTION_KEY', 'your-32-byte-secure-encryption-key');
 
-// Function to encrypt data
 function encryptData($data, $key) {
-    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
-    $encrypted = openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv);
+    $cipher = 'aes-256-cbc';
+    $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipher));
+    $encrypted = openssl_encrypt($data, $cipher, $key, 0, $iv);
     return base64_encode($iv . $encrypted);
 }
 
+
 // Function to decrypt data
 function decryptData($data, $key) {
+    $cipher = 'aes-256-cbc';
     $decoded = base64_decode($data);
-    $ivLength = openssl_cipher_iv_length('aes-256-cbc');
-    $iv = substr($decoded, 0, $ivLength);
-    $encrypted = substr($decoded, $ivLength);
-    return openssl_decrypt($encrypted, 'aes-256-cbc', $key, 0, $iv);
+    $ivLength = openssl_cipher_iv_length($cipher); // Ensure this is the correct IV length
+    $iv = substr($decoded, 0, $ivLength); // Extract IV
+    $encrypted = substr($decoded, $ivLength); // Extract ciphertext
+    if (strlen($iv) !== $ivLength) {
+        return false; // Return false if IV length is incorrect to avoid errors
+    }
+    return openssl_decrypt($encrypted, $cipher, $key, 0, $iv);
 }
+
 
 // Initialize variables for remembered credentials
 $rememberedEmail = isset($_COOKIE['remember_email']) ? htmlspecialchars($_COOKIE['remember_email']) : '';
 $rememberedPassword = isset($_COOKIE['remember_password']) ? decryptData($_COOKIE['remember_password'], ENCRYPTION_KEY) : '';
+
+$error = ""; // Initialize error variable
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["submit"])) {
     $email = trim($_POST["email"]);
