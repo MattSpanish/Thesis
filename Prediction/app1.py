@@ -1,18 +1,17 @@
 import matplotlib
 import numpy as np
-from scipy.interpolate import interp1d
-from sklearn.linear_model import LinearRegression
-
-matplotlib.use('Agg')  # Use a non-GUI backend
 import base64
 import os
 from io import BytesIO
-
 import matplotlib.pyplot as plt
 import mysql.connector
-from flask import Flask, jsonify, redirect, render_template, url_for
+from flask import Flask, jsonify, redirect
+from multiprocessing import Process
 
-app = Flask(__name__)
+matplotlib.use('Agg')  # Use a non-GUI backend
+
+# Correct the app name to `app1` to avoid confusion
+app1 = Flask(__name__)
 
 # Database configuration
 DB_CONFIG = {
@@ -27,14 +26,16 @@ def get_data_from_db():
     Fetch data from the student_data table in the database.
     """
     connection = mysql.connector.connect(**DB_CONFIG)
+    cursor = None
     try:
         cursor = connection.cursor()
         query = "SELECT year, SUM(total) AS total_students FROM student_data GROUP BY year ORDER BY year"
         cursor.execute(query)
         results = cursor.fetchall()
-        cursor.close()
         return results
     finally:
+        if cursor:
+            cursor.close()
         connection.close()
 
 def preprocess_data(data):
@@ -72,10 +73,7 @@ def create_chart(years, totals):
     plt.close()
     return encoded_image
 
-from flask import jsonify
-
-
-@app.route('/api/get_chart_data', methods=['GET'])
+@app1.route('/api/get_chart_data', methods=['GET'])
 def get_chart_data():
     try:
         # Fetch data from the database
@@ -99,14 +97,29 @@ def get_chart_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-
-@app.route('/phpmyadmin')
+@app1.route('/phpmyadmin')
 def phpmyadmin():
     """
     Redirect to the phpMyAdmin interface.
     """
     return redirect("http://localhost/phpmyadmin/")
 
+def run_app1():
+    # Start app1 (this is now correct as app1)
+    app1.run(debug=False, port=5000)
+
+def run_app2():
+    # Start app2 (this is the app2 from your main script)
+    from app2 import app2  # Import app2 from the other file (app2.py)
+    app2.run(debug=False, port=5001)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Start both apps in parallel using multiprocessing
+    process1 = Process(target=run_app1)
+    process2 = Process(target=run_app2)
+
+    process1.start()
+    process2.start()
+
+    process1.join()
+    process2.join()

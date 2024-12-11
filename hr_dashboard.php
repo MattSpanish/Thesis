@@ -302,7 +302,7 @@ $db->close();
     <!-- Dashboard Cards -->
     <div class="dashboard-cards">
         <div class="card professors">
-            <a href="#" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Available Professors</a>
+            <a href="/workload.php" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Available Professors</a>
             <h3>Available Professors</h3>
             <p><?php echo $professors; ?></p>
         </div>
