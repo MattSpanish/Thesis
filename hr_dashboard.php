@@ -329,15 +329,16 @@ $db->close();
 
         <div class="chart-container">
     <div>
-        <?php if ($chartImage): ?>
-            <!-- Display the chart if available -->
-            <img src="data:image/png;base64,<?php echo $chartImage; ?>" alt="Performance Chart">
-        <?php else: ?>
-            <!-- Fallback content if no chart is available -->
-            <img src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
-                <p>No chart data available. Please check the API connection or database.</p>
-                <p>MSE: <?php echo htmlspecialchars($mse); ?></p>
-        <?php endif; ?>
+    <?php if ($chartImage): ?>
+    <!-- Display the chart if available -->
+    <img id="chart" src="data:image/png;base64,<?php echo $chartImage; ?>" alt="Performance Chart">
+<?php else: ?>
+    <!-- Fallback content if no chart is available -->
+    <img id="chart" src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
+    <p>No chart data available. Please check the API connection or database.</p>
+    <p>MSE: <?php echo htmlspecialchars($mse); ?></p>
+<?php endif; ?>
+
     </div>
 </div>
 
@@ -391,6 +392,47 @@ $db->close();
         });
     });
     </script>
+    
+   
+    <script>
+        // Function to update chart every 5 seconds
+      // Function to update the chart by fetching the data
+function updateChart() {
+    fetch('/api/get_chart_data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.chart) {
+                document.getElementById('chart').src = 'data:image/png;base64,' + data.chart;
+            } else {
+                console.error("Error fetching chart: " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching chart data:", error);
+        });
+}
+
+// Update the chart when the page loads
+window.onload = updateChart;
+
+// Trigger chart update when going back or navigating to the page
+window.addEventListener('popstate', () => {
+    updateChart(); // Update chart when back button or any navigation occurs
+});
+
+// If you want the chart to update after any form submission or action that results in a page reload, ensure the form submission triggers a page reload
+// For example, after updating the profile picture or any form submission:
+
+document.querySelector('form').addEventListener('submit', () => {
+    // Reload page after form submission to update the chart
+    setTimeout(updateChart, 500); // Delay to allow for form submission to finish
+});
+
+// Optionally, if the chart data might change without a full page reload (using AJAX for example):
+setInterval(updateChart, 5000); // Update chart every 5 seconds to keep it refreshed
+
+    </script>
+
 
 </body>
 </html>
