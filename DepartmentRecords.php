@@ -1,3 +1,46 @@
+<?php
+    // Database connection
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "enrollment_db";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Handle search and filter
+    $search = isset($_GET['search']) ? $_GET['search'] : '';
+    $year = isset($_GET['year']) ? $_GET['year'] : '';
+    $section = isset($_GET['section']) ? $_GET['section'] : '';
+    $program = isset($_GET['program']) ? $_GET['program'] : '';
+
+    $sql = "SELECT * FROM student_records WHERE 1";
+
+    if (!empty($search)) {
+        $sql .= " AND section LIKE '%" . $conn->real_escape_string($search) . "%'";
+    }
+    if (!empty($year)) {
+        $sql .= " AND year = '" . $conn->real_escape_string($year) . "'";
+    }
+    if (!empty($section)) {
+        $sql .= " AND section = '" . $conn->real_escape_string($section) . "'";
+    }
+    if (!empty($program)) {
+        $sql .= " AND program = '" . $conn->real_escape_string($program) . "'";
+    }
+
+    $result = $conn->query($sql);
+    
+    // Fetch all available sections for dropdown
+    $sectionsResult = $conn->query("SELECT DISTINCT section FROM student_records");
+
+    // Fetch all available programs for dropdown
+    $programsResult = $conn->query("SELECT DISTINCT program FROM student_records");
+    ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,48 +94,6 @@
     </style>
 </head>
 <body>
-    <?php
-    // Database connection
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "enrollment_db";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    // Handle search and filter
-    $search = isset($_GET['search']) ? $_GET['search'] : '';
-    $year = isset($_GET['year']) ? $_GET['year'] : '';
-    $section = isset($_GET['section']) ? $_GET['section'] : '';
-    $program = isset($_GET['program']) ? $_GET['program'] : '';
-
-    $sql = "SELECT * FROM student_records WHERE 1";
-
-    if (!empty($search)) {
-        $sql .= " AND section LIKE '%" . $conn->real_escape_string($search) . "%'";
-    }
-    if (!empty($year)) {
-        $sql .= " AND year = '" . $conn->real_escape_string($year) . "'";
-    }
-    if (!empty($section)) {
-        $sql .= " AND section = '" . $conn->real_escape_string($section) . "'";
-    }
-    if (!empty($program)) {
-        $sql .= " AND program = '" . $conn->real_escape_string($program) . "'";
-    }
-
-    $result = $conn->query($sql);
-    
-    // Fetch all available sections for dropdown
-    $sectionsResult = $conn->query("SELECT DISTINCT section FROM student_records");
-
-    // Fetch all available programs for dropdown
-    $programsResult = $conn->query("SELECT DISTINCT program FROM student_records");
-    ?>
 
     <div class="container full-width-container mt-5">
         <!-- Back Button -->

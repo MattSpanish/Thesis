@@ -49,8 +49,29 @@ $_SESSION['profile_pic'] = isset($user['profile_pic']) && !empty($user['profile_
     : 'default-profile.jpg';
 
 $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8') : 'Unknown User';
-?>
 
+// Include database connection
+$servername = "localhost"; // Change to your server name
+$username = "root";        // Change to your database username
+$password = "";            // Change to your database password
+$dbname = "enrollment_db"; // Change to your database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch schedule records from the database
+$sql = "SELECT subject, sections, time, day, total_students FROM FacultySchedule"; 
+$schedule_result = $conn->query($sql);
+
+if (!$schedule_result) {
+    die("SQL error: " . $conn->error);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -230,18 +251,38 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     cursor: pointer;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: adds shadow for depth */
-}
+    }
 
-.back-arrow i {
-    margin-right: 5px; /* Space between icon and text */
-}
+    .back-arrow i {
+        margin-right: 5px; /* Space between icon and text */
+    }
 
-.back-arrow:hover {
-    background-color: #0F2A1D;  /* Hover color */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhance hover effect */
-}
+    .back-arrow:hover {
+        background-color: #0F2A1D;  /* Hover color */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Enhance hover effect */
+    }
+    .action-button {
+        background-color: #28a745; /* Green color */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
 
+      .action-button:hover {
+        background-color: #218838; /* Darker green on hover */
+      }
 
+      .action-button:active {
+        background-color: #1e7e34; /* Even darker green when active */
+      }
 
   </style>
 </head>
@@ -278,14 +319,9 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
 
     <div class="info-right">
       <div class="stats-right">
-        <div class="stats-card">
-          <h3>64</h3>
-          <p>STUDENTS</p>
-        </div>
-        <div class="stats-card">
-          <h3 id="classes-count">0</h3>
-          <p>CLASSES</p>
-        </div>
+        <button class="action-button" onclick="handleCombinedAction()">
+          📩 Message / 🏥 Sick Leave
+        </button>
       </div>
     </div>
   </div>
@@ -296,62 +332,54 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
 <div class="schedule-section">
   <div class="schedule-header">
     <h4>Schedule</h4>
-    <button class="btn btn-success" id="add-class-btn">Add Classes</button>
   </div>
   <table class="table mt-3" id="schedule-table">
     <thead>
       <tr>
-        <th>Strand/Sections</th>
+        <th>Subject</th>
+        <th>Sections</th>
         <th>Time</th>
-        <th>Days</th>
+        <th>Day</th>
+        <th>Total Students</th>
       </tr>
     </thead>
     <tbody id="schedule-table-body">
-  <?php if ($schedule_result->num_rows > 0): ?>
-    <?php while ($schedule = $schedule_result->fetch_assoc()): ?>
-      <tr>
-        <td><?php echo htmlspecialchars($schedule['strand'], ENT_QUOTES, 'UTF-8'); ?></td>
-        <td><?php echo htmlspecialchars($schedule['time'], ENT_QUOTES, 'UTF-8'); ?></td>
-        <td><?php echo htmlspecialchars($schedule['days'], ENT_QUOTES, 'UTF-8'); ?></td>
-        <td>
-          <a href="edit_schedule.php?schedule_id=<?php echo $schedule['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
-          <a href="delete_schedule.php?schedule_id=<?php echo $schedule['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this schedule?')">Delete</a>
-        </td>
-      </tr>
-    <?php endwhile; ?>
-  <?php else: ?>
-    <tr>
-      <td colspan="4">No schedule available.</td>
-    </tr>
-  <?php endif; ?>
-</tbody>
-
+      <?php if ($schedule_result->num_rows > 0): ?>
+        <?php while ($schedule = $schedule_result->fetch_assoc()): ?>
+          <tr>
+            <td><?php echo htmlspecialchars($schedule['subject'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($schedule['sections'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($schedule['time'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($schedule['day'], ENT_QUOTES, 'UTF-8'); ?></td>
+            <td><?php echo htmlspecialchars($schedule['total_students'], ENT_QUOTES, 'UTF-8'); ?></td>
+          </tr>
+        <?php endwhile; ?>
+      <?php else: ?>
+        <tr>
+          <td colspan="5">No schedule available.</td>
+        </tr>
+      <?php endif; ?>
+    </tbody>
   </table>
-
-  <div id="add-class-form">
-    <h5>Add a New Class</h5>
-    <form action="add_class.php" method="POST">
-      <div class="form-group">
-        <label for="strand">Strand/Section:</label>
-        <input type="text" class="form-control" id="strand" name="strand" required>
-      </div>
-      <div class="form-group">
-        <label for="time">Time:</label>
-        <input type="text" class="form-control" id="time" name="time" required>
-      </div>
-      <div class="form-group">
-        <label for="days">Days:</label>
-        <input type="text" class="form-control" id="days" name="days" required>
-      </div>
-      <button type="submit" class="btn btn-primary mt-2">Add Class</button>
-      <button type="button" class="btn btn-danger mt-2" id="cancel-class-btn">Cancel</button>
-    </form>
-  </div>
 </div>
 
 </div>
 
 <script>
+function handleCombinedAction() {
+  // Prompt the user with a choice
+  let userChoice = confirm('Do you want to send a message or request sick leave? Click OK for Message or Cancel to do nothing.');
+
+  if (userChoice) {
+    alert('Opening messaging interface...');
+    // Redirect to the messaging interface
+    window.location.href = "messaging_interface.php";
+  } else {
+    // User clicked Cancel; do nothing
+    alert('Action canceled.');
+  }
+}
+
   document.getElementById('change-profile-btn').addEventListener('click', function() {
     document.getElementById('profile-upload-form').style.display = 'block';
     document.getElementById('change-profile-btn').style.display = 'none';
