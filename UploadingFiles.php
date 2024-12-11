@@ -1,9 +1,9 @@
 <?php
 // Database connection settings
-$servername = "localhost"; // Change if using a remote server
-$username = "root";        // Your database username
-$password = "";            // Your database password
-$dbname = "enrollment_db"; // Your database name
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "enrollment_db";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -13,34 +13,61 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle Student Enrollment Form Submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['uploadTeacher'])) {
-    // Collect and sanitize user inputs
+// Function to handle form submissions
+function handleFormSubmission($conn) {
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['uploadTeacher'])) {
+            handleTeacherData($conn);
+        } elseif (isset($_POST['program'], $_POST['total'], $_POST['year']) && !isset($_POST['section'])) {
+            handleEnrollmentData($conn);
+        } elseif (isset($_POST['program'], $_POST['year'], $_POST['section'], $_POST['total_students'])) {
+            handleStudentData($conn);
+        }
+    }
+}
+
+// Function to handle student enrollment form submission
+function handleEnrollmentData($conn) {
     $program = mysqli_real_escape_string($conn, $_POST['program']);
     $total = mysqli_real_escape_string($conn, $_POST['total']);
+    $year = mysqli_real_escape_string($conn, $_POST['year']);
+
+    $sql = "INSERT INTO student_data (program, total, year) VALUES ('$program', '$total', '$year')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>
+                alert('Student enrollment data uploaded successfully!');
+                window.location.href = window.location.href;
+              </script>";
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// Function to handle student data form submission
+function handleStudentData($conn) {
+    $program = mysqli_real_escape_string($conn, $_POST['program']);
     $year = mysqli_real_escape_string($conn, $_POST['year']);
     $section = mysqli_real_escape_string($conn, $_POST['section']);
     $total_students = mysqli_real_escape_string($conn, $_POST['total_students']);
 
-    // SQL queries to insert data into the database
-    $sql1 = "INSERT INTO student_data (program, total, year) VALUES ('$program', '$total', '$year')";
-    $sql2 = "INSERT INTO student_records (year, program, section, total) VALUES ('$year', '$program', '$section', '$total_students')";
+    $sql = "INSERT INTO student_records (year, program, section, total) 
+            VALUES ('$year', '$program', '$section', '$total_students')";
 
-    // Execute the queries and check for success
-    if ($conn->query($sql1) === TRUE && $conn->query($sql2) === TRUE) {
+    if ($conn->query($sql) === TRUE) {
         echo "<script>
-                alert('New record created successfully!');
-                window.location.href = window.location.href; // Refresh the page
+                alert('Student data uploaded successfully!');
+                window.location.href = window.location.href;
               </script>";
         exit();
     } else {
-        echo "Error: " . $conn->error;
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 
-// Handle Teacher Data Upload Form Submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['uploadTeacher'])) {
-    // Collect and sanitize user inputs
+// Function to handle teacher data form submission
+function handleTeacherData($conn) {
     $teacherIdNo = mysqli_real_escape_string($conn, $_POST['teacherIdNo']);
     $teacherLastName = mysqli_real_escape_string($conn, $_POST['teacherLastName']);
     $teacherFirstName = mysqli_real_escape_string($conn, $_POST['teacherFirstName']);
@@ -50,17 +77,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['uploadTeacher'])) {
     $teacherDateHired = mysqli_real_escape_string($conn, $_POST['teacherDateHired']);
     $teacherYearsOfService = mysqli_real_escape_string($conn, $_POST['teacherYearsOfService']);
     $teacherRanking = mysqli_real_escape_string($conn, $_POST['teacherRanking']);
-    $teacherStatus = mysqli_real_escape_string($conn, $_POST['teacherStatus']); // New field for status
+    $teacherStatus = mysqli_real_escape_string($conn, $_POST['teacherStatus']);
 
-    // SQL query to insert data into historical_data table
     $sql = "INSERT INTO historical_data (id_no, last_name, first_name, middle_name, department, position, date_hired, years_of_service, ranking, status) 
             VALUES ('$teacherIdNo', '$teacherLastName', '$teacherFirstName', '$teacherMiddleName', '$teacherDepartment', '$teacherPosition', '$teacherDateHired', '$teacherYearsOfService', '$teacherRanking', '$teacherStatus')";
 
-    // Execute the query and check for success
     if ($conn->query($sql) === TRUE) {
         echo "<script>
                 alert('Teacher data uploaded successfully!');
-                window.location.href = window.location.href; // Refresh the page
+                window.location.href = window.location.href;
               </script>";
         exit();
     } else {
@@ -68,9 +93,86 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['uploadTeacher'])) {
     }
 }
 
+// Handle form submissions
+handleFormSubmission($conn);
+
+// Connect to the `register` database
+$register_conn = new mysqli('localhost', '', '', 'register');
+
+// Connect to the `enrollment_db` database
+$enrollment_conn = new mysqli('localhost', '', '', 'enrollment_db');
+
+// Check connections
+if ($register_conn->connect_error || $enrollment_conn->connect_error) {
+    die("Connection failed: " . $register_conn->connect_error . " / " . $enrollment_conn->connect_error);
+}
+
+// Fetch users for the dropdown
+$userDropdownQuery = "SELECT id, fullname FROM users";
+$userDropdownResult = $register_conn->query($userDropdownQuery);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Fetch and sanitize POST data
+    $id = $_POST['id'] ?? null;
+    $subject = $_POST['subject'] ?? '';
+    $sections = $_POST['sections'] ?? '';
+    $time = $_POST['time'] ?? '';
+    $day = $_POST['day'] ?? '';
+    $total_students = $_POST['total_students'] ?? 0;
+
+    if ($id && $subject && $sections && $time && $day) {
+        // Fetch fullname from `register` database
+        $fullnameQuery = "SELECT fullname FROM users WHERE id = ?";
+        $fullnameStmt = $register_conn->prepare($fullnameQuery);
+        $fullnameStmt->bind_param('i', $id);
+        $fullnameStmt->execute();
+        $fullnameResult = $fullnameStmt->get_result();
+
+        if ($fullnameResult->num_rows > 0) {
+            $fullnameRow = $fullnameResult->fetch_assoc();
+            $fullname = $fullnameRow['fullname'];
+
+            // Insert data into `facultyschedule`
+            $insert_query = "INSERT INTO facultyschedule (id, fullname, subject, sections, time, day, total_students)
+                             VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $enrollment_conn->prepare($insert_query);
+            if (!$stmt) {
+                die("Prepare failed: " . $enrollment_conn->error);
+            }
+            $stmt->bind_param('isssssi', $id, $fullname, $subject, $sections, $time, $day, $total_students);
+
+            if ($stmt->execute()) {
+                // Redirect to avoid form resubmission
+                header("Location: " . $_SERVER['PHP_SELF'] . "?success=true");
+                exit();
+            } else {
+                echo "Error: " . $stmt->error;
+            }
+        } else {
+            echo "User not found.";
+        }
+    } else {
+        echo "All fields are required.";
+    }
+}
+
+// Show a success message if redirected
+if (isset($_GET['success']) && $_GET['success'] === 'true') {
+    echo "<script>
+            alert('Schedule added successfully!');
+            window.location.href = document.referrer;
+          </script>";
+    exit();
+}
+
+// Close connections
+$register_conn->close();
+$enrollment_conn->close();
+
 // Close the database connection
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -395,77 +497,48 @@ $conn->close();
 
     <!-- Faculty File Upload Section -->
     <div class="upload-container">
-        <h2>Upload Faculty Schedule</h2>
-        <form id="facultyUploadForm" action="" method="POST" enctype="multipart/form-data">
+        <h2>Faculty Schedule Input Form</h2>
+        <form action="" method="POST">
             <div class="form-group">
-                <label for="facultyName">Faculty Name</label>
-                <input type="text" id="facultyName" name="facultyName" required>
+                <label for="id">Select Faculty Member</label>
+                <select id="id" name="id" required>
+                    <option disabled selected>Please select a faculty</option>
+                    <?php 
+                    if ($userDropdownResult && $userDropdownResult->num_rows > 0) {
+                        while ($row = $userDropdownResult->fetch_assoc()) {
+                            echo '<option value="' . $row['id'] . '">' . $row['fullname'] . '</option>';
+                        }
+                    } else {
+                        echo '<option disabled>No faculty available</option>';
+                    }
+                    ?>
+                </select>
             </div>
-
-            <!-- Subject - Section Fields -->
-            <div id="subject-section-container">
-                <div class="form-group subject-section-group">
-                    <label>Subject - Section</label>
-                    <input type="text" name="subject_section[]" placeholder="e.g., Gen Chem - STEM 11-Y1-2" required>
-                    <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
-                </div>
-            </div>
-            <div class="add-button" onclick="addSubjectSection()">+ Add Another Subject - Section</div>
-
-            <!-- Day - Time Fields -->
-            <div id="day-time-container">
-                <div class="form-group day-time-group">
-                    <label>Day - Time</label>
-                    <input type="text" name="day_time[]" placeholder="e.g., Monday - 1:30 - 4:30" required onchange="calculateTotalHours()">
-                    <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
-                </div>
-            </div>
-            <div class="add-button" onclick="addDayTime()">+ Add Another Day - Time</div>
-
-            <!-- Total Hours -->
             <div class="form-group">
-                <label for="total">Total</label>
-                <input type="text" id="total" name="total" placeholder="e.g., 3, etc.">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" name="subject" placeholder="Enter subject name" required>
             </div>
-
+            <div class="form-group">
+                <label for="sections">Sections</label>
+                <input type="text" id="sections" name="sections" placeholder="Enter sections (e.g., A, B, C)" required>
+            </div>
+            <div class="form-group">
+                <label for="time">Time</label>
+                <input type="text" id="time" name="time" placeholder="e.g., 8:00 AM - 10:00 AM" required>
+            </div>
+            <div class="form-group">
+                <label for="day">Day</label>
+                <input type="text" id="day" name="day" placeholder="e.g., Monday, Wednesday" required>
+            </div>
+            <div class="form-group">
+                <label for="total_students">Total Students</label>
+                <input type="number" id="total_students" name="total_students" min="0" placeholder="Enter total students" required>
+            </div>
             <button type="submit">Submit</button>
         </form>
     </div>
-</div>
 
 <script>
-    // Add and Remove Elements
-    function addSubjectSection() {
-        const container = document.getElementById('subject-section-container');
-        const newSection = document.createElement('div');
-        newSection.className = 'form-group subject-section-group';
-        newSection.innerHTML = `
-            <label>Subject - Section</label>
-            <input type="text" name="subject_section[]" placeholder="e.g., Gen Chem - STEM 11-Y1-2" required>
-            <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
-        `;
-        container.appendChild(newSection);
-    }
-
-    function addDayTime() {
-        const container = document.getElementById('day-time-container');
-        const newDayTime = document.createElement('div');
-        newDayTime.className = 'form-group day-time-group';
-        newDayTime.innerHTML = `
-            <label>Day - Time</label>
-            <input type="text" name="day_time[]" placeholder="e.g., Monday - 1:30 - 4:30" required>
-            <button type="button" class="remove-button" onclick="removeElement(this)">×</button>
-        `;
-        container.appendChild(newDayTime);
-    }
-
-    function removeElement(button) {
-        button.parentElement.remove();
-    }
-
-    function calculateTotalHours() {
-        // Implement your logic for calculating total hours here
-    }
 
     // Automatically format the Program input field
     const programInput = document.getElementById('program');
