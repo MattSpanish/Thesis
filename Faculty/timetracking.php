@@ -10,6 +10,71 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['fullname'])) {
 
 // Safely fetch the logged-in user's full name from the session
 $loggedInUserName = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['fullname']) : 'Unknown User';
+
+// Database connection
+$host = "localhost";
+$user = "root";
+$password = "";
+$dbname = "register";
+
+$conn = new mysqli($host, $user, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Get today's date
+$today = date('Y-m-d');
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fullname = $loggedInUserName;
+    $date = $_POST['date'] ?? $today;
+    $time_in = $_POST['time-in'] ?? null;
+    $time_out = $_POST['time-out'] ?? null;
+
+    if (strtotime($date) <= strtotime($today)) {
+        if ($time_in && $time_out) {
+            // Calculate the difference in hours
+            $inTime = strtotime($time_in);
+            $outTime = strtotime($time_out);
+            $hoursWorked = ($outTime - $inTime) / 3600;
+
+            if ($hoursWorked <= 0) {
+                $_SESSION['errorMessage'] = "Time Out must be later than Time In.";
+            } elseif ($hoursWorked > 4) {
+                $_SESSION['errorMessage'] = "Logged hours cannot exceed 4 hours. You attempted to log $hoursWorked hours.";
+            } else {
+                $stmt = $conn->prepare("INSERT INTO time_logs (fullname, date, time_in, time_out) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("ssss", $fullname, $date, $time_in, $time_out);
+
+                if ($stmt->execute()) {
+                    $_SESSION['successMessage'] = "Time log saved successfully! Teacher $fullname worked for " . number_format($hoursWorked, 2) . " hours.";
+                } else {
+                    $_SESSION['errorMessage'] = "Error saving time log: " . $stmt->error;
+                }
+
+                $stmt->close();
+            }
+        } else {
+            $_SESSION['errorMessage'] = "Please provide both Time In and Time Out.";
+        }
+    } else {
+        $_SESSION['errorMessage'] = "Invalid date selected. Please choose today or earlier.";
+    }
+
+    // Redirect to the same page to reset the form and avoid duplicate submissions
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Display success or error messages
+$successMessage = $_SESSION['successMessage'] ?? null;
+$errorMessage = $_SESSION['errorMessage'] ?? null;
+
+// Clear messages to prevent them from being displayed on subsequent loads
+unset($_SESSION['successMessage'], $_SESSION['errorMessage']);
 ?>
 
 <!DOCTYPE html>
@@ -22,15 +87,12 @@ $loggedInUserName = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['f
     <title>Faculty Time Tracking</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f7fc;
             color: #333;
-            margin: 0;
-            padding: 0;
         }
         .container {
-            max-width: 500px;
-            margin: 60px auto;
+            max-width: 600px;
+            margin: 80px auto;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -41,24 +103,9 @@ $loggedInUserName = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['f
             margin-bottom: 20px;
             color: #4CAF50;
         }
-        label {
-            font-weight: bold;
-            margin-top: 15px;
-            display: block;
-        }
-        input[type="text"], input[type="time"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -76,7 +123,6 @@ $loggedInUserName = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['f
             margin-top: 20px;
             padding: 10px;
             border-radius: 5px;
-            display: none;
         }
         .status.success {
             background-color: #d4edda;
@@ -113,7 +159,6 @@ $loggedInUserName = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['f
     </style>
 </head>
 <body>
-
 <a href="../Faculty/profDASHBOARD.php" class="back-arrow">
     <i class="fa-solid fa-arrow-left"></i>
 </a>
@@ -121,58 +166,36 @@ $loggedInUserName = isset($_SESSION['fullname']) ? htmlspecialchars($_SESSION['f
 <div class="container">
     <h2>Faculty Time Tracking</h2>
 
-    <!-- Display the logged-in user's name -->
-    <label for="teacher-name">Teacher Name:</label>
-    <input type="text" id="teacher-name" name="teacher-name" value="<?php echo $loggedInUserName; ?>" readonly>
+    <?php if (isset($successMessage)): ?>
+        <div class="status success"><?php echo $successMessage; ?></div>
+    <?php elseif (isset($errorMessage)): ?>
+        <div class="status error"><?php echo $errorMessage; ?></div>
+    <?php endif; ?>
 
-    <label for="time-in">Time In:</label>
-    <input type="time" id="time-in">
+    <form method="POST" action="">
+        <div class="mb-3">
+            <label for="teacher-name" class="form-label">Teacher Name:</label>
+            <input type="text" id="teacher-name" name="teacher-name" value="<?php echo $loggedInUserName; ?>" class="form-control" readonly>
+        </div>
 
-    <label for="time-out">Time Out:</label>
-    <input type="time" id="time-out">
+        <div class="mb-3">
+            <label for="date" class="form-label">Date: Auto-Generated</label>
+            <input type="date" id="date" name="date" class="form-control" value="<?php echo $today; ?>" readonly>
+        </div>
 
-    <button onclick="trackTime()">Submit</button>
+        <div class="mb-3">
+            <label for="time-in" class="form-label">Time In:</label>
+            <input type="time" id="time-in" name="time-in" class="form-control">
+        </div>
 
-    <div class="status" id="status"></div>
+        <div class="mb-3">
+            <label for="time-out" class="form-label">Time Out:</label>
+            <input type="time" id="time-out" name="time-out" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 
-<script>
-    function trackTime() {
-        const teacherName = document.getElementById('teacher-name').value;
-        const timeIn = document.getElementById('time-in').value;
-        const timeOut = document.getElementById('time-out').value;
-        const statusDiv = document.getElementById('status');
-
-        if (!teacherName) {
-            statusDiv.textContent = "Please select a teacher.";
-            statusDiv.className = 'status error';
-            statusDiv.style.display = 'block';
-            return;
-        }
-
-        if (!timeIn || !timeOut) {
-            statusDiv.textContent = "Please enter both Time In and Time Out.";
-            statusDiv.className = 'status error';
-            statusDiv.style.display = 'block';
-            return;
-        }
-
-        const inTime = new Date(`1970-01-01T${timeIn}:00`);
-        const outTime = new Date(`1970-01-01T${timeOut}:00`);
-
-        if (outTime <= inTime) {
-            statusDiv.textContent = "Time Out must be later than Time In.";
-            statusDiv.className = 'status error';
-            statusDiv.style.display = 'block';
-            return;
-        }
-
-        const workingHours = (outTime - inTime) / (1000 * 60 * 60);
-
-        statusDiv.textContent = `Teacher: ${teacherName}, Hours Worked: ${workingHours.toFixed(2)} hrs.`;
-        statusDiv.className = 'status success';
-        statusDiv.style.display = 'block';
-    }
-</script>
 </body>
 </html>
