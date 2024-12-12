@@ -10,12 +10,8 @@ if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
 $user_id = $_SESSION["id"];
 require '../signin&signout/config.php'; // Database connection
 
-// Fetch schedule data
-$sql_schedule = "SELECT * FROM schedule WHERE user_id = ?";
-$stmt_schedule = $conn->prepare($sql_schedule);
-$stmt_schedule->bind_param("i", $user_id);
-$stmt_schedule->execute();
-$schedule_result = $stmt_schedule->get_result();
+
+
 
 // Prepare SQL statement for fetching user data
 $stmt = $conn->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
@@ -40,7 +36,6 @@ $user = $result->fetch_assoc();
 
 // Close the statement and connection
 $stmt->close();
-$stmt_schedule->close();
 $conn->close();
 
 // Store the profile image path in the session
