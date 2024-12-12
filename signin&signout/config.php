@@ -1,13 +1,23 @@
 <?php
-$host = 'localhost';
-$dbname = 'register';
-$username = '';  // Add your database username
-$password = '';  // Add your database password
 
-$conn = mysqli_connect($host, $username, $password, $dbname);
+$servername = "localhost";
+$username = "";
+$password = "";
+$dbname = "register";
 
-if ($conn === false) {
-    die("Error: Could not connect. " . mysqli_connect_error());
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
+
+$faculty_conn = new mysqli('localhost', 'root', '', 'register'); // Example for local development with no password
+
+// Check connection
+if ($faculty_conn->connect_error) {
+    die("Faculty database connection failed: " . $faculty_conn->connect_error);
+}
 ?>

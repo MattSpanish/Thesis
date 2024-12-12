@@ -312,8 +312,8 @@ $db->close();
             <p><?php echo $departments; ?></p>
         </div>
         <div class="card evaluations">
-            <a href="#" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Files</a>
-            <h3>Files</h3>
+            <a href="hr_messaging.php" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Messages</a>
+            <h3>Messages</h3>
             <p><?php echo $evaluations; ?></p>
         </div>
     </div>
