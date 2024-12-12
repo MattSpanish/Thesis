@@ -140,11 +140,11 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     }
     /* Stats Section */
     .stats-section {
-    display: flex;
-    gap: 20px;
-    margin-top: 30px; /* Space from the header */
-    flex-wrap: wrap;
-    justify-content: space-between; /* Distribute evenly across the available space */
+        display: flex;
+        gap: 20px;
+        margin-top: 30px; /* Space from the header */
+        flex-wrap: wrap;
+        justify-content: space-between; /* Distribute evenly across the available space */
     }
     .stat-card {
         background: #E3EED4; /* Light Accent */
@@ -156,6 +156,8 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         min-width: 200px;
         transition: transform 0.3s, box-shadow 0.3s;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-decoration: none; /* Removes underline from links */
+        color: inherit; /* Maintains text color */
     }
     .stat-card:hover {
         transform: translateY(-5px);
@@ -170,7 +172,6 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         font-weight: bold;
         color: #0F2A1D; /* Primary Color */
     }
-
     /* Notifications Section */
         .notifications-section {
         margin-top: 40px; /* Space from the stats section */
@@ -276,21 +277,21 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     </div>
 </div>
 
-        <!-- Stats Section -->
-        <div class="stats-section">
-            <div class="stat-card">
-                <h4>Tasks Completed</h4>
-                <p>42</p>
-            </div>
-            <div class="stat-card">
-                <h4>New Notifications</h4>
-                <p>5</p>
-            </div>
-            <div class="stat-card">
-                <h4>Upcoming Deadlines</h4>
-                <p>3</p>
-            </div>
-        </div>
+<!-- Stats Section -->
+<div class="stats-section">
+    <a href="/tasks" class="stat-card">
+        <h4>Tasks Completed</h4>
+        <p>42</p>
+    </a>
+    <a href="/notifications" class="stat-card">
+        <h4>New Notifications</h4>
+        <p>5</p>
+    </a>
+    <a href="timetracking.php" class="stat-card">
+        <h4>Time Log in/out</h4>
+        <p>3</p>
+    </a>
+</div>
 
         <!-- Notifications Section -->
         <div class="notifications-section" style="margin-top: 30px;">

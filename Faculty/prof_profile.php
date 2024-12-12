@@ -86,18 +86,15 @@ if (!$schedule_result) {
         font-family: 'Roboto', sans-serif;
         background-color: #E3EED4; /* Light Accent */
     }
-
     .container {
     background-color: #FFFFFF;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;          /* Adjust the top and bottom margins to control spacing */
+    margin: 20px auto;      /* Adjust the top and bottom margins to control spacing */
     max-width: 1500px;
-    margin-bottom: 40px;        /* Add bottom margin to create space below the container */
-}
-
-
+    margin-bottom: 40px;   /* Add bottom margin to create space below the container */
+    }
     .info-section {
         display: flex;
         justify-content: space-between;
@@ -106,7 +103,6 @@ if (!$schedule_result) {
         padding: 20px 0;
         border-bottom: 2px solid #AEC3B0;
     }
-
  .info-left {
     display: flex;
     flex-direction: column;
@@ -114,22 +110,19 @@ if (!$schedule_result) {
     gap: 15px;
     position: relative;
     margin-left: 100px; /* Adjust this value to shift the entire section to the right */
-}
-
-.profile-pic {
+  }
+  .profile-pic {
     width: 150px;
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid #375534;
     
-}
+  }
 
-.badge-custom {
+  .badge-custom {
     margin-top: 5px; /* Optional: Adds spacing between the image and the badge */
-}
-
-
+  }
     .info-details p {
         font-size: 16px;
         margin: 5px 0;
@@ -283,7 +276,6 @@ if (!$schedule_result) {
       .action-button:active {
         background-color: #1e7e34; /* Even darker green when active */
       }
-
   </style>
 </head>
 <body>
@@ -379,7 +371,6 @@ function handleCombinedAction() {
     alert('Action canceled.');
   }
 }
-
   document.getElementById('change-profile-btn').addEventListener('click', function() {
     document.getElementById('profile-upload-form').style.display = 'block';
     document.getElementById('change-profile-btn').style.display = 'none';

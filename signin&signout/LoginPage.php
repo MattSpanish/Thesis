@@ -12,20 +12,17 @@ function encryptData($data, $key) {
     return base64_encode($iv . $encrypted);
 }
 
-
-// Function to decrypt data
 function decryptData($data, $key) {
     $cipher = 'aes-256-cbc';
     $decoded = base64_decode($data);
-    $ivLength = openssl_cipher_iv_length($cipher); // Ensure this is the correct IV length
-    $iv = substr($decoded, 0, $ivLength); // Extract IV
-    $encrypted = substr($decoded, $ivLength); // Extract ciphertext
+    $ivLength = openssl_cipher_iv_length($cipher);
+    $iv = substr($decoded, 0, $ivLength);
+    $encrypted = substr($decoded, $ivLength);
     if (strlen($iv) !== $ivLength) {
-        return false; // Return false if IV length is incorrect to avoid errors
+        return false;
     }
     return openssl_decrypt($encrypted, $cipher, $key, 0, $iv);
 }
-
 
 // Initialize variables for remembered credentials
 $rememberedEmail = isset($_COOKIE['remember_email']) ? htmlspecialchars($_COOKIE['remember_email']) : '';
@@ -53,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["submit"])) {
                     // Set session variables
                     $_SESSION["login"] = true;
                     $_SESSION["id"] = $row["id"];
+                    $_SESSION["fullname"] = $row["fullname"]; // Add fullname to session
 
                     // Handle "Remember Me" functionality
                     if ($rememberMe) {
@@ -65,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["submit"])) {
 
                     // Generate OTP
                     $otp = rand(100000, 999999);
-                    $_SESSION['otp'] = $otp; // Store OTP in session
+                    $_SESSION['otp'] = $otp;
 
                     // Send OTP to user's email
                     $subject = "Your OTP for Login";
@@ -73,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["submit"])) {
                     $headers = "From: no-reply@yourwebsite.com";
 
                     if (mail($email, $subject, $message, $headers)) {
-                        header("Location: otp_verification.php"); // Redirect to OTP verification page
+                        header("Location: otp_verification.php");
                         exit;
                     } else {
                         $error = "Failed to send OTP. Please try again.";
@@ -96,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["submit"])) {
 
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

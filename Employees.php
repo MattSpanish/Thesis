@@ -101,7 +101,7 @@
         <h1>Employees</h1>
         <div class="row mt-5">
             <div class="col-12 col-md-6 mb-3">
-                <a href="../Time/time.php" class="card p-4 text-decoration-none">
+                <a href="../time.php" class="card p-4 text-decoration-none">
                     <div class="card-body">
                         <div class="card-title">
                             <span class="card-icon">💼</span> Time Tracking
