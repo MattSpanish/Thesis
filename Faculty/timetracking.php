@@ -1,6 +1,9 @@
 <?php
 session_start(); // Start the session
 
+// Set time zone to Asia/Manila
+date_default_timezone_set('Asia/Manila');
+
 // Check if the user is logged in
 if (!isset($_SESSION['id']) || !isset($_SESSION['fullname'])) {
     // Redirect to login page if not logged in
@@ -179,7 +182,7 @@ unset($_SESSION['successMessage'], $_SESSION['errorMessage']);
         </div>
 
         <div class="mb-3">
-            <label for="date" class="form-label">Date: Auto-Generated</label>
+            <label for="date" class="form-label">Date:</label>
             <input type="date" id="date" name="date" class="form-control" value="<?php echo $today; ?>" readonly>
         </div>
 

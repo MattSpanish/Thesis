@@ -1,137 +1,172 @@
+<?php
+// Connect to the database
+$conn = new mysqli("localhost", "root", "", "register");
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch time_logs data
+$sql = "SELECT fullname, time_in, time_out, TIMESTAMPDIFF(HOUR, time_in, time_out) AS total_hours, created_at FROM time_logs";
+$result = $conn->query($sql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Time Tracking</title>
+    <title>HR Time Logs Record</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7fc;
-            color: #333;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f4;
         }
+
         .container {
-            max-width: 450px;
+            max-width: 1200px;
             margin: 50px auto;
             background: #fff;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
         }
-        h2 {
-            text-align: center;
-            color: #4CAF50;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        select, input {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-top: 8px;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #375534;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-bar input, .filter-bar button {
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box;
+            font-size: 14px;
         }
-        .status {
-            font-size: 1rem;
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
+
+        .filter-bar button {
+            background-color: #375534;
+            color: white;
+            cursor: pointer;
         }
-        button {
+
+        .filter-bar button:hover {
+            background-color: #0F2A1D;
+        }
+
+        table {
             width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+
+        table th {
+            background-color: #375534;
+            color: white;
+        }
+
+        table .no-records {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+        }
+
+        .back-arrow {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            padding: 10px 15px;
+            background-color: #375534;
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        button:hover {
-            background-color: #45a049;
+        .back-arrow i {
+            margin-right: 5px;
         }
-        .status.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .status.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .back-arrow:hover {
+            background-color: #0F2A1D;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
+    <a href="../Faculty/profDASHBOARD.php" class="back-arrow">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+
     <div class="container">
-        <h2>Faculty Time Tracking</h2>
+        <div class="header">
+            <h1>HR Time Logs</h1>
+        </div>
 
-        <label for="teacher-name">Select Teacher:</label>
-        <select id="teacher-name">
-            <option value="">-- Select Full Name --</option>
-            <option value="John Doe">John Doe</option>
-            <option value="Jane Smith">Jane Smith</option>
-            <option value="Alice Johnson">Alice Johnson</option>
-        </select>
+        <div class="filter-bar">
+            <input type="text" id="filter-name" placeholder="Search by Full Name">
+            <input type="date" id="filter-date-start">
+            <input type="date" id="filter-date-end">
+            <button id="search-button">Search</button>
+            <button id="reset-button">Reset</button>
+        </div>
 
-        <label for="time-in">Time In:</label>
-        <input type="time" id="time-in">
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                    <th>Total Hours</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody id="time-logs-body">
+                <?php
+                    if ($result->num_rows > 0) {
+                        // Output data of each row
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row["fullname"] . "</td>";
+                            echo "<td>" . $row["time_in"] . "</td>";
+                            echo "<td>" . $row["time_out"] . "</td>";
+                            echo "<td>" . $row["total_hours"] . "</td>";
+                            echo "<td>" . $row["created_at"] . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='7' class='no-records'>No records found</td></tr>";
+                    }
 
-        <label for="time-out">Time Out:</label>
-        <input type="time" id="time-out">
-
-        <button onclick="trackTime()">Submit</button>
-
-        <div class="status" id="status"></div>
+                    $conn->close();
+                ?>
+            </tbody>
+        </table>
     </div>
-
-    <script>
-        function trackTime() {
-            const teacherName = document.getElementById('teacher-name').value;
-            const timeIn = document.getElementById('time-in').value;
-            const timeOut = document.getElementById('time-out').value;
-            const statusDiv = document.getElementById('status');
-
-            if (!teacherName) {
-                statusDiv.textContent = "Please select a teacher.";
-                statusDiv.className = 'status error';
-                statusDiv.style.display = 'block';
-                return;
-            }
-
-            if (!timeIn || !timeOut) {
-                statusDiv.textContent = "Please enter both Time In and Time Out.";
-                statusDiv.className = 'status error';
-                statusDiv.style.display = 'block';
-                return;
-            }
-
-            const inTime = new Date(`1970-01-01T${timeIn}:00`);
-            const outTime = new Date(`1970-01-01T${timeOut}:00`);
-
-            if (outTime <= inTime) {
-                statusDiv.textContent = "Time Out must be later than Time In.";
-                statusDiv.className = 'status error';
-                statusDiv.style.display = 'block';
-                return;
-            }
-
-            const workingHours = (outTime - inTime) / (1000 * 60 * 60);
-
-            statusDiv.textContent = `Teacher: ${teacherName}, Hours Worked: ${workingHours.toFixed(2)} hrs.`;
-            statusDiv.className = 'status success';
-            statusDiv.style.display = 'block';
-        }
-    </script>
 </body>
 </html>
