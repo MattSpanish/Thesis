@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['profile_pic'])) {
         $uploadOk = 0;
     }
 
-    // Check file size (500KB limit)
-    if ($_FILES["profile_pic"]["size"] > 500000) {
+    // Check file size (5MB limit)
+    if ($_FILES["profile_pic"]["size"] > 5000000) {
         echo "Sorry, your file is too large.";
         $uploadOk = 0;
     }
