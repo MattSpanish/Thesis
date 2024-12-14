@@ -98,14 +98,13 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     }
 
     /* Sidebar logo */
-.sidebar .logo {
-    width: 100%;
-    height: 120px; /* Adjust as needed */
-    background: url('../signin&signout/assets1/img/logo.png') no-repeat center center;
-    background-size: contain;
-    margin-bottom: 1px; /* Spacing below the logo */
-}
-
+    .sidebar .logo {
+        width: 100%;
+        height: 120px; /* Adjust as needed */
+        background: url('../signin&signout/assets1/img/logo.png') no-repeat center center;
+        background-size: contain;
+        margin-bottom: 1px; /* Spacing below the logo */
+    }
 
     /* Content Styles */
     .content {
@@ -147,17 +146,22 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
         justify-content: space-between; /* Distribute evenly across the available space */
     }
     .stat-card {
-        background: #E3EED4; /* Light Accent */
-        border: 1px solid #AEC3B0; /* Highlight */
-        border-radius: 12px;
-        padding: 20px;
-        flex: 1;
-        text-align: center;
-        min-width: 200px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        text-decoration: none; /* Removes underline from links */
-        color: inherit; /* Maintains text color */
+    background: #E3EED4; /* Light Accent */
+    border: 1px solid #AEC3B0; /* Highlight */
+    border-radius: 12px;
+    padding: 20px;
+    flex: 1;
+    text-align: center;
+    min-width: 200px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-decoration: none; /* Removes underline from links */
+    color: inherit; /* Maintains text color */
+    display: flex; /* Add flexbox */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+    height: 120px; /* Fixed height for consistent centering */
     }
     .stat-card:hover {
         transform: translateY(-5px);
@@ -277,21 +281,20 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
     </div>
 </div>
 
-<!-- Stats Section -->
-<div class="stats-section">
-    <a href="/tasks" class="stat-card">
-        <h4>Tasks Completed</h4>
-        <p>42</p>
-    </a>
-    <a href="/notifications" class="stat-card">
-        <h4>New Notifications</h4>
-        <p>5</p>
-    </a>
-    <a href="timetracking.php" class="stat-card">
-        <h4>Time Log in/out</h4>
-        <p>3</p>
-    </a>
-</div>
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <a href="/tasks" class="stat-card">
+                <h4>Tasks Completed</h4>
+                <p>42</p>
+            </a>
+            <a href="/notifications" class="stat-card">
+                <h4>New Notifications</h4>
+                <p>5</p>
+            </a>
+            <a href="timetracking.php" class="stat-card">
+                <h4>Time Log in/out</h4>
+            </a>
+        </div>
 
         <!-- Notifications Section -->
         <div class="notifications-section" style="margin-top: 30px;">
@@ -312,6 +315,7 @@ $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_
             </ul>
         </div>
     </div>
+
     <script>
     function toggleDropdown() {
         const dropdown = document.getElementById("dropdownMenu");

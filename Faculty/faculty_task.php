@@ -215,7 +215,8 @@ mysqli_close($conn);
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            alert(data.message);
+                            alert(data.message); // Show the alert
+                            window.location.reload(); // Refresh the page
                         } else {
                             alert(data.message || 'Failed to update status.');
                         }
