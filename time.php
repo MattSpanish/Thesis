@@ -119,7 +119,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-    <a href="../Faculty/profDASHBOARD.php" class="back-arrow">
+    <a href="../Employees.php" class="back-arrow">
         <i class="fa-solid fa-arrow-left"></i>
     </a>
 
