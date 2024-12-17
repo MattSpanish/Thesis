@@ -2,7 +2,7 @@
 // Example PHP data fetching (in a real scenario, this would come from a database)
 $professors = 10; // Replace with dynamic value from the database
 $departments = 3; // Replace with dynamic value from the database
-$evaluations = 20; // Replace with dynamic value from the database
+$Messageses = 20; // Replace with dynamic value from the database
 
 // Database connection
 $db = new mysqli('localhost', 'root', '', 'hr_data');
@@ -314,7 +314,7 @@ $db->close();
         <div class="card evaluations">
             <a href="hr_messaging.php" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; text-indent: -9999px; overflow: hidden;">Messages</a>
             <h3>Messages</h3>
-            <p><?php echo $evaluations; ?></p>
+            <p><?php echo $Messageses; ?></p>
         </div>
     </div>
 
