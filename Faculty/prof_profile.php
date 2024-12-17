@@ -2,7 +2,7 @@
 session_start();
 // Check if the user is logged in
 if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
-    header(header: "Location: ../signin&signout/LoginPage.php");
+    header("Location: ../signin&signout/LoginPage.php");
     exit;
 }
 
@@ -10,11 +10,8 @@ if (!isset($_SESSION["login"]) || !$_SESSION["login"]) {
 $user_id = $_SESSION["id"];
 require '../signin&signout/config.php'; // Database connection
 
-
-
-
 // Prepare SQL statement for fetching user data
-$stmt = $conn->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT username, email, gender, department, subject, status, profile_pic FROM users WHERE id = ?");
 if ($stmt === false) {
     die("Error preparing the SQL statement: " . $conn->error);
 }
@@ -44,6 +41,11 @@ $_SESSION['profile_pic'] = isset($user['profile_pic']) && !empty($user['profile_
     : 'default-profile.jpg';
 
 $user_name = isset($user['username']) ? htmlspecialchars($user['username'], ENT_QUOTES, 'UTF-8') : 'Unknown User';
+$email = isset($user['email']) ? htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8') : 'Not Available';
+$gender = isset($user['gender']) ? htmlspecialchars($user['gender'], ENT_QUOTES, 'UTF-8') : 'Not Specified';
+$department = isset($user['department']) ? htmlspecialchars($user['department'], ENT_QUOTES, 'UTF-8') : 'Unknown Department';
+$subject = isset($user['subject']) ? htmlspecialchars($user['subject'], ENT_QUOTES, 'UTF-8') : 'Not Assigned';
+$status = isset($user['status']) ? htmlspecialchars($user['status'], ENT_QUOTES, 'UTF-8') : 'Not Specified';
 
 // Include database connection
 $servername = "localhost"; // Change to your server name
@@ -271,6 +273,59 @@ if (!$schedule_result) {
       .action-button:active {
         background-color: #1e7e34; /* Even darker green when active */
       }
+        .info-details {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap; /* Ensures responsiveness */
+    padding: 20px;
+  }
+
+  .info-card {
+    background-color: #F8F9FA; /* Light background */
+    border: 1px solid #AEC3B0; /* Accent border */
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px; /* Control the card size */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  }
+
+  .info-card h5 {
+    margin-bottom: 15px;
+    color: #0F2A1D;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .info-card p {
+    font-size: 16px;
+    color: #0F2A1D;
+    margin-bottom: 10px;
+  }
+
+  .info-card a {
+    color: #375534; /* Accent color */
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .info-card a:hover {
+    text-decoration: underline;
+  }
+
+  .form-control {
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #AEC3B0;
+    padding: 5px;
+    color: #0F2A1D;
+  }
+
+  .btn-success {
+    width: 100%; /* Full-width button for better responsiveness */
+    margin-top: 10px;
+  }
   </style>
 </head>
 <body>
@@ -297,12 +352,44 @@ if (!$schedule_result) {
     </div>
 
     <div class="info-details">
-      <p><strong>Email :</strong> <a href="mailto:jrespanol485@gmail.com">jrespanol485@gmail.com</a></p>
-      <p><strong>Gender :</strong> Male</p>
-      <p><strong>Department :</strong> Senior High School</p>
-      <p><strong>Subject :</strong> Physical Education</p>
-      <p><strong>Status :</strong> Full Time</p>
-    </div>
+  <div class="info-card">
+    <h5><strong>Contact Information</strong></h5>
+    <p><strong>Email:</strong> <a href="mailto:<?php echo $email; ?>"><?php echo $email; ?></a></p>
+  </div>
+
+  <div class="info-card">
+    <h5><strong>Profile Details</strong></h5>
+    <form action="update_user_info.php" method="POST">
+      <!-- Editable Gender -->
+      <p><strong>Gender:</strong> 
+        <select name="gender" class="form-control" required>
+          <option value="MALE" <?php if ($gender == 'MALE') echo 'selected'; ?>>MALE</option>
+          <option value="FEMALE" <?php if ($gender == 'FEMALE') echo 'selected'; ?>>FEMALE</option>
+        </select>
+      </p>
+
+      <!-- Editable Subject -->
+      <p><strong>Subject:</strong> 
+        <select name="subject" class="form-control" required>
+          <option value="STEM" <?php if ($subject == 'STEM') echo 'selected'; ?>>STEM</option>
+          <option value="HUMMS" <?php if ($subject == 'HUMMS') echo 'selected'; ?>>HUMMS</option>
+          <option value="ABM" <?php if ($subject == 'ABM') echo 'selected'; ?>>ABM</option>
+        </select>
+      </p>
+
+      <!-- Editable Status -->
+      <p><strong>Status:</strong> 
+        <select name="status" class="form-control" required>
+          <option value="ACTIVE" <?php if ($status == 'ACTIVE') echo 'selected'; ?>>ACTIVE</option>
+          <option value="INACTIVE" <?php if ($status == 'INACTIVE') echo 'selected'; ?>>INACTIVE</option>
+        </select>
+      </p>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-success mt-3">Update Information</button>
+    </form>
+  </div>
+</div>
 
     <div class="info-right">
       <div class="stats-right">

@@ -2,6 +2,15 @@
 // Require database configuration file
 require_once 'signin&signout/config.php';
 
+// SQL query to update task statuses to 'due' if the due date has passed and the status is not 'complete'
+$updateQuery = "UPDATE tasks 
+                SET status = 'due' 
+                WHERE due_date < CURDATE() AND status != 'complete'";
+
+if (!mysqli_query($conn, $updateQuery)) {
+    die("Error updating task statuses: " . mysqli_error($conn));
+}
+
 // Fetch all registered users to populate dropdown
 $userQuery = "SELECT id, fullname FROM users";
 $userResult = mysqli_query($conn, $userQuery);
@@ -126,42 +135,6 @@ mysqli_free_result($tasksResult);
             </div>
         </div>
 
-        <!-- Task Summary Cards -->
-        <div class="row text-center mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Task Left</h5>
-                        <p id="task-left" class="card-text display-4">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Complete Task</h5>
-                        <p id="complete-task" class="card-text display-4">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Pending Task</h5>
-                        <p id="pending-task" class="card-text display-4">0</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Due Task</h5>
-                        <p id="due-task" class="card-text display-4">0</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Add Task Button -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Employee Tasks</h4>
@@ -254,6 +227,3 @@ mysqli_free_result($tasksResult);
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-
-
-

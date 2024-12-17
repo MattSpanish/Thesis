@@ -93,6 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message_id'], $_POST[
                 } else {
                     $error_message = "Error preparing the faculty database query: " . $faculty_conn->error;
                 }
+
+                // Redirect to prevent form resubmission
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
             } else {
                 $error_message = "Error updating the HR database: " . $conn->error;
             }
@@ -116,10 +120,39 @@ $faculty_conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Messaging System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Green Theme -->
+    <style>
+        body {
+            background-color: #e6f5e6; /* Light green background */
+        }
+        h1, h3 {
+            color: #155724; /* Dark green headings */
+        }
+        .card {
+            border: 1px solid #198754; /* Bootstrap green border */
+        }
+        .card-header {
+            background-color: #198754;
+            color: #fff;
+        }
+        .btn-primary {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        .btn-primary:hover {
+            background-color: #146c43;
+            border-color: #146c43;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">HR Messaging System</h1>
+    <h1 class="text-center mb-4">HR Messaging System</h1>
 
     <!-- Success and Error Messages -->
     <?php if (isset($success_message)): ?>
@@ -128,13 +161,15 @@ $faculty_conn->close();
         <div class="alert alert-danger"><?php echo htmlspecialchars($error_message); ?></div>
     <?php endif; ?>
 
-    <h3 class="mt-4">Pending Messages</h3>
+    <h3 class="mb-3">Pending Messages</h3>
 
     <?php if (!empty($messages)): ?>
         <?php foreach ($messages as $row): ?>
-            <div class="card mb-3">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <strong>Message from <?php echo htmlspecialchars($row['username']); ?></strong>
+                </div>
                 <div class="card-body">
-                    <p><strong>Message from <?php echo htmlspecialchars($row['username']); ?>:</strong></p>
                     <p><strong>Type:</strong> <?php echo $row['message_type'] === 'message' ? 'Message' : 'Sick Leave Request'; ?></p>
                     <p><?php echo nl2br(htmlspecialchars($row['message'])); ?></p>
                     <p><small><em>Sent on: <?php echo htmlspecialchars($row['created_at']); ?></em></small></p>
@@ -156,7 +191,7 @@ $faculty_conn->close();
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p>No messages pending response.</p>
+        <p class="text-success">No messages pending response.</p>
     <?php endif; ?>
 </div>
 

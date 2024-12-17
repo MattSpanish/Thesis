@@ -52,7 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+<<<<<<< Updated upstream
 // Fetch messages and HR responses including the faculty's response
+=======
+// Fetch messages and HR responses
+>>>>>>> Stashed changes
 $fetch_sql = "SELECT m.id, m.message, m.hr_response, m.created_at, 'message' AS message_type
               FROM hr_data.messages m
               WHERE m.user_id = ? 
@@ -91,6 +95,46 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Messaging Interface</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f8f6;
+            color: #155724;
+        }
+        .container {
+            background-color: #d4edda;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .table thead {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-secondary {
+            background-color: #5a6268;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        h1, h3 {
+            color: #155724;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
@@ -115,6 +159,7 @@ $conn->close();
             </tr>
         </thead>
         <tbody>
+<<<<<<< Updated upstream
             <?php if ($result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
@@ -130,6 +175,23 @@ $conn->close();
                 </tr>
             <?php endif; ?>
         </tbody>
+=======
+    <?php if ($result && $result->num_rows > 0): ?>
+        <?php while ($row = $result->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo ucfirst($row['message_type']); ?></td>
+                <td><?php echo htmlspecialchars($row['message'], ENT_QUOTES, 'UTF-8'); ?></td>
+                <td><?php echo $row['hr_response'] ? htmlspecialchars($row['hr_response'], ENT_QUOTES, 'UTF-8') : 'No response yet'; ?></td>
+                <td><?php echo $row['created_at']; ?></td>
+            </tr>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="4">No messages or requests found.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
+>>>>>>> Stashed changes
     </table>
 
     <!-- Form to Submit Message or Sick Leave Request -->

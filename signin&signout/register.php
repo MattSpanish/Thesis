@@ -17,45 +17,57 @@ if (isset($_POST["submit"])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirmpassword = $_POST["confirmpassword"];
+    $gender = $_POST['gender'];
+    $department = $_POST['department'];
+    $subject = $_POST['subject'];
+    $status = $_POST['status'];
 
-    // Check for duplicate username or email
-    $duplicate = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username' OR email= '$email'");
-    if (mysqli_num_rows($duplicate) > 0) {
-        $error_message = "Email or username already taken.";
+    // Validate all required fields are filled
+    if (empty($fullname) || empty($username) || empty($email) || empty($password) || empty($confirmpassword) || empty($gender) || empty($department) || empty($subject) || empty($status)) {
+        $error_message = "All fields are required.";
     } else {
-        // Check if passwords match and if they are exactly 8 characters long
-        if ($password == $confirmpassword) {
-            if (strlen($password) != 8) {
-                $password_error = "Password must be exactly 8 characters long.";
-            } else {
-                // Hash the password
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                // Insert new user into the database with hashed password
-                $query = "INSERT INTO users (fullname, username, email, password) VALUES ('$fullname', '$username', '$email', '$hashed_password')";
-                if (mysqli_query($conn, $query)) {
-                    $error_message = "Registration successful.";
-                    
-                    // Get the newly registered user's ID
-                    $new_user_id = mysqli_insert_id($conn);
-
-                    // Auto-assign a default task
-                    $default_task_query = "INSERT INTO tasks (task_name, employee_id, due_date, status) VALUES 
-                    ('Welcome Task', '$new_user_id', CURDATE() + INTERVAL 7 DAY, 'pending')";
-        
-                    if (mysqli_query($conn, $default_task_query)) {
-                        $error_message = "Registration successful and default task assigned!";
-                        // Redirect to login page
-                        header("Location: LoginPage.php");
-                        exit();
-                    } else {
-                        $error_message = "Registration successful but default task assignment failed.";
-                    }
-                } else {
-                    $error_message = "Error: Registration failed.";
-                }
-            }
+        // Check for duplicate username or email
+        $duplicate = mysqli_query($conn, "SELECT * FROM users WHERE username = '$username' OR email= '$email'");
+        if (mysqli_num_rows($duplicate) > 0) {
+            $error_message = "Email or username already taken.";
         } else {
-            $error_message = "Passwords do not match.";
+            // Check if passwords match and if they are exactly 8 characters long
+            if ($password == $confirmpassword) {
+                if (strlen($password) != 8) {
+                    $password_error = "Password must be exactly 8 characters long.";
+                } else {
+                    // Hash the password
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    
+                    // Insert new user into the database with hashed password
+                    $query = "INSERT INTO users (fullname, username, email, password, gender, department, subject, status) 
+                              VALUES ('$fullname', '$username', '$email', '$hashed_password', '$gender', '$department', '$subject', '$status')";
+                    
+                    if (mysqli_query($conn, $query)) {
+                        $error_message = "Registration successful.";
+                        
+                        // Get the newly registered user's ID
+                        $new_user_id = mysqli_insert_id($conn);
+
+                        // Auto-assign a default task
+                        $default_task_query = "INSERT INTO tasks (task_name, employee_id, due_date, status) 
+                                               VALUES ('Welcome Task', '$new_user_id', CURDATE() + INTERVAL 7 DAY, 'pending')";
+                        
+                        if (mysqli_query($conn, $default_task_query)) {
+                            $error_message = "Registration successful and default task assigned!";
+                            // Redirect to login page
+                            header("Location: LoginPage.php");
+                            exit();
+                        } else {
+                            $error_message = "Registration successful but default task assignment failed.";
+                        }
+                    } else {
+                        $error_message = "Error: Registration failed.";
+                    }
+                }
+            } else {
+                $error_message = "Passwords do not match.";
+            }
         }
     }
 }
@@ -109,6 +121,45 @@ if (isset($_POST["submit"])) {
                 <div class="form-outline mb-4">
                     <label class="form-label" for="email">Email</label>
                     <input type="email" id="email" name="email" class="form-control" value="<?php echo isset($email) ? $email : ''; ?>" />
+                </div>
+
+                <!-- Gender -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="gender">Gender</label>
+                    <select id="gender" name="gender" class="form-control">
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+
+                <!-- Department -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="department">Department</label>
+                    <select id="department" name="department" class="form-control">
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="Senior High School">Senior High School</option>
+                    </select>
+                </div>
+
+                <!-- Subject -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="subject">Subject</label>
+                    <select id="subject" name="subject" class="form-control">
+                        <option value="" disabled selected>Select Subject</option>
+                        <option value="STEM">STEM</option>
+                        <option value="ABM">ABM</option>
+                        <option value="HUMMS">HUMMS</option>
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div class="form-outline mb-4">
+                    <label class="form-label" for="status">Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="" disabled selected>Select Status</option>
+                        <option value="Fulltime">Fulltime</option>
+                    </select>
                 </div>
                 
                 <!-- Password -->

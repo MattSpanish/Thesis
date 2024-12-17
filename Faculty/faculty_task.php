@@ -3,6 +3,12 @@
 require_once '../signin&signout/config.php';
 session_start(); // Start the session
 
+// Update overdue tasks
+$updateQuery = "UPDATE tasks SET status = 'due' WHERE due_date < CURDATE() AND status != 'complete'";
+if (!mysqli_query($conn, $updateQuery)) {
+    error_log("Failed to update overdue tasks: " . mysqli_error($conn));
+}
+
 // Assuming the user is logged in and their user ID is stored in the session
 if (!isset($_SESSION['id'])) {
     header('Location: ../signin&signout/login.php');
@@ -167,28 +173,33 @@ mysqli_close($conn);
                     </tr>
                 </thead>
                 <tbody>
-    <?php if (empty($tasks)): ?>
-        <tr>
-            <td colspan="4" class="text-center">No tasks assigned.</td>
-        </tr>
-    <?php else: ?>
-        <?php foreach ($tasks as $task): ?>
-            <tr>
-                <td><?= htmlspecialchars($task['task_name']); ?></td>
-                <td><?= htmlspecialchars($task['employee_name']); ?></td>
-                <td><?= htmlspecialchars($task['due_date']); ?></td>
-                <td>
-                    <select class="status-dropdown" data-task-id="<?= $task['id']; ?>">
-                        <option value="complete" <?= $task['status'] === 'complete' ? 'selected' : ''; ?>>Complete</option>
-                        <option value="pending" <?= $task['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                        <option value="due" <?= $task['status'] === 'due' ? 'selected' : ''; ?>>Due</option>
-                    </select>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</tbody>
-
+                    <?php if (empty($tasks)): ?>
+                        <tr>
+                            <td colspan="4" class="text-center">No tasks assigned.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($tasks as $task): ?>
+                            <tr>
+                            <td><?= htmlspecialchars($task['task_name']); ?></td>
+                            <td><?= htmlspecialchars($task['employee_name']); ?></td>
+                            <td><?= htmlspecialchars($task['due_date']); ?></td>
+                            <td>
+                                <?php if ($task['status'] === 'due'): ?>
+                                    <span class="badge badge-due">Due</span>
+                                <?php else: ?>
+                                    <select 
+                                        class="status-dropdown" 
+                                        data-task-id="<?= $task['id']; ?>"
+                                    >
+                                        <option value="complete" <?= $task['status'] === 'complete' ? 'selected' : ''; ?>>Complete</option>
+                                        <option value="pending" <?= $task['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                    </select>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
             </table>
         </div>
     </div>
