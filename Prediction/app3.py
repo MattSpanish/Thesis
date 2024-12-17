@@ -5,9 +5,7 @@ import os
 from io import BytesIO
 import matplotlib.pyplot as plt
 import mysql.connector
-from flask import Flask, jsonify, redirect, render_template
-from sklearn.linear_model import LinearRegression
-
+from flask import Flask, jsonify, redirect
 
 matplotlib.use('Agg')  # Use a non-GUI backend
 
@@ -73,34 +71,34 @@ def create_chart(years, totals):
     plt.close()
     return encoded_image
 
-@app3.route('/index1')
-def index1():
+@app3.route('/api/faculty-data', methods=['GET'])
+def faculty_data_api():
     try:
         # Fetch teacher data from the database
         data = get_faculty_data()
         if not data:
-            return render_template('index1.html', chart="", mse="No data available.")
+            return jsonify({"success": False, "message": "No data available."}), 404
 
         # Preprocess data
         years, totals = preprocess_data(data)
         if len(years) < 2:
-            return render_template('index1.html', chart="", mse="Not enough data to create a chart.")
+            return jsonify({"success": False, "message": "Not enough data to create a chart."}), 400
 
         # Generate the chart image
         chart = create_chart(years, totals)
 
-        # Render the template with the chart data
-        return render_template('index1.html', chart=chart, mse="Perfect Match")
+        # Return the JSON response
+        return jsonify({
+            "success": True,
+            "years": years,
+            "totals": totals,
+            "chart": chart
+        })
+    except mysql.connector.Error as db_err:
+        return jsonify({"success": False, "message": f"Database error: {str(db_err)}"}), 500
     except Exception as e:
-        # Pass the error message to the template
-        return render_template('index1.html', chart="", mse=f"Error: {str(e)}")
+        return jsonify({"success": False, "message": f"Internal server error: {str(e)}"}), 500
 
-@app3.route('/phpmyadmin')
-def phpmyadmin():
-    """
-    Redirect to the phpMyAdmin interface.
-    """
-    return redirect("http://localhost/phpmyadmin/")
 
 if __name__ == '__main__':
-    app3.run(debug=False, port=5000)
+    app3.run(debug=False, port=5002)

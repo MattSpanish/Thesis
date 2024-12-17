@@ -14,7 +14,8 @@ $ADMIN_CREDENTIALS = $result->fetch_assoc();
 $profilePicture = $ADMIN_CREDENTIALS['profile_picture'] ?? 'default-profile.png';
 
 // Handle profile picture upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle profile picture upload
     if (isset($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['profilePicture'];
         $targetDir = "UploadHrProfile/";
@@ -46,23 +47,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Initialize $mse with a default value
 $mse = 'No data available';
 
-// Fetch chart data from the Flask API
-$flaskApiUrl = 'http://127.0.0.1:5000/api/get_chart_data';
-$chartImage = null;
+// Fetch chart data from the Flask APIs
+$flaskApiUrl1 = 'http://127.0.0.1:5000/api/get_chart_data';
+$flaskApiUrl3 = 'http://127.0.0.1:5002/api/faculty-data';
+$chartImage1 = null;
+$chartImage2 = null;
 
 try {
-    $apiResponse = @file_get_contents($flaskApiUrl);
-    if ($apiResponse !== false) {
-        $data = json_decode($apiResponse, true);
-        $chartImage = $data['chart'] ?? null;
-        $mse = $data['mse'] ?? 'No MSE data available';
+    // Fetch first chart (student population data)
+    $apiResponse1 = @file_get_contents($flaskApiUrl1);
+    if ($apiResponse1 !== false) {
+        $data1 = json_decode($apiResponse1, true);
+        $chartImage1 = $data1['chart'] ?? null;
+        $mse = $data1['mse'] ?? 'No MSE data available';
     } else {
-        $mse = "Unable to connect to the API.";
+        $mse = "Unable to connect to the first API.";
+    }
+
+    // Fetch second chart (faculty data)
+    $apiResponse3 = @file_get_contents($flaskApiUrl3);
+    if ($apiResponse3 !== false) {
+        $data3 = json_decode($apiResponse3, true);
+        $chartImage2 = $data3['chart'] ?? null;
+    } else {
+        $mse = "Unable to connect to the second API.";
     }
 } catch (Exception $e) {
     $mse = "An error occurred while fetching chart data.";
 }
-
 
 // Database connection to enrollment_db for department count
 $db_enrollment = new mysqli('localhost', 'root', '', 'enrollment_db');
@@ -73,21 +85,13 @@ if ($db_enrollment->connect_error) {
 // Fetch department count from historical_data table in enrollment_db
 $departmentQuery = $db_enrollment->query("SELECT COUNT(*) AS total_departments FROM historical_data");
 if (!$departmentQuery) {
-    die("Error fetching department count: " . $db_enrollment->error); // Will show the actual query error
+    die("Error fetching department count: " . $db_enrollment->error);
 }
 
 if ($departmentRow = $departmentQuery->fetch_assoc()) {
     $departments = (int)$departmentRow['total_departments'];
 } else {
-    $departments = 0; // Default to 0 if query fails
-}
-
-// Count available professors (You need to define this variable)
-$professorQuery = $db_enrollment->query("SELECT COUNT(*) AS total_professors FROM professors");
-if ($professorQuery) {
-    $professors = (int)$professorQuery->fetch_assoc()['total_professors'];
-} else {
-    $professors = 0; // Default to 0 if query fails
+    $departments = 0;
 }
 
 // Count pending messages and sick leave requests from hr_data
@@ -98,10 +102,9 @@ $count_sql = "
         SELECT id FROM hr_data.sick_leaves WHERE hr_response IS NULL
     ) AS pending_messages;
 ";
-
 $count_result = $db_hr->query($count_sql);
 if (!$count_result) {
-    die("Error fetching pending messages: " . $db_hr->error); // Will show the actual query error
+    die("Error fetching pending messages: " . $db_hr->error);
 }
 
 $pending_count = $count_result->fetch_assoc()['pending_count'] ?? 0;
@@ -286,6 +289,13 @@ $db_enrollment->close();
             padding: 20px;
         }
 
+        .profile-btn span:last-child {
+    font-size: 18px; /* Adjust the size of the arrow */
+    margin-left: 5px; /* Space between the name and the arrow */
+    color: #333; /* Match the profile text color */
+}
+
+
         /* Profile Dropdown Styling */
         .profile-btn {
             display: flex;
@@ -351,7 +361,11 @@ $db_enrollment->close();
                 <button id="profileDropdown" class="profile-btn">
                     <img src="UploadHrProfile/<?php echo htmlspecialchars($profilePicture); ?>" alt="Profile">
                     <span>ADMIN</span>
+                    <svg width="15" height="13">
+                        <path d="M3.5 5.5a.5.5 0 0 1 .707-.707L8 8.793l3.793-3.998a.5.5 0 1 1 .707.707l-4 4.25a.5.5 0 0 1-.707 0l-4-4.25a.5.5 0 0 1-.707-.707z"/>
+                    </svg>
                 </button>
+
                 <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
                     <a href="../signin&signout/change_password.php">Change Password</a>
                     <a href="../signin&signout/LandingPage.php" style="background-color: #ff4d4d;">Logout</a>
@@ -360,26 +374,33 @@ $db_enrollment->close();
         </div>
 
         <div class="dashboard-cards">
-    <div class="card professors" onclick="window.location.href='workload.php';">
-        <h3>Available Professors</h3>
-        <p><?php echo $professors; ?></p>
-    </div>
-    <div class="card departments" onclick="window.location.href='DepartmentRecords.php';">
-        <h3>Departments</h3>
-        <p><?php echo $departments; ?></p>
-    </div>
-    <div class="card evaluations" onclick="window.location.href='hr_messaging.php';">
-        <h3>Pending Messages</h3>
-        <p><?php echo $pending_count; ?></p>
-    </div>
-</div>
-
+            <div class="card professors" onclick="window.location.href='workload.php';">
+                <h3> Teacher Workload Prediction</h3>
+            </div>
+            <div class="card departments" onclick="window.location.href='DepartmentRecords.php';">
+                <h3>Departments</h3>
+                <p><?php echo $departments; ?></p>
+            </div>
+            <div class="card evaluations" onclick="window.location.href='hr_messaging.php';">
+                <h3>Pending Messages</h3>
+                <p><?php echo $pending_count; ?></p>
+            </div>
+        </div>
 
         <div class="chart-container">
-            <?php if ($chartImage): ?>
-                <img id="chart" src="data:image/png;base64,<?php echo $chartImage; ?>" alt="Performance Chart">
+            <h3>Student Population Chart</h3>
+            <?php if ($chartImage1): ?>
+                <img id="chart1" src="data:image/png;base64,<?php echo $chartImage1; ?>" alt="Student Population Chart">
             <?php else: ?>
-                <img id="chart" src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
+                <img id="chart1" src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
+                <p><?php echo htmlspecialchars($mse); ?></p>
+            <?php endif; ?>
+
+            <h3>Faculty Population Chart</h3>
+            <?php if ($chartImage2): ?>
+                <img id="chart2" src="data:image/png;base64,<?php echo $chartImage2; ?>" alt="Faculty Population Chart">
+            <?php else: ?>
+                <img id="chart2" src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
                 <p><?php echo htmlspecialchars($mse); ?></p>
             <?php endif; ?>
         </div>

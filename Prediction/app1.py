@@ -1,18 +1,13 @@
-import matplotlib
-import numpy as np
-import base64
-import os
-from io import BytesIO
-import matplotlib.pyplot as plt
-import mysql.connector
+import threading
 from flask import Flask, jsonify, redirect
-from multiprocessing import Process
-from sklearn.linear_model import LinearRegression
+import base64
+import mysql.connector
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from io import BytesIO
 
 matplotlib.use('Agg')  # Use a non-GUI backend
-
-# Correct the app name to `app1` to avoid confusion
-app1 = Flask(__name__)
 
 # Database configuration
 DB_CONFIG = {
@@ -22,15 +17,19 @@ DB_CONFIG = {
     'database': 'enrollment_db'
 }
 
-def get_data_from_db():
+# Flask app instances
+app1 = Flask(__name__)
+app3 = Flask(__name__)
+
+# Utility functions for database interaction
+def get_data_from_db(query):
     """
-    Fetch data from the student_data table in the database.
+    Fetch data from the database based on the given query.
     """
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = None
     try:
         cursor = connection.cursor()
-        query = "SELECT year, SUM(total) AS total_students FROM student_data GROUP BY year ORDER BY year"
         cursor.execute(query)
         results = cursor.fetchall()
         return results
@@ -50,21 +49,18 @@ def preprocess_data(data):
         totals.append(row[1])
     return years, totals
 
-def create_chart(years, totals):
+def create_chart(years, totals, title, ylabel, color):
     """
-    Generate a chart where the predictions perfectly match the actual values using interpolation.
+    Generate a chart visualizing the data.
     """
     plt.figure(figsize=(10, 6))
-    # Plot actual data points
-    plt.plot(years, totals, label="Actual (Matched)", marker='o', color='blue')
-    
-    # Add grid and labels
-    plt.title("Student Population Over Time")
+    plt.plot(years, totals, label=title, marker='o', color=color)
+    plt.title(f"{title} Over Time")
     plt.xlabel("Year")
-    plt.ylabel("Total Students")
+    plt.ylabel(ylabel)
     plt.legend()
     plt.grid(True)
-    
+
     # Save the plot as a base64 image
     buffer = BytesIO()
     plt.savefig(buffer, format='png', bbox_inches='tight')
@@ -74,27 +70,21 @@ def create_chart(years, totals):
     plt.close()
     return encoded_image
 
+# app1 routes
 @app1.route('/api/get_chart_data', methods=['GET'])
 def get_chart_data():
     try:
-        # Fetch data from the database
-        data = get_data_from_db()
+        query = "SELECT year, SUM(total) AS total_students FROM student_data GROUP BY year ORDER BY year"
+        data = get_data_from_db(query)
         if not data:
             return jsonify({'error': 'No data available in the database.'}), 404
 
-        # Preprocess data
         years, totals = preprocess_data(data)
         if len(years) < 2:
             return jsonify({'error': 'Not enough data to create a chart.'}), 400
 
-        # Generate the chart image
-        chart = create_chart(years, totals)
-
-        # Return data as JSON
-        return jsonify({
-            'chart': chart,
-            'mse': 'Perfect Match'
-        })
+        chart = create_chart(years, totals, "Student Population", "Total Students", "blue")
+        return jsonify({'chart': chart, 'mse': 'Perfect Match'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -105,22 +95,49 @@ def phpmyadmin():
     """
     return redirect("http://localhost/phpmyadmin/")
 
+# app3 routes
+@app3.route('/api/faculty-data', methods=['GET'])
+def faculty_data_api():
+    try:
+        query = "SELECT year, SUM(total_teachers) AS total_teachers FROM faculty_data GROUP BY year ORDER BY year"
+        data = get_data_from_db(query)
+        if not data:
+            return jsonify({"success": False, "message": "No data available."}), 404
+
+        years, totals = preprocess_data(data)
+        if len(years) < 2:
+            return jsonify({"success": False, "message": "Not enough data to create a chart."}), 400
+
+        chart = create_chart(years, totals, "Teacher Population", "Total Teachers", "green")
+        return jsonify({
+            "success": True,
+            "years": years,
+            "totals": totals,
+            "chart": chart
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+# Threading to run all three apps simultaneously
 def run_app1():
-    # Start app1 (this is now correct as app1)
     app1.run(debug=False, port=5000)
 
 def run_app2():
-    # Start app2 (this is the app2 from your main script)
-    from app2 import app2  # Import app2 from the other file (app2.py)
+    from app2 import app2  # Ensure app2 is defined in a separate file called app2.py
     app2.run(debug=False, port=5001)
 
+def run_app3():
+    app3.run(debug=False, port=5002)
+
 if __name__ == '__main__':
-    # Start both apps in parallel using multiprocessing
-    process1 = Process(target=run_app1)
-    process2 = Process(target=run_app2)
+    thread1 = threading.Thread(target=run_app1)
+    thread2 = threading.Thread(target=run_app2)
+    thread3 = threading.Thread(target=run_app3)
 
-    process1.start()
-    process2.start()
+    thread1.start()
+    thread2.start()
+    thread3.start()
 
-    process1.join()
-    process2.join()
+    thread1.join()
+    thread2.join()
+    thread3.join()

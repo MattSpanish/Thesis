@@ -17,9 +17,16 @@ def validate_inputs(data):
     for key in required_keys:
         if key not in data:
             raise ValueError(f"Missing key: {key}")
-    inputs = {key: int(data.get(key)) for key in required_keys}
+    
+    # Convert values to integers and validate they are positive
+    try:
+        inputs = {key: int(data[key]) for key in required_keys}
+    except ValueError:
+        raise ValueError("All inputs must be valid integers.")
+    
     if any(value <= 0 for value in inputs.values()):
         raise ValueError("All inputs must be positive integers.")
+    
     return inputs
 
 def calculate_teachers(student_count, limit_per_teacher, subjects, max_workload):
