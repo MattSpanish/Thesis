@@ -5,14 +5,13 @@ import os
 from io import BytesIO
 import matplotlib.pyplot as plt
 import mysql.connector
-from flask import Flask, jsonify, redirect
-from multiprocessing import Process
+from flask import Flask, jsonify, redirect, render_template
 from sklearn.linear_model import LinearRegression
+
 
 matplotlib.use('Agg')  # Use a non-GUI backend
 
-# Correct the app name to `app1` to avoid confusion
-app1 = Flask(__name__)
+app3 = Flask(__name__)
 
 # Database configuration
 DB_CONFIG = {
@@ -22,15 +21,15 @@ DB_CONFIG = {
     'database': 'enrollment_db'
 }
 
-def get_data_from_db():
+def get_faculty_data():
     """
-    Fetch data from the student_data table in the database.
+    Fetch teacher data from the database.
     """
     connection = mysql.connector.connect(**DB_CONFIG)
     cursor = None
     try:
         cursor = connection.cursor()
-        query = "SELECT year, SUM(total) AS total_students FROM student_data GROUP BY year ORDER BY year"
+        query = "SELECT year, SUM(total_teachers) AS total_teachers FROM faculty_data GROUP BY year ORDER BY year"
         cursor.execute(query)
         results = cursor.fetchall()
         return results
@@ -52,16 +51,16 @@ def preprocess_data(data):
 
 def create_chart(years, totals):
     """
-    Generate a chart where the predictions perfectly match the actual values using interpolation.
+    Generate a chart visualizing teacher data over the years.
     """
     plt.figure(figsize=(10, 6))
     # Plot actual data points
-    plt.plot(years, totals, label="Actual (Matched)", marker='o', color='blue')
+    plt.plot(years, totals, label="Total Teachers", marker='o', color='green')
     
     # Add grid and labels
-    plt.title("Student Population Over Time")
+    plt.title("Teacher Population Over Time")
     plt.xlabel("Year")
-    plt.ylabel("Total Students")
+    plt.ylabel("Total Teachers")
     plt.legend()
     plt.grid(True)
     
@@ -74,53 +73,34 @@ def create_chart(years, totals):
     plt.close()
     return encoded_image
 
-@app1.route('/api/get_chart_data', methods=['GET'])
-def get_chart_data():
+@app3.route('/index1')
+def index1():
     try:
-        # Fetch data from the database
-        data = get_data_from_db()
+        # Fetch teacher data from the database
+        data = get_faculty_data()
         if not data:
-            return jsonify({'error': 'No data available in the database.'}), 404
+            return render_template('index1.html', chart="", mse="No data available.")
 
         # Preprocess data
         years, totals = preprocess_data(data)
         if len(years) < 2:
-            return jsonify({'error': 'Not enough data to create a chart.'}), 400
+            return render_template('index1.html', chart="", mse="Not enough data to create a chart.")
 
         # Generate the chart image
         chart = create_chart(years, totals)
 
-        # Return data as JSON
-        return jsonify({
-            'chart': chart,
-            'mse': 'Perfect Match'
-        })
+        # Render the template with the chart data
+        return render_template('index1.html', chart=chart, mse="Perfect Match")
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Pass the error message to the template
+        return render_template('index1.html', chart="", mse=f"Error: {str(e)}")
 
-@app1.route('/phpmyadmin')
+@app3.route('/phpmyadmin')
 def phpmyadmin():
     """
     Redirect to the phpMyAdmin interface.
     """
     return redirect("http://localhost/phpmyadmin/")
 
-def run_app1():
-    # Start app1 (this is now correct as app1)
-    app1.run(debug=False, port=5000)
-
-def run_app2():
-    # Start app2 (this is the app2 from your main script)
-    from app2 import app2  # Import app2 from the other file (app2.py)
-    app2.run(debug=False, port=5001)
-
 if __name__ == '__main__':
-    # Start both apps in parallel using multiprocessing
-    process1 = Process(target=run_app1)
-    process2 = Process(target=run_app2)
-
-    process1.start()
-    process2.start()
-
-    process1.join()
-    process2.join()
+    app3.run(debug=False, port=5000)

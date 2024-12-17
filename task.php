@@ -204,13 +204,11 @@ mysqli_free_result($tasksResult);
                             <input type="date" class="form-control" id="due_date" name="due_date" required>
                         </div>
                         <div class="form-group">
-                            <label for="status">Status</label>
-                            <select class="form-control" id="status" name="status" required>
-                                <option value="pending">Pending</option>
-                                <option value="complete">Complete</option>
-                                <option value="due">Due</option>
-                            </select>
-                        </div>
+                        <label for="status">Status</label>
+                        <select class="form-control" id="status" name="status" readonly>
+                            <option value="pending" selected>Pending</option>
+                        </select>
+                    </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

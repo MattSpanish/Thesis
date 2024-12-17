@@ -22,7 +22,27 @@ function handleFormSubmission($conn) {
             handleEnrollmentData($conn);
         } elseif (isset($_POST['program'], $_POST['year'], $_POST['section'], $_POST['total_students'])) {
             handleStudentData($conn);
+        } elseif (isset($_POST['total_teachers'], $_POST['year'])) {
+            handleFacultyData($conn);
         }
+    }
+}
+
+// Function to handle faculty data form submission
+function handleFacultyData($conn) {
+    $total_teachers = mysqli_real_escape_string($conn, $_POST['total_teachers']);
+    $year = mysqli_real_escape_string($conn, $_POST['year']);
+
+    $sql = "INSERT INTO faculty_data (total_teachers, year) VALUES ('$total_teachers', '$year')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>
+                alert('Faculty data uploaded successfully!');
+                window.location.href = window.location.href;
+              </script>";
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 
@@ -112,7 +132,6 @@ $userDropdownQuery = "SELECT id, fullname FROM users";
 $userDropdownResult = $register_conn->query($userDropdownQuery);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Fetch and sanitize POST data
     $id = $_POST['id'] ?? null;
     $subject = $_POST['subject'] ?? '';
     $sections = $_POST['sections'] ?? '';
@@ -121,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total_students = $_POST['total_students'] ?? 0;
 
     if ($id && $subject && $sections && $time && $day) {
-        // Fetch fullname from `register` database
         $fullnameQuery = "SELECT fullname FROM users WHERE id = ?";
         $fullnameStmt = $register_conn->prepare($fullnameQuery);
         $fullnameStmt->bind_param('i', $id);
@@ -132,17 +150,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fullnameRow = $fullnameResult->fetch_assoc();
             $fullname = $fullnameRow['fullname'];
 
-            // Insert data into `facultyschedule`
             $insert_query = "INSERT INTO facultyschedule (id, fullname, subject, sections, time, day, total_students)
                              VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt = $enrollment_conn->prepare($insert_query);
-            if (!$stmt) {
-                die("Prepare failed: " . $enrollment_conn->error);
-            }
             $stmt->bind_param('isssssi', $id, $fullname, $subject, $sections, $time, $day, $total_students);
 
             if ($stmt->execute()) {
-                // Redirect to avoid form resubmission
                 header("Location: " . $_SERVER['PHP_SELF'] . "?success=true");
                 exit();
             } else {
@@ -156,7 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Show a success message if redirected
 if (isset($_GET['success']) && $_GET['success'] === 'true') {
     echo "<script>
             alert('Schedule added successfully!');
@@ -165,14 +177,10 @@ if (isset($_GET['success']) && $_GET['success'] === 'true') {
     exit();
 }
 
-// Close connections
 $register_conn->close();
 $enrollment_conn->close();
-
-// Close the database connection
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -390,9 +398,9 @@ $conn->close();
 
 <!-- Main Content Area -->
 <div class="content">
-    <!-- Student Enrollment List Section -->
+    <!-- Student Enrollment Data List Section -->
     <div class="upload-container">
-        <h2>Student Enrollment List</h2>
+        <h2>Student Enrollment Data List</h2>
         <form id="studentEnrollmentForm" action="" method="POST">
             <div class="form-group">
                 <label for="program">Program</label>
@@ -410,9 +418,25 @@ $conn->close();
         </form>
     </div>
 
-    <!-- Teacher Data Upload Section -->
+    <!-- Faculty Data Section -->
     <div class="upload-container">
-        <h2>Upload Faculty Historical Data</h2>
+        <h2>Faculty Data List</h2>
+        <form id="facultyDataForm" action="" method="POST">
+            <div class="form-group">
+                <label for="total_teachers">Total Teachers</label>
+                <input type="text" id="total_teachers" name="total_teachers" placeholder="e.g., 5, 10, etc.">
+            </div>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input type="text" id="year" name="year" placeholder="e.g., 2021, 2024-2025, etc.">
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Teacher Historical Data Upload Section -->
+    <div class="upload-container">
+        <h2>Faculty Historical Data</h2>
         <form id="teacherUploadForm" action="" method="POST">
             <div class="form-group">
                 <label for="teacherIdNo">ID No.</label>

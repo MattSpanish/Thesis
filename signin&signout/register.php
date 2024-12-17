@@ -153,14 +153,12 @@ if (isset($_POST["submit"])) {
                     </select>
                 </div>
 
-                <!-- Status -->
-                <div class="form-outline mb-4">
-                    <label class="form-label" for="status">Status</label>
-                    <select id="status" name="status" class="form-control">
-                        <option value="" disabled selected>Select Status</option>
-                        <option value="Fulltime">Fulltime</option>
-                    </select>
-                </div>
+<!-- Status -->
+<div class="form-outline mb-4">
+    <label class="form-label" for="status">Status</label>
+    <input type="text" id="status" name="status" class="form-control" value="ACTIVE" readonly>
+</div>
+
                 
                 <!-- Password -->
                 <div class="form-outline mb-4">
