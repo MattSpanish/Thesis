@@ -52,11 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-<<<<<<< Updated upstream
-// Fetch messages and HR responses including the faculty's response
-=======
 // Fetch messages and HR responses
->>>>>>> Stashed changes
 $fetch_sql = "SELECT m.id, m.message, m.hr_response, m.created_at, 'message' AS message_type
               FROM hr_data.messages m
               WHERE m.user_id = ? 
