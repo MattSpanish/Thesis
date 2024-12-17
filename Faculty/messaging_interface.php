@@ -51,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Message or reason cannot be empty.";
     }
 }
-// Fetch messages and HR responses
-// Fetch messages and HR responses
+
+// Fetch messages and HR responses including the faculty's response
 $fetch_sql = "SELECT m.id, m.message, m.hr_response, m.created_at, 'message' AS message_type
               FROM hr_data.messages m
               WHERE m.user_id = ? 
@@ -63,23 +63,25 @@ $fetch_sql = "SELECT m.id, m.message, m.hr_response, m.created_at, 'message' AS 
               ORDER BY created_at DESC";
 
 $stmt = $conn->prepare($fetch_sql);
-
 if ($stmt) {
     $stmt->bind_param("ii", $user_id, $user_id);
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-    } else {
-        $error_message = "Error executing query: " . $stmt->error;
-        $result = null; // Ensuring $result is defined
-    }
-    $stmt->close();
+    $stmt->execute();
+    $result = $stmt->get_result();
 } else {
-    $error_message = "Error preparing query: " . $conn->error;
-    $result = null; // Ensuring $result is defined
+    $error_message = "Error preparing query to fetch messages and responses.";
+}
+
+
+$stmt = $conn->prepare($fetch_sql);
+if ($stmt) {
+    $stmt->bind_param("ii", $user_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $error_message = "Error preparing query to fetch messages and responses.";
 }
 
 $conn->close();
-
 ?>
 
 <!DOCTYPE html>
@@ -113,22 +115,21 @@ $conn->close();
             </tr>
         </thead>
         <tbody>
-    <?php if ($result && $result->num_rows > 0): ?>
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?php echo ucfirst($row['message_type']); ?></td>
-                <td><?php echo htmlspecialchars($row['message'], ENT_QUOTES, 'UTF-8'); ?></td>
-                <td><?php echo $row['hr_response'] ? htmlspecialchars($row['hr_response'], ENT_QUOTES, 'UTF-8') : 'No response yet'; ?></td>
-                <td><?php echo $row['created_at']; ?></td>
-            </tr>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <tr>
-            <td colspan="4">No messages or requests found.</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
-
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo ucfirst($row['message_type']); ?></td>
+                        <td><?php echo htmlspecialchars($row['message'], ENT_QUOTES, 'UTF-8'); ?></td>
+                        <td><?php echo $row['hr_response'] ? htmlspecialchars($row['hr_response'], ENT_QUOTES, 'UTF-8') : 'No response yet'; ?></td>
+                        <td><?php echo $row['created_at']; ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="4">No messages or requests found.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
     </table>
 
     <!-- Form to Submit Message or Sick Leave Request -->
