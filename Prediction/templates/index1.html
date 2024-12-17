@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Population Over the Years</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .chart-container {
+            margin: 20px auto;
+            width: 80%;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .mse {
+            font-size: 1.2em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h3>Teacher Population Over the Years</h3>
+    <div class="chart-container">
+        {% if chart %}
+            <img src="data:image/png;base64,{{ chart }}" alt="Teacher Population Chart">
+        {% else %}
+            <p>No chart available to display.</p>
+        {% endif %}
+    </div>
+    <p class="mse">{{ mse }}</p>
+</body>
+</html>
