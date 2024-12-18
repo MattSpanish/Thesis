@@ -345,7 +345,7 @@ $db_enrollment->close();
 
     <div class="content">
         <div class="header">
-            <h1>Dashboard</h1>
+            <h1>HR Dashboard</h1>
             <div>
                 <button id="profileDropdown" class="profile-btn">
                     <img src="UploadHrProfile/<?php echo htmlspecialchars($profilePicture); ?>" alt="Profile">
