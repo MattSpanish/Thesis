@@ -198,6 +198,7 @@ $conn->close();
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #E3EED4; /* Light Accent */
             display: flex;
             justify-content: center;
             align-items: center;

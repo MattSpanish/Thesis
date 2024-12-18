@@ -172,7 +172,7 @@ $db_enrollment->close();
         .content {
             margin-left: 270px; /* Space for left sidebar */
             padding: 20px;
-            background-color: #FFFFFF; /* White for the main content area */
+            background-color: #E3EED4; /* Light Accent */ /* White for the main content area */
             border-radius: 10px; /* Rounded corners */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for depth */
             flex-grow: 1; /* Allows content to take remaining space */
@@ -198,18 +198,18 @@ $db_enrollment->close();
         }
 
         .dashboard-cards div {
-        background-color: #FFFFFF; /* White for card background */
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        flex: 1; /* Equal size for cards */
-        margin: 0 10px; /* Spacing between cards */
-        display: flex; /* Enable flexbox */
-        align-items: center; /* Center content vertically */
-        justify-content: center; /* Center content horizontally */
-        flex-direction: column; /* Stack content vertically */
-    }
+            background-color: #FFFFFF; /* White for card background */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1; /* Equal size for cards */
+            margin: 0 10px; /* Spacing between cards */
+            display: flex; /* Enable flexbox */
+            align-items: center; /* Center content vertically */
+            justify-content: center; /* Center content horizontally */
+            flex-direction: column; /* Stack content vertically */
+        }
 
         .dashboard-cards .card {
             border-left: 5px solid transparent;

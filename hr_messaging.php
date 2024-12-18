@@ -119,6 +119,8 @@ $faculty_conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR Messaging System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom Green Theme -->
@@ -148,9 +150,53 @@ $faculty_conn->close();
             background-color: #d4edda;
             color: #155724;
         }
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            background: #375534;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background: #0F2A1D;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #375534;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+        }
+        .back-button:hover {
+            background-color: #2a442e;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        .back-button i {
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Back Button -->
+    <a href="hr_dashboard.php" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">HR Messaging System</h1>
 
