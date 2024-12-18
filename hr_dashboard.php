@@ -198,14 +198,18 @@ $db_enrollment->close();
         }
 
         .dashboard-cards div {
-            background-color: #FFFFFF; /* White for card background */
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            flex: 1; /* Equal size for cards */
-            margin: 0 10px; /* Spacing between cards */
-        }
+        background-color: #FFFFFF; /* White for card background */
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex: 1; /* Equal size for cards */
+        margin: 0 10px; /* Spacing between cards */
+        display: flex; /* Enable flexbox */
+        align-items: center; /* Center content vertically */
+        justify-content: center; /* Center content horizontally */
+        flex-direction: column; /* Stack content vertically */
+    }
 
         .dashboard-cards .card {
             border-left: 5px solid transparent;
@@ -290,11 +294,10 @@ $db_enrollment->close();
         }
 
         .profile-btn span:last-child {
-    font-size: 18px; /* Adjust the size of the arrow */
-    margin-left: 5px; /* Space between the name and the arrow */
-    color: #333; /* Match the profile text color */
-}
-
+            font-size: 18px; /* Adjust the size of the arrow */
+            margin-left: 5px; /* Space between the name and the arrow */
+            color: #333; /* Match the profile text color */
+        }
 
         /* Profile Dropdown Styling */
         .profile-btn {
@@ -320,7 +323,7 @@ $db_enrollment->close();
 
         .dropdown-menu {
             position: absolute;
-            top: 50px; /* Adjust based on your header size */
+            top: 85px; /* Adjust based on your header size */
             right: 10px;
             background-color: #fff;
             border: 1px solid #ddd;
