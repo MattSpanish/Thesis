@@ -52,6 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Reset message count if reset_count parameter is set
+if (isset($_GET['reset_count']) && $_GET['reset_count'] == 'true') {
+    $_SESSION['reset_message_count'] = true;  // Set session flag to reset count
+}
+
 // Fetch messages and HR responses
 $fetch_sql = "SELECT m.id, m.message, m.hr_response, m.created_at, 'message' AS message_type
               FROM hr_data.messages m
@@ -67,16 +72,7 @@ if ($stmt) {
     $stmt->bind_param("ii", $user_id, $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
-} else {
-    $error_message = "Error preparing query to fetch messages and responses.";
-}
-
-
-$stmt = $conn->prepare($fetch_sql);
-if ($stmt) {
-    $stmt->bind_param("ii", $user_id, $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->close(); // Close the statement after executing
 } else {
     $error_message = "Error preparing query to fetch messages and responses.";
 }
@@ -155,23 +151,6 @@ $conn->close();
             </tr>
         </thead>
         <tbody>
-<<<<<<< Updated upstream
-            <?php if ($result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo ucfirst($row['message_type']); ?></td>
-                        <td><?php echo htmlspecialchars($row['message'], ENT_QUOTES, 'UTF-8'); ?></td>
-                        <td><?php echo $row['hr_response'] ? htmlspecialchars($row['hr_response'], ENT_QUOTES, 'UTF-8') : 'No response yet'; ?></td>
-                        <td><?php echo $row['created_at']; ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr>
-                    <td colspan="4">No messages or requests found.</td>
-                </tr>
-            <?php endif; ?>
-        </tbody>
-=======
     <?php if ($result && $result->num_rows > 0): ?>
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
@@ -187,7 +166,6 @@ $conn->close();
         </tr>
     <?php endif; ?>
 </tbody>
->>>>>>> Stashed changes
     </table>
 
     <!-- Form to Submit Message or Sick Leave Request -->
@@ -206,7 +184,7 @@ $conn->close();
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="../Faculty/profDASHBOARD.php" class="btn btn-secondary">Back to Dashboard</a>
+        <a href="../Faculty/profDASHBOARD.php?reset_count=true" class="btn btn-secondary">Back to Dashboard</a>
     </form>
 </div>
 
