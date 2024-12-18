@@ -14,24 +14,22 @@ $ADMIN_CREDENTIALS = $result->fetch_assoc();
 $profilePicture = $ADMIN_CREDENTIALS['profile_picture'] ?? 'default-profile.png';
 
 // Handle profile picture upload
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle profile picture upload
-    if (isset($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === UPLOAD_ERR_OK) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['profilePicture'];
         $targetDir = "UploadHrProfile/";
         $fileName = time() . "_" . basename($file["name"]);
         $targetFilePath = $targetDir . $fileName;
 
-        // Validate file type (only allow images)
-        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+        $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
         $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
 
-        if (in_array(strtolower($fileType), $allowedTypes)) {
+        if (in_array($fileType, $allowedTypes)) {
             if (move_uploaded_file($file["tmp_name"], $targetFilePath)) {
-                // Update the database with the new profile picture
-                $updateQuery = "UPDATE ADMIN_CREDENTIALS SET profile_picture = '$fileName' WHERE id = 1";
-                $db_hr->query($updateQuery);
-                $profilePicture = $fileName; // Update the profile picture in the session
+                $updateQuery = $db_hr->prepare("UPDATE ADMIN_CREDENTIALS SET profile_picture = ? WHERE id = 1");
+                $updateQuery->bind_param('s', $fileName);
+                $updateQuery->execute();
+                $profilePicture = $fileName;
                 header("Location: hr_dashboard.php");
                 exit;
             } else {
@@ -43,58 +41,49 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST') 
     }
 }
 
-
-// Initialize $mse with a default value
+// Flask API data handling
 $mse = 'No data available';
-
-// Fetch chart data from the Flask APIs
 $flaskApiUrl1 = 'http://127.0.0.1:5000/api/get_chart_data';
 $flaskApiUrl3 = 'http://127.0.0.1:5002/api/faculty-data';
 $chartImage1 = null;
 $chartImage2 = null;
 
 try {
-    // Fetch first chart (student population data)
     $apiResponse1 = @file_get_contents($flaskApiUrl1);
     if ($apiResponse1 !== false) {
         $data1 = json_decode($apiResponse1, true);
         $chartImage1 = $data1['chart'] ?? null;
         $mse = $data1['mse'] ?? 'No MSE data available';
-    } else {
-        $mse = "Unable to connect to the first API.";
     }
 
-    // Fetch second chart (faculty data)
     $apiResponse3 = @file_get_contents($flaskApiUrl3);
     if ($apiResponse3 !== false) {
         $data3 = json_decode($apiResponse3, true);
         $chartImage2 = $data3['chart'] ?? null;
-    } else {
-        $mse = "Unable to connect to the second API.";
     }
 } catch (Exception $e) {
     $mse = "An error occurred while fetching chart data.";
 }
 
-// Database connection to enrollment_db for department count
+// Database connection to enrollment_data
 $db_enrollment = new mysqli('localhost', 'root', '', 'enrollment_db');
 if ($db_enrollment->connect_error) {
     die("Database connection failed: " . $db_enrollment->connect_error);
 }
 
-// Fetch department count from historical_data table in enrollment_db
-$departmentQuery = $db_enrollment->query("SELECT COUNT(*) AS total_departments FROM historical_data");
-if (!$departmentQuery) {
-    die("Error fetching department count: " . $db_enrollment->error);
-}
+// Fetch department counts
+$departmentCounts = [];
+$departmentQuery = $db_enrollment->query("SELECT program, COUNT(*) AS count FROM student_records GROUP BY program");
 
-if ($departmentRow = $departmentQuery->fetch_assoc()) {
-    $departments = (int)$departmentRow['total_departments'];
+if ($departmentQuery) {
+    while ($row = $departmentQuery->fetch_assoc()) {
+        $departmentCounts[$row['program']] = $row['count'];
+    }
 } else {
-    $departments = 0;
+    die("Error fetching department data: " . $db_enrollment->error);
 }
 
-// Count pending messages and sick leave requests from hr_data
+// Fetch pending messages count
 $count_sql = "
     SELECT COUNT(*) AS pending_count FROM (
         SELECT id FROM hr_data.messages WHERE hr_response IS NULL
@@ -106,14 +95,11 @@ $count_result = $db_hr->query($count_sql);
 if (!$count_result) {
     die("Error fetching pending messages: " . $db_hr->error);
 }
-
 $pending_count = $count_result->fetch_assoc()['pending_count'] ?? 0;
 
-// Close the database connections
 $db_hr->close();
 $db_enrollment->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -382,7 +368,7 @@ $db_enrollment->close();
             </div>
             <div class="card departments" onclick="window.location.href='DepartmentRecords.php';">
                 <h3>Departments</h3>
-                <p><?php echo $departments; ?></p>
+                <p><?php echo htmlspecialchars(array_sum($departmentCounts)); ?></p>
             </div>
             <div class="card evaluations" onclick="window.location.href='hr_messaging.php';">
                 <h3>Pending Messages</h3>
@@ -395,7 +381,6 @@ $db_enrollment->close();
             <?php if ($chartImage1): ?>
                 <img id="chart1" src="data:image/png;base64,<?php echo $chartImage1; ?>" alt="Student Population Chart">
             <?php else: ?>
-                <img id="chart1" src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
                 <p><?php echo htmlspecialchars($mse); ?></p>
             <?php endif; ?>
 
@@ -403,7 +388,6 @@ $db_enrollment->close();
             <?php if ($chartImage2): ?>
                 <img id="chart2" src="data:image/png;base64,<?php echo $chartImage2; ?>" alt="Faculty Population Chart">
             <?php else: ?>
-                <img id="chart2" src="https://via.placeholder.com/600x200" alt="Placeholder Chart">
                 <p><?php echo htmlspecialchars($mse); ?></p>
             <?php endif; ?>
         </div>
@@ -413,7 +397,6 @@ $db_enrollment->close();
         // Toggle the dropdown menu
         document.getElementById('profileDropdown').addEventListener('click', () => {
             const menu = document.getElementById('dropdownMenu');
-            // Toggle visibility of the dropdown menu
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         });
 
