@@ -57,7 +57,7 @@ mysqli_close($conn);
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #E3EED4; /* Light Accent */
+            background-color: #E3EED4;
         }
         .container-fluid {
             margin-top: 20px;
@@ -65,15 +65,14 @@ mysqli_close($conn);
         .header-container {
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
         .back-button {
             margin-right: 10px;
         }
-       
         .card {
             border: none;
             transition: 0.3s;
-            cursor: pointer;
             margin: 10px 0;
             background-color: #FFFFFF;
             border-radius: 8px;
@@ -86,10 +85,10 @@ mysqli_close($conn);
         .card-title {
             font-size: 18px;
             font-weight: bold;
-            color: #375534; /* Dark Green */
+            color: #375534;
         }
         .card-text {
-            font-size: 1.25rem;
+            font-size: 2.5rem;
             font-weight: bold;
         }
         .badge-complete {
@@ -105,10 +104,11 @@ mysqli_close($conn);
             color: white;
         }
         .table-hover tbody tr:hover {
-            background-color: #f1f1f1;
+            background-color: #f8f9fa;
         }
         .table th, .table td {
             vertical-align: middle;
+            text-align: center;
         }
     </style>
 </head>
@@ -127,35 +127,27 @@ mysqli_close($conn);
 
         <!-- Task Summary Cards -->
         <div class="row text-center mb-4">
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Task Left</h5>
-                        <p id="task-left" class="card-text display-4"><?= $taskCounts['total'] - ($taskCounts['complete'] + $taskCounts['pending'] + $taskCounts['due']); ?></p>
+                        <h5 class="card-title">Complete Tasks</h5>
+                        <p id="complete-task" class="card-text"><?= $taskCounts['complete']; ?></p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Complete Task</h5>
-                        <p id="complete-task" class="card-text display-4"><?= $taskCounts['complete']; ?></p>
+                        <h5 class="card-title">Pending Tasks</h5>
+                        <p id="pending-task" class="card-text"><?= $taskCounts['pending']; ?></p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Pending Task</h5>
-                        <p id="pending-task" class="card-text display-4"><?= $taskCounts['pending']; ?></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Due Task</h5>
-                        <p id="due-task" class="card-text display-4"><?= $taskCounts['due']; ?></p>
+                        <h5 class="card-title">Due Tasks</h5>
+                        <p id="due-task" class="card-text"><?= $taskCounts['due']; ?></p>
                     </div>
                 </div>
             </div>
@@ -180,23 +172,22 @@ mysqli_close($conn);
                     <?php else: ?>
                         <?php foreach ($tasks as $task): ?>
                             <tr>
-                            <td><?= htmlspecialchars($task['task_name']); ?></td>
-                            <td><?= htmlspecialchars($task['employee_name']); ?></td>
-                            <td><?= htmlspecialchars($task['due_date']); ?></td>
-                            <td>
-                                <?php if ($task['status'] === 'due'): ?>
-                                    <span class="badge badge-due">Due</span>
-                                <?php else: ?>
-                                    <select 
-                                        class="status-dropdown" 
-                                        data-task-id="<?= $task['id']; ?>"
-                                    >
-                                        <option value="complete" <?= $task['status'] === 'complete' ? 'selected' : ''; ?>>Complete</option>
-                                        <option value="pending" <?= $task['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                                    </select>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
+                                <td><?= htmlspecialchars($task['task_name']); ?></td>
+                                <td><?= htmlspecialchars($task['employee_name']); ?></td>
+                                <td><?= htmlspecialchars($task['due_date']); ?></td>
+                                <td>
+                                    <?php if ($task['status'] === 'due'): ?>
+                                        <span class="badge badge-due">Due</span>
+                                    <?php else: ?>
+                                        <select 
+                                            class="status-dropdown" 
+                                            data-task-id="<?= $task['id']; ?>">
+                                            <option value="complete" <?= $task['status'] === 'complete' ? 'selected' : ''; ?>>Complete</option>
+                                            <option value="pending" <?= $task['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                        </select>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
@@ -205,42 +196,37 @@ mysqli_close($conn);
     </div>
 
     <!-- Bootstrap JS and dependencies -->
-
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const dropdowns = document.querySelectorAll('.status-dropdown');
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdowns = document.querySelectorAll('.status-dropdown');
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('change', function () {
+                    const taskId = this.getAttribute('data-task-id');
+                    const newStatus = this.value;
 
-        dropdowns.forEach(dropdown => {
-            dropdown.addEventListener('change', function () {
-                const taskId = this.getAttribute('data-task-id');
-                const newStatus = this.value;
-
-                // Send an AJAX request to update the task status
-                fetch('update_status.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `task_id=${taskId}&status=${newStatus}`
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            alert(data.message); // Show the alert
-                            window.location.reload(); // Refresh the page
-                        } else {
-                            alert(data.message || 'Failed to update status.');
-                        }
+                    // Send an AJAX request to update the task status
+                    fetch('update_status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `task_id=${taskId}&status=${newStatus}`
                     })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                    });
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                alert(data.message);
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Failed to update status.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred. Please try again.');
+                        });
+                });
             });
         });
-    });
-</script>
-
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

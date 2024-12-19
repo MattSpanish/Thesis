@@ -402,11 +402,11 @@ $conn->close();
 
 
         <div class="stats-section">
-            <a href="/tasks" class="stat-card">
+            <a href="#" class="stat-card">
                 <h4>Tasks Completed</h4>
                 <p><?= $task_count_completed ?></p>
             </a>
-            <a href="faculty_task.php" class="stat-card">
+            <a href="#" class="stat-card">
                 <h4>New Notifications</h4>
                 <p><?= $task_count_pending ?></p>
             </a>
