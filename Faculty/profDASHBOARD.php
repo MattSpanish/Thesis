@@ -2,6 +2,12 @@
 // Start the session at the beginning
 session_start();
 
+// Redirect guests to the login page
+if (!isset($_SESSION["id"])) {
+    header("Location: ../signin&signout/LoginPage.php");
+    exit(); // Ensure no further code is executed
+}
+
 // Include the database connection file
 require_once '../signin&signout/config.php';
 
@@ -16,81 +22,64 @@ $task_count_completed = 0;
 $new_message_count = 0;
 $sick_leave_count = 0;  // Initialize sick leave count
 
-// Check if user is logged in
-if (isset($_SESSION["id"])) {
-    $user_id = $_SESSION["id"];
+$user_id = $_SESSION["id"];
 
-    // Fetch pending tasks count
-    $sql_pending = "SELECT COUNT(*) AS task_count FROM tasks WHERE status = 'pending' AND employee_id = ?";
-    $stmt_pending = $conn->prepare($sql_pending);
-    if (!$stmt_pending) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt_pending->bind_param("i", $user_id);
-    $stmt_pending->execute();
-    $result_pending = $stmt_pending->get_result();
-    $task_count_pending = $result_pending->fetch_assoc()['task_count'] ?? 0;
-    $stmt_pending->close();
-
-    // Fetch completed tasks count
-    $sql_completed = "SELECT COUNT(*) AS task_count FROM tasks WHERE status = 'complete' AND employee_id = ?";
-    $stmt_completed = $conn->prepare($sql_completed);
-    if (!$stmt_completed) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt_completed->bind_param("i", $user_id);
-    $stmt_completed->execute();
-    $result_completed = $stmt_completed->get_result();
-    if ($result_completed && $result_completed->num_rows > 0) {
-        $row = $result_completed->fetch_assoc();
-        $task_count_completed = $row['task_count'] ?? 0;
-    } else {
-        $task_count_completed = 0; // Default to 0 if no results
-    }
-    $stmt_completed->close();
-
-    // Fetch message count for a specific user from the hr_data database
-    $sql_messages = "SELECT COUNT(*) AS message_count FROM hr_data.messages WHERE user_id = ?";
-    $stmt_messages = $conn->prepare($sql_messages);
-    if (!$stmt_messages) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt_messages->bind_param("i", $user_id);
-    $stmt_messages->execute();
-    $result_messages = $stmt_messages->get_result();
-    $new_message_count = $result_messages->fetch_assoc()['message_count'] ?? 0;
-    $stmt_messages->close();
-
-    // Fetch sick leave count for the user
-    $sql_sick_leaves = "SELECT COUNT(*) AS sick_leave_count FROM hr_data.sick_leaves WHERE user_id = ?";
-    $stmt_sick_leaves = $conn->prepare($sql_sick_leaves);
-    if (!$stmt_sick_leaves) {
-        die("Prepare failed: " . $conn->error);
-    }
-    $stmt_sick_leaves->bind_param("i", $user_id);
-    $stmt_sick_leaves->execute();
-    $result_sick_leaves = $stmt_sick_leaves->get_result();
-    $sick_leave_count = $result_sick_leaves->fetch_assoc()['sick_leave_count'] ?? 0;
-    $stmt_sick_leaves->close();
-
-    // Add sick leave count to the message count
-    $new_message_count += $sick_leave_count;
-
-    // Example of resetting message count session variable when required
-if (isset($_SESSION['reset_message_count']) && $_SESSION['reset_message_count'] == true) {
-    // Reset message count in the session
-    $_SESSION['new_message_count'] = 0; // Resetting the session variable
-    
-    // Optionally, reset the database or do additional processing if needed
-    unset($_SESSION['reset_message_count']);  // Remove the flag
+// Fetch pending tasks count
+$sql_pending = "SELECT COUNT(*) AS task_count FROM tasks WHERE status = 'pending' AND employee_id = ?";
+$stmt_pending = $conn->prepare($sql_pending);
+if (!$stmt_pending) {
+    die("Prepare failed: " . $conn->error);
 }
+$stmt_pending->bind_param("i", $user_id);
+$stmt_pending->execute();
+$result_pending = $stmt_pending->get_result();
+$task_count_pending = $result_pending->fetch_assoc()['task_count'] ?? 0;
+$stmt_pending->close();
 
-// Fetch messages and sender names for notifications
-$sql_messages = "SELECT m.message, u.username 
+// Fetch completed tasks count
+$sql_completed = "SELECT COUNT(*) AS task_count FROM tasks WHERE status = 'complete' AND employee_id = ?";
+$stmt_completed = $conn->prepare($sql_completed);
+if (!$stmt_completed) {
+    die("Prepare failed: " . $conn->error);
+}
+$stmt_completed->bind_param("i", $user_id);
+$stmt_completed->execute();
+$result_completed = $stmt_completed->get_result();
+$task_count_completed = $result_completed->fetch_assoc()['task_count'] ?? 0;
+$stmt_completed->close();
+
+// Fetch message count for a specific user from the hr_data database
+$sql_messages = "SELECT COUNT(*) AS message_count FROM hr_data.messages WHERE user_id = ?";
+$stmt_messages = $conn->prepare($sql_messages);
+if (!$stmt_messages) {
+    die("Prepare failed: " . $conn->error);
+}
+$stmt_messages->bind_param("i", $user_id);
+$stmt_messages->execute();
+$result_messages = $stmt_messages->get_result();
+$new_message_count = $result_messages->fetch_assoc()['message_count'] ?? 0;
+$stmt_messages->close();
+
+// Fetch sick leave count for the user
+$sql_sick_leaves = "SELECT COUNT(*) AS sick_leave_count FROM hr_data.sick_leaves WHERE user_id = ?";
+$stmt_sick_leaves = $conn->prepare($sql_sick_leaves);
+if (!$stmt_sick_leaves) {
+    die("Prepare failed: " . $conn->error);
+}
+$stmt_sick_leaves->bind_param("i", $user_id);
+$stmt_sick_leaves->execute();
+$result_sick_leaves = $stmt_sick_leaves->get_result();
+$sick_leave_count = $result_sick_leaves->fetch_assoc()['sick_leave_count'] ?? 0;
+$stmt_sick_leaves->close();
+
+// Add sick leave count to the message count
+$new_message_count += $sick_leave_count;
+
+$sql_messages = "SELECT m.id, m.message, u.username 
                  FROM hr_data.messages m 
                  JOIN users u ON m.user_id = u.id 
                  WHERE m.user_id = ? 
-                 ORDER BY m.created_at DESC LIMIT 5"; // Fetch the latest 5 messages
+                 ORDER BY m.created_at DESC LIMIT 5";
 $stmt_messages = $conn->prepare($sql_messages);
 if (!$stmt_messages) {
     die("Prepare failed: " . $conn->error);
@@ -99,42 +88,26 @@ $stmt_messages->bind_param("i", $user_id);
 $stmt_messages->execute();
 $result_messages = $stmt_messages->get_result();
 
-// Store messages in an array for later use in the notifications section
 $messages = [];
 while ($row = $result_messages->fetch_assoc()) {
-    // If the sender is HR, modify the message label
-    if ($row['username'] == 'HR') {
-        $messages[] = [
-            'message' => 'HR Response: ' . $row['message'], // Modify message for HR
-            'sender' => 'HR'
-        ];
-    } else {
-        $messages[] = [
-            'message' => $row['message'],
-            'sender' => $row['username']
-        ];
-    }
+    $messages[] = [
+        'id' => $row['id'], // Include the message ID
+        'message' => $row['username'] == 'HR' ? 'HR Response: ' . $row['message'] : $row['message'],
+        'sender' => $row['username']
+    ];
 }
 $stmt_messages->close();
 
+// Fetch user information
+$stmt_user = $conn->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
+$stmt_user->bind_param("i", $user_id);
+$stmt_user->execute();
+$result_user = $stmt_user->get_result();
+$user = $result_user->fetch_assoc();
+$stmt_user->close();
 
-
-    // Fetch user information
-    $stmt_user = $conn->prepare("SELECT username, email, profile_pic FROM users WHERE id = ?");
-    $stmt_user->bind_param("i", $user_id);
-    $stmt_user->execute();
-    $result_user = $stmt_user->get_result();
-    $user = $result_user->fetch_assoc();
-    $stmt_user->close();
-
-    // Default fallback for user information
-    $user_image = $user && !empty($user['profile_pic']) ? '../Faculty/uploads/' . htmlspecialchars($user['profile_pic']) : 'default-profile.jpg';
-    $user_name = $user['username'] ?? 'Unknown User';
-} else {
-    // Default if no session exists
-    $user_name = 'Guest';
-    $user_image = 'default-profile.jpg';
-}
+$user_image = $user && !empty($user['profile_pic']) ? '../Faculty/uploads/' . htmlspecialchars($user['profile_pic']) : 'default-profile.jpg';
+$user_name = $user['username'] ?? 'Unknown User';
 
 // Close the database connection
 $conn->close();
@@ -218,40 +191,40 @@ $conn->close();
         }
          
         .header .user-info {
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-        .header img {
-    width: 75px;
-    height: 75px;
-    border-radius: 50%;
-    border: 3px solid #375534; /* Secondary Color */
-    margin-right: 10px; /* Adjust spacing between profile picture and name */
-}
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+                .header img {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 3px solid #375534; /* Secondary Color */
+            margin-right: 10px; /* Adjust spacing between profile picture and name */
+        }
         .header .user-info span {
             margin-left: 10px;
             font-size: 18px;
             font-weight: 500;
         }
         
-.header .messages-icon {
-    font-size: 22px;
-    cursor: pointer;
-    position: relative;
-    margin-right: 20px; /* Add spacing between message icon and profile picture */
-}
+        .header .messages-icon {
+            font-size: 22px;
+            cursor: pointer;
+            position: relative;
+            margin-right: 20px; /* Add spacing between message icon and profile picture */
+        }
         .header .messages-icon::after {
-    content: attr(data-count);
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 14px;
-}
+            content: attr(data-count);
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 14px;
+        }
         /* Stats Section */
         .stats-section {
             display: flex;
@@ -400,7 +373,6 @@ $conn->close();
     </div>
 </div>
 
-
         <div class="stats-section">
             <a href="#" class="stat-card">
                 <h4>Tasks Completed</h4>
@@ -417,10 +389,22 @@ $conn->close();
         <div class="notifications-section">
             <h3> New Notifications</h3>
             <ul>
-                <li>
-                    New Message: John sent you a message.
-                    <span class="badge">New</span>
-                </li>
+            <ul>
+            <?php if (!empty($messages)): ?>
+                <?php foreach ($messages as $msg): ?>
+                    <a href="messaging_interface.php?message_id=<?php echo $msg['id']; ?>" style="display: block; text-decoration: none; color: inherit;">
+                        <li>
+                            <?php 
+                                // Always prepend "HR Response:" to every message
+                                echo 'HR Response: ' . htmlspecialchars($msg['message']); 
+                            ?>
+                            <span class="badge">New</span>
+                        </li>
+                    </a>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <li>No new messages.</li>
+            <?php endif; ?>
                 <li>
                     Tasks Pending: <span class="badge"><?= $task_count_pending ?></span>
                 </li>
@@ -428,7 +412,7 @@ $conn->close();
         </div>
     </div>
         
-    <script>
+<script>
    function resetMessageCount() {
     const messageIcon = document.querySelector('.messages-icon');
     if (messageIcon) {

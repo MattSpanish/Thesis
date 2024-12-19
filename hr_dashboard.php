@@ -281,10 +281,9 @@ $db_enrollment->close();
         }
         
         .profile-btn svg {
-    margin-left: 5px; /* Adjust the value to move it left or right */
-    vertical-align: middle; /* Aligns it better with text */
-}
-
+            margin-left: 5px; /* Adjust the value to move it left or right */
+            vertical-align: middle; /* Aligns it better with text */
+        }
 
         .profile-btn span:last-child {
             font-size: 18px; /* Adjust the size of the arrow */
