@@ -100,6 +100,7 @@ $pending_count = $count_result->fetch_assoc()['pending_count'] ?? 0;
 $db_hr->close();
 $db_enrollment->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -278,6 +279,12 @@ $db_enrollment->close();
             text-align: center;
             padding: 20px;
         }
+        
+        .profile-btn svg {
+    margin-left: 5px; /* Adjust the value to move it left or right */
+    vertical-align: middle; /* Aligns it better with text */
+}
+
 
         .profile-btn span:last-child {
             font-size: 18px; /* Adjust the size of the arrow */

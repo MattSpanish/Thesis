@@ -387,11 +387,16 @@ $conn->close();
 
         <img src="<?= htmlspecialchars($user_image) ?>" alt="Profile Picture" onclick="toggleDropdown()">
         <span onclick="toggleDropdown()"><?= htmlspecialchars($user_name) ?></span>
-        <i class="dropdown-icon" onclick="toggleDropdown()">▼</i>
-        <div id="dropdownMenu" class="dropdown-menu">
-            <a href="../Faculty/change_password2.php">Change Password</a>
-            <a href="../signin&signout/LandingPage.php" style="color: red;">Logout</a>
-        </div>
+        <span class="dropdown-toggle" onclick="toggleDropdown()">
+    <svg width="15" height="13" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" role="img">
+        <title>Toggle Dropdown</title>
+        <path d="M3.5 5.5a.5.5 0 0 1 .707-.707L8 8.793l3.793-3.998a.5.5 0 1 1 .707.707l-4 4.25a.5.5 0 0 1-.707 0l-4-4.25a.5.5 0 0 1-.707-.707z" fill="currentColor"/>
+    </svg>
+</span>
+<div id="dropdownMenu" class="dropdown-menu">
+    <a href="../Faculty/change_password2.php">Change Password</a>
+    <a href="../signin&signout/LandingPage.php" style="background-color: #ff4d4d;">Logout</a>
+</div>
     </div>
 </div>
 
@@ -401,7 +406,7 @@ $conn->close();
                 <h4>Tasks Completed</h4>
                 <p><?= $task_count_completed ?></p>
             </a>
-            <a href="/notifications" class="stat-card">
+            <a href="faculty_task.php" class="stat-card">
                 <h4>New Notifications</h4>
                 <p><?= $task_count_pending ?></p>
             </a>
@@ -456,8 +461,9 @@ function toggleDropdown() {
 
 // Close the dropdown menu if clicked outside
 document.addEventListener('click', (event) => {
+    const dropdown = document.querySelector('.dropdown-toggle');
     const menu = document.getElementById('dropdownMenu');
-    if (!menu.contains(event.target) && !event.target.closest('.user-info')) {
+    if (!dropdown.contains(event.target) && !menu.contains(event.target)) {
         menu.style.display = 'none';
     }
 });
