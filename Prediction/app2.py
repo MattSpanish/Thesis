@@ -3,6 +3,8 @@ from flask_cors import CORS
 import math
 import os
 import logging
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -83,6 +85,25 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
 
     return notifications
 
+def train_mock_model():
+    """Trains a mock linear regression model for demonstration purposes."""
+    # Example input features: [[student_count, subjects, max_workload, current_teachers]]
+    X = np.array([
+        [200, 10, 5, 8],
+        [150, 8, 4, 6],
+        [300, 15, 6, 12],
+        [250, 12, 5, 10]
+    ])
+    # Example output: additional teachers needed
+    y = np.array([2, 1, 3, 2])
+
+    model = LinearRegression()
+    model.fit(X, y)
+    return model
+
+# Train the mock model
+mock_model = train_mock_model()
+
 @app2.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -114,11 +135,17 @@ def predict():
         # Calculate utilization rate (use the MAX_CRITICAL_RATIO as a baseline for utilization)
         utilization_rate = round(student_count / (current_teachers * MAX_CRITICAL_RATIO), 2)
 
+        # Use the trained model to predict additional teachers needed
+        prediction_features = np.array([[student_count, subjects, max_workload, current_teachers]])
+        additional_teachers_predicted = mock_model.predict(prediction_features)[0]
+        logging.debug(f"Predicted additional teachers needed: {additional_teachers_predicted}")
+
         # Return the results
         result = {
             "teachers_needed": teachers_needed,
             "subjects_per_teacher": subjects_per_teacher,
             "utilization_rate": utilization_rate,
+            "predicted_additional_teachers": round(additional_teachers_predicted),
             "notifications": notifications
         }
         logging.debug(f"Response: {result}")
