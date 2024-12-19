@@ -2,10 +2,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import math
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 # Initialize Flask app and apply CORS for cross-origin requests
 app2 = Flask(__name__)
-CORS(app2, resources={r"/*": {"origins": "*"}})  # Allow all origins for testing
+CORS(app2, resources={r"/*": {"origins": "*"}})
 
 # Configuration for critical ratios
 MIN_CRITICAL_RATIO = int(os.getenv('MIN_CRITICAL_RATIO', 30))
@@ -35,42 +39,47 @@ def calculate_teachers(student_count, limit_per_teacher, subjects, max_workload)
     teachers_for_workload = math.ceil(subjects / max_workload)
     return max(teachers_for_students, teachers_for_workload), teachers_for_students
 
-def calculate_notifications(student_count, teachers_needed, teachers_for_students, subjects, current_teachers):
+def calculate_notifications(student_count, teachers_needed, current_teachers, max_critical_ratio, min_critical_ratio):
     """Calculates notifications based on various conditions."""
     notifications = []
-    current_ratio = student_count / teachers_needed
+    
+    # Calculate current student-to-teacher ratio
+    current_ratio = student_count / current_teachers
+    logging.debug(f"Current ratio: {current_ratio}, Teachers needed: {teachers_needed}, Current teachers: {current_teachers}")
 
-    # Overcrowding or underutilization notification
-    if current_ratio > MAX_CRITICAL_RATIO:
-        additional_teachers = math.ceil(student_count / MAX_CRITICAL_RATIO) - teachers_needed
+    # Add a notification for no overcrowding if teachers are sufficient
+    if current_teachers >= teachers_needed:
+        notifications.append({
+            "type": "no_overcrowding",
+            "message": f"No overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which is within the acceptable threshold of {max_critical_ratio}."
+        })
+        logging.debug("Added 'no_overcrowding' notification.")
+
+    # Add a notification for sufficient teachers
+    if current_teachers >= teachers_needed:
+        notifications.append({
+            "type": "sufficient_teachers",
+            "message": "No additional teachers are needed. The current number of teachers is sufficient."
+        })
+        logging.debug("Added 'sufficient_teachers' notification.")
+
+    # Add a notification for overcrowding if teachers are insufficient
+    if current_teachers < teachers_needed:
+        additional_teachers = teachers_needed - current_teachers
         notifications.append({
             "type": "overcrowding",
-            "message": f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {MAX_CRITICAL_RATIO}.",
+            "message": f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {max_critical_ratio}.",
             "additional_teachers_needed": additional_teachers
         })
-    elif current_ratio < MIN_CRITICAL_RATIO:
+        logging.debug("Added 'overcrowding' notification.")
+
+    # Add a notification for underutilization
+    if current_ratio < min_critical_ratio:
         notifications.append({
             "type": "underutilization",
-            "message": f"Underutilization detected: The student-to-teacher ratio is {current_ratio:.2f}, which is below the minimum critical threshold of {MIN_CRITICAL_RATIO}."
+            "message": f"Underutilization detected: The student-to-teacher ratio is {current_ratio:.2f}, which is below the minimum critical threshold of {min_critical_ratio}."
         })
-
-    # Workload notification (if teachers are overloaded)
-    if teachers_needed > teachers_for_students:
-        additional_teachers = teachers_needed - teachers_for_students
-        notifications.append({
-            "type": "workload",
-            "message": "Teachers are overloaded. Additional teachers are required to handle the subjects.",
-            "additional_teachers_needed": additional_teachers
-        })
-
-    # Hiring notification (if current teachers are insufficient)
-    if teachers_needed > current_teachers:
-        additional_teachers_needed = teachers_needed - current_teachers
-        notifications.append({
-            "type": "hiring",
-            "message": f"Additional teachers required. Current teachers are insufficient to meet the demand. {additional_teachers_needed} more teachers are needed.",
-            "additional_teachers_needed": additional_teachers_needed
-        })
+        logging.debug("Added 'underutilization' notification.")
 
     return notifications
 
@@ -78,6 +87,8 @@ def calculate_notifications(student_count, teachers_needed, teachers_for_student
 def predict():
     try:
         data = request.json
+        logging.debug(f"Received data: {data}")
+        
         inputs = validate_inputs(data)
 
         student_count = inputs['student_count']
@@ -90,27 +101,35 @@ def predict():
         teachers_needed, teachers_for_students = calculate_teachers(
             student_count, limit_per_teacher, subjects, max_workload
         )
+        logging.debug(f"Teachers needed: {teachers_needed}, Subjects per teacher: {math.ceil(subjects / teachers_needed)}")
+
         subjects_per_teacher = math.ceil(subjects / teachers_needed)
 
-        # Calculate notifications for overcrowding, underutilization, workload, and hiring needed
+        # Calculate notifications for overcrowding, underutilization, and hiring
         notifications = calculate_notifications(
-            student_count, teachers_needed, teachers_for_students, subjects, current_teachers
+            student_count, teachers_needed, current_teachers, MAX_CRITICAL_RATIO, MIN_CRITICAL_RATIO
         )
+        logging.debug(f"Notifications: {notifications}")
 
         # Calculate utilization rate (use the MAX_CRITICAL_RATIO as a baseline for utilization)
-        utilization_rate = round(student_count / (teachers_needed * MAX_CRITICAL_RATIO), 2)
+        utilization_rate = round(student_count / (current_teachers * MAX_CRITICAL_RATIO), 2)
 
         # Return the results
-        return jsonify({
+        result = {
             "teachers_needed": teachers_needed,
             "subjects_per_teacher": subjects_per_teacher,
             "utilization_rate": utilization_rate,
             "notifications": notifications
-        })
+        }
+        logging.debug(f"Response: {result}")
+
+        return jsonify(result)
 
     except ValueError as ve:
+        logging.error(f"Validation Error: {ve}")
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
+        logging.error(f"Unexpected Error: {e}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
