@@ -125,7 +125,7 @@ $result = $conn->query($sql);
 
     <div class="container">
         <div class="header">
-            <h1>HR Time Logs</h1>
+            <h1>Faculty Time Logs</h1>
         </div>
 
         <div class="filter-bar">

@@ -486,9 +486,9 @@ $conn->close();
         </form>
     </div>
 
-    <!-- Student Historical Data Section -->
+    <!-- Department Historical Data Section -->
     <div class="upload-container">
-        <h2>Student Historical Data</h2>
+        <h2>Department Historical Data</h2>
         <form id="historicalDataForm" action="" method="POST">
             <div class="form-group">
                 <label for="program">Program</label>
