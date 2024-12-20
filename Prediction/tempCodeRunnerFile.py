@@ -3,8 +3,6 @@ from flask_cors import CORS
 import math
 import os
 import logging
-from sklearn.linear_model import LinearRegression
-import numpy as np
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -41,13 +39,17 @@ def calculate_teachers(student_count, limit_per_teacher, subjects, max_workload)
     teachers_for_workload = math.ceil(subjects / max_workload)
     return max(teachers_for_students, teachers_for_workload), teachers_for_students
 
-def calculate_notifications(student_count, teachers_needed, current_teachers, max_critical_ratio, min_critical_ratio):
-    """Calculates notifications based on various conditions."""
+def calculate_notifications(student_count, teachers_needed, current_teachers, max_critical_ratio, min_critical_ratio, subjects, max_workload):
+    """Calculates notifications based on various conditions, including workload details."""
     notifications = []
     
     # Calculate current student-to-teacher ratio
     current_ratio = student_count / current_teachers
     logging.debug(f"Current ratio: {current_ratio}, Teachers needed: {teachers_needed}, Current teachers: {current_teachers}")
+
+    # Calculate workload per teacher
+    current_workload = math.ceil(subjects * student_count / current_teachers)
+    logging.debug(f"Current workload per teacher: {current_workload}, Max allowed workload: {max_workload}")
 
     # Add a notification for no overcrowding if teachers are sufficient
     if current_teachers >= teachers_needed:
@@ -70,10 +72,13 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
         additional_teachers = teachers_needed - current_teachers
         notifications.append({
             "type": "overcrowding",
-            "message": f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {max_critical_ratio}.",
+            "message": (
+                f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {max_critical_ratio}. "
+                f"Current workload per teacher is {current_workload} hours, which exceeds the maximum allowed workload of {max_workload} hours."
+            ),
             "additional_teachers_needed": additional_teachers
         })
-        logging.debug("Added 'overcrowding' notification.")
+        logging.debug("Added 'overcrowding' notification with workload details.")
 
     # Add a notification for underutilization
     if current_ratio < min_critical_ratio:
@@ -85,24 +90,6 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
 
     return notifications
 
-def train_mock_model():
-    """Trains a mock linear regression model for demonstration purposes."""
-    # Example input features: [[student_count, subjects, max_workload, current_teachers]]
-    X = np.array([
-        [200, 10, 5, 8],
-        [150, 8, 4, 6],
-        [300, 15, 6, 12],
-        [250, 12, 5, 10]
-    ])
-    # Example output: additional teachers needed
-    y = np.array([2, 1, 3, 2])
-
-    model = LinearRegression()
-    model.fit(X, y)
-    return model
-
-# Train the mock model
-mock_model = train_mock_model()
 
 @app2.route('/predict', methods=['POST'])
 def predict():
@@ -135,17 +122,11 @@ def predict():
         # Calculate utilization rate (use the MAX_CRITICAL_RATIO as a baseline for utilization)
         utilization_rate = round(student_count / (current_teachers * MAX_CRITICAL_RATIO), 2)
 
-        # Use the trained model to predict additional teachers needed
-        prediction_features = np.array([[student_count, subjects, max_workload, current_teachers]])
-        additional_teachers_predicted = mock_model.predict(prediction_features)[0]
-        logging.debug(f"Predicted additional teachers needed: {additional_teachers_predicted}")
-
         # Return the results
         result = {
             "teachers_needed": teachers_needed,
             "subjects_per_teacher": subjects_per_teacher,
             "utilization_rate": utilization_rate,
-            "predicted_additional_teachers": round(additional_teachers_predicted),
             "notifications": notifications
         }
         logging.debug(f"Response: {result}")
@@ -159,5 +140,5 @@ def predict():
         logging.error(f"Unexpected Error: {e}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     app2.run(debug=True, port=5001)

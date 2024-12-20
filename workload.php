@@ -187,11 +187,6 @@
             }
         }
 
-        function displayNotification(message, type) {
-            const notificationContainer = document.getElementById('notification');
-            notificationContainer.innerHTML = `<div class="notification ${type}">${message}</div>`;
-        }
-
         function displayResults(result) {
     let resultHTML = `
         <h2>Results:</h2>
@@ -232,7 +227,7 @@
                             <p>${notification.message}</p>
                         </div>`;
                     break;
-                case 'sufficient_teachers': // New case for sufficient_teachers
+                case 'sufficient_teachers': // Case for sufficient teachers
                     resultHTML += `
                         <div class="notification success">
                             <p>${notification.message}</p>
@@ -246,6 +241,7 @@
 
     document.getElementById('results').innerHTML = resultHTML;
 }
+
 
     </script>
 </head>

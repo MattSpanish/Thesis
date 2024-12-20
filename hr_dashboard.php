@@ -97,6 +97,58 @@ if (!$count_result) {
 }
 $pending_count = $count_result->fetch_assoc()['pending_count'] ?? 0;
 
+// Fetch admin data from hr_data
+$result = $db_hr->query("SELECT * FROM ADMIN_CREDENTIALS WHERE id = 1");
+if (!$result) {
+    die("Error fetching admin credentials: " . $db_hr->error);
+}
+$ADMIN_CREDENTIALS = $result->fetch_assoc();
+$profilePicture = $ADMIN_CREDENTIALS['profile_picture'] ?? 'default-profile.png';
+
+// Handle profile picture upload
+$uploadMessage = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['profilePicture'];
+        $targetDir = "UploadHrProfile/";
+        $fileName = time() . "_" . basename($file["name"]);
+        $targetFilePath = $targetDir . $fileName;
+
+        // Create the upload directory if it doesn't exist
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+
+        $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (in_array($fileType, $allowedTypes)) {
+            // Remove old profile picture if it's not the default one
+            if ($profilePicture !== 'default-profile.png' && file_exists($targetDir . $profilePicture)) {
+                unlink($targetDir . $profilePicture);
+            }
+
+            if (move_uploaded_file($file["tmp_name"], $targetFilePath)) {
+                $updateQuery = $db_hr->prepare("UPDATE ADMIN_CREDENTIALS SET profile_picture = ? WHERE id = 1");
+                $updateQuery->bind_param('s', $fileName);
+                if ($updateQuery->execute()) {
+                    $profilePicture = $fileName;
+                    $uploadMessage = "Profile picture updated successfully.";
+                    header("Location: hr_dashboard.php"); // Refresh to show the updated picture
+                    exit;
+                } else {
+                    $uploadMessage = "Database update failed: " . $db_hr->error;
+                }
+            } else {
+                $uploadMessage = "Failed to upload the profile picture.";
+            }
+        } else {
+            $uploadMessage = "Invalid file type. Only JPG, PNG, and GIF are allowed.";
+        }
+    } else {
+        $uploadMessage = "Error uploading file. Please try again.";
+    }
+}
 $db_hr->close();
 $db_enrollment->close();
 ?>
@@ -336,6 +388,57 @@ $db_enrollment->close();
             background-color: #f4f4f4;
             color: #000;
         }
+
+        .modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close-btn:hover, .close-btn:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background-color: #0F2A1D;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #506C5A;
+    }
     </style>
 </head>
 <body>
@@ -360,6 +463,16 @@ $db_enrollment->close();
                         <path d="M3.5 5.5a.5.5 0 0 1 .707-.707L8 8.793l3.793-3.998a.5.5 0 1 1 .707.707l-4 4.25a.5.5 0 0 1-.707 0l-4-4.25a.5.5 0 0 1-.707-.707z"/>
                     </svg>
                 </button>
+                <div id="profileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Change Profile Picture</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="profilePicture" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</div>
 
                 <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
                     <a href="../signin&signout/change_password.php">Change Password</a>
@@ -400,20 +513,46 @@ $db_enrollment->close();
     </div>
 
     <script>
-        // Toggle the dropdown menu
-        document.getElementById('profileDropdown').addEventListener('click', () => {
-            const menu = document.getElementById('dropdownMenu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
+    // Toggle the dropdown menu
+    document.getElementById('profileDropdown').addEventListener('click', (event) => {
+        const menu = document.getElementById('dropdownMenu');
+        // Prevent event bubbling when clicking dropdown toggle
+        event.stopPropagation();
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
 
-        // Close the dropdown menu if clicked outside
-        document.addEventListener('click', (event) => {
-            const menu = document.getElementById('dropdownMenu');
-            const profileBtn = document.getElementById('profileDropdown');
-            if (!profileBtn.contains(event.target) && !menu.contains(event.target)) {
-                menu.style.display = 'none';
-            }
-        });
-    </script>
+    // Show the modal when profile image is clicked
+    const profileImage = document.querySelector('.profile-btn img');
+    const modal = document.querySelector('#profileModal');
+    const closeModal = document.querySelector('.close-btn');
+
+    profileImage.addEventListener('click', (event) => {
+        // Prevent dropdown toggle from opening
+        event.stopPropagation();
+        modal.style.display = 'flex';
+    });
+
+    // Close the modal when close button is clicked
+    closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    // Close the modal when clicking outside of it
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Close the dropdown menu if clicked outside
+    document.addEventListener('click', (event) => {
+        const menu = document.getElementById('dropdownMenu');
+        const profileBtn = document.getElementById('profileDropdown');
+        if (!profileBtn.contains(event.target)) {
+            menu.style.display = 'none';
+        }
+    });
+</script>
+
 </body>
 </html>

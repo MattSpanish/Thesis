@@ -61,13 +61,26 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch schedule records from the database
-$sql = "SELECT subject, sections, time, day, total_students FROM FacultySchedule"; 
-$schedule_result = $conn->query($sql);
+// Fetch schedule records for the specific user from the database
+$sql = "SELECT subject, sections, time, day, total_students 
+        FROM FacultySchedule 
+        WHERE id = ?";
 
-if (!$schedule_result) {
-    die("SQL error: " . $conn->error);
+// Prepare and bind the statement
+$stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die("Error preparing the SQL statement: " . $conn->error);
 }
+
+$stmt->bind_param("i", $user_id); // Bind the logged-in user's ID
+$stmt->execute();
+
+// Get the result
+$schedule_result = $stmt->get_result();
+if (!$schedule_result) {
+    die("SQL error: " . $stmt->error);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -418,22 +431,23 @@ if (!$schedule_result) {
       </tr>
     </thead>
     <tbody id="schedule-table-body">
-      <?php if ($schedule_result->num_rows > 0): ?>
-        <?php while ($schedule = $schedule_result->fetch_assoc()): ?>
-          <tr>
-            <td><?php echo htmlspecialchars($schedule['subject'], ENT_QUOTES, 'UTF-8'); ?></td>
-            <td><?php echo htmlspecialchars($schedule['sections'], ENT_QUOTES, 'UTF-8'); ?></td>
-            <td><?php echo htmlspecialchars($schedule['time'], ENT_QUOTES, 'UTF-8'); ?></td>
-            <td><?php echo htmlspecialchars($schedule['day'], ENT_QUOTES, 'UTF-8'); ?></td>
-            <td><?php echo htmlspecialchars($schedule['total_students'], ENT_QUOTES, 'UTF-8'); ?></td>
-          </tr>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <tr>
-          <td colspan="5">No schedule available.</td>
-        </tr>
-      <?php endif; ?>
-    </tbody>
+  <?php if ($schedule_result->num_rows > 0): ?>
+    <?php while ($schedule = $schedule_result->fetch_assoc()): ?>
+      <tr>
+        <td><?php echo htmlspecialchars($schedule['subject'], ENT_QUOTES, 'UTF-8'); ?></td>
+        <td><?php echo htmlspecialchars($schedule['sections'], ENT_QUOTES, 'UTF-8'); ?></td>
+        <td><?php echo htmlspecialchars($schedule['time'], ENT_QUOTES, 'UTF-8'); ?></td>
+        <td><?php echo htmlspecialchars($schedule['day'], ENT_QUOTES, 'UTF-8'); ?></td>
+        <td><?php echo htmlspecialchars($schedule['total_students'], ENT_QUOTES, 'UTF-8'); ?></td>
+      </tr>
+    <?php endwhile; ?>
+  <?php else: ?>
+    <tr>
+      <td colspan="5">No schedule available for your account.</td>
+    </tr>
+  <?php endif; ?>
+</tbody>
+
   </table>
 </div>
 
