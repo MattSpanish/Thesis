@@ -60,7 +60,11 @@ def calculate_teachers(student_count, limit_per_teacher, subjects, max_workload)
 
 def calculate_notifications(student_count, teachers_needed, current_teachers, max_critical_ratio, min_critical_ratio, subjects, max_workload):
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     """Calculates notifications based on various conditions."""
+=======
+    """Calculates notifications based on various conditions, including workload details."""
+>>>>>>> Stashed changes
 =======
     """Calculates notifications based on various conditions, including workload details."""
 >>>>>>> Stashed changes
@@ -97,10 +101,13 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
             "type": "overcrowding",
             "message": (
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {max_critical_ratio}."
             ),
             "additional_teachers_needed": max(0, additional_teachers_for_ratio)
 =======
+=======
+>>>>>>> Stashed changes
                 f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {max_critical_ratio}. "
                 f"Current workload per teacher is {current_workload} hours, which exceeds the maximum allowed workload of {max_workload} hours."
             ),
@@ -108,6 +115,7 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
 >>>>>>> Stashed changes
         })
         logging.debug("Added 'overcrowding' notification with workload details.")
+<<<<<<< Updated upstream
 
     # Teacher overload notification
     if current_workload > max_workload:
@@ -120,6 +128,8 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
             "additional_teachers_needed": max(0, additional_teachers_for_workload)
         })
         logging.debug("Added 'teacher_overload' notification.")
+=======
+>>>>>>> Stashed changes
 
     # Add a notification for underutilization
     if current_ratio < min_critical_ratio:
