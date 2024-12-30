@@ -62,7 +62,11 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     """Calculates notifications based on various conditions."""
+=======
+    """Calculates notifications based on various conditions, including workload details."""
+>>>>>>> Stashed changes
 =======
     """Calculates notifications based on various conditions, including workload details."""
 >>>>>>> Stashed changes
@@ -107,10 +111,13 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 f"Overcrowding detected: The student-to-teacher ratio is {current_ratio:.2f}, which exceeds the maximum critical threshold of {max_critical_ratio}."
             ),
             "additional_teachers_needed": max(0, additional_teachers_for_ratio)
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -122,6 +129,7 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
 >>>>>>> Stashed changes
         })
         logging.debug("Added 'overcrowding' notification with workload details.")
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 
@@ -136,6 +144,8 @@ def calculate_notifications(student_count, teachers_needed, current_teachers, ma
             "additional_teachers_needed": max(0, additional_teachers_for_workload)
         })
         logging.debug("Added 'teacher_overload' notification.")
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
