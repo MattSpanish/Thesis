@@ -188,61 +188,66 @@
         }
 
         function displayResults(result) {
-    let resultHTML = `
-        <h2>Results:</h2>
-        <p><strong>Teachers Needed:</strong> ${result.teachers_needed}</p>
-        <p><strong>Subjects Per Teacher:</strong> ${result.subjects_per_teacher}</p>
-        <p><strong>Utilization Rate:</strong> ${(result.utilization_rate * 100).toFixed(2)}%</p>
-    `;
+            let resultHTML = `
+                <h2>Results:</h2>
+                <p><strong>Teachers Needed:</strong> ${result.teachers_needed}</p>
+                <p><strong>Subjects Per Teacher:</strong> ${result.subjects_per_teacher}</p>
+                <p><strong>Utilization Rate:</strong> ${(result.utilization_rate * 100).toFixed(2)}%</p>
+            `;
 
-    // Check if there are notifications and display them accordingly
-    if (result.notifications && result.notifications.length > 0) {
-        resultHTML += '<h3>Notifications:</h3>';
+            // Check if there are notifications and display them accordingly
+            if (result.notifications && result.notifications.length > 0) {
+                resultHTML += '<h3>Notifications:</h3>';
 
-        result.notifications.forEach(notification => {
-            switch (notification.type) {
-                case 'overcrowding':
-                    resultHTML += `
-                        <div class="notification error">
-                            <p>${notification.message}</p>
-                            ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
-                        </div>`;
-                    break;
-                case 'underutilization':
-                    resultHTML += `
-                        <div class="notification info">
-                            <p>${notification.message}</p>
-                        </div>`;
-                    break;
-                case 'workload':
-                    resultHTML += `
-                        <div class="notification warning">
-                            <p>${notification.message}</p>
-                            ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
-                        </div>`;
-                    break;
-                case 'hiring':
-                    resultHTML += `
-                        <div class="notification info">
-                            <p>${notification.message}</p>
-                        </div>`;
-                    break;
-                case 'sufficient_teachers': // Case for sufficient teachers
-                    resultHTML += `
-                        <div class="notification success">
-                            <p>${notification.message}</p>
-                        </div>`;
-                    break;
-                default:
-                    break;
+                result.notifications.forEach(notification => {
+                    switch (notification.type) {
+                        case 'overcrowding':
+                            resultHTML += `
+                                <div class="notification error">
+                                    <p>${notification.message}</p>
+                                    ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
+                                </div>`;
+                            break;
+                        case 'underutilization':
+                            resultHTML += `
+                                <div class="notification info">
+                                    <p>${notification.message}</p>
+                                </div>`;
+                            break;
+                        case 'workload':
+                            resultHTML += `
+                                <div class="notification warning">
+                                    <p>${notification.message}</p>
+                                    ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
+                                </div>`;
+                            break;
+                        case 'teacher_overload': // Handle teacher overload
+                            resultHTML += `
+                                <div class="notification error">
+                                    <p>${notification.message}</p>
+                                    <p><strong>Suggested Action:</strong> Reduce workload or hire additional teachers.</p>
+                                </div>`;
+                            break;
+                        case 'hiring':
+                            resultHTML += `
+                                <div class="notification info">
+                                    <p>${notification.message}</p>
+                                </div>`;
+                            break;
+                        case 'sufficient_teachers':
+                            resultHTML += `
+                                <div class="notification success">
+                                    <p>${notification.message}</p>
+                                </div>`;
+                            break;
+                        default:
+                            break;
+                    }
+                });
             }
-        });
-    }
 
-    document.getElementById('results').innerHTML = resultHTML;
-}
-
-
+            document.getElementById('results').innerHTML = resultHTML;
+        }
     </script>
 </head>
 <body>
@@ -251,9 +256,9 @@
     </header>
 
     <!-- Back Button -->
-<a href="hr_dashboard.php" class="back-button">
-    <i class="fas fa-arrow-left"></i>
-</a>
+    <a href="hr_dashboard.php" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+    </a>
 
     <main>
         <form onsubmit="handleSubmit(event)">
