@@ -199,6 +199,7 @@
             if (result.notifications && result.notifications.length > 0) {
                 resultHTML += '<h3>Notifications:</h3>';
 
+<<<<<<< Updated upstream
                 result.notifications.forEach(notification => {
                     switch (notification.type) {
                         case 'overcrowding':
@@ -244,10 +245,52 @@
                             break;
                     }
                 });
+=======
+        result.notifications.forEach(notification => {
+            switch (notification.type) {
+                case 'overcrowding':
+                    resultHTML += `
+                        <div class="notification error">
+                            <p>${notification.message}</p>
+                            ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
+                        </div>`;
+                    break;
+                case 'underutilization':
+                    resultHTML += `
+                        <div class="notification info">
+                            <p>${notification.message}</p>
+                        </div>`;
+                    break;
+                case 'workload':
+                    resultHTML += `
+                        <div class="notification warning">
+                            <p>${notification.message}</p>
+                            ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
+                        </div>`;
+                    break;
+                case 'hiring':
+                    resultHTML += `
+                        <div class="notification info">
+                            <p>${notification.message}</p>
+                        </div>`;
+                    break;
+                case 'sufficient_teachers': // Case for sufficient teachers
+                    resultHTML += `
+                        <div class="notification success">
+                            <p>${notification.message}</p>
+                        </div>`;
+                    break;
+                default:
+                    break;
+>>>>>>> Stashed changes
             }
 
+<<<<<<< Updated upstream
             document.getElementById('results').innerHTML = resultHTML;
         }
+=======
+
+>>>>>>> Stashed changes
     </script>
 </head>
 <body>
