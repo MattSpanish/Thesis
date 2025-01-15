@@ -198,7 +198,7 @@ $faculty_conn->close();
     </a>
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">HR Messaging System</h1>
+    <h1 class="text-center mb-4">DEAN Messaging System</h1>
 
     <!-- Success and Error Messages -->
     <?php if (isset($success_message)): ?>

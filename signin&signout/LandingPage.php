@@ -47,7 +47,7 @@
         <p class="fs-4 mb-3 text-center">REGISTER AS FACULTY / LOGIN AS</p>
         <div class="d-flex justify-content-center">
             <a class="btn btn-primary btn-xl text-uppercase w-100 me-1" href="LoginPage.php" role="button">Faculty</a>
-            <a class="btn btn-primary btn-xl text-uppercase w-100 ms-1" href="LoginPageHR.php" role="button">HR</a>
+            <a class="btn btn-primary btn-xl text-uppercase w-100 ms-1" href="LoginPageHR.php" role="button">DEAN</a>
         </div>
     </div>
 </div>

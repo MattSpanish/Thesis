@@ -158,7 +158,7 @@ $db_enrollment->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Dashboard</title>
+    <title>DEAN Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -454,7 +454,7 @@ $db_enrollment->close();
 
     <div class="content">
         <div class="header">
-            <h1>HR Dashboard</h1>
+            <h1>DEAN DASHBOARD</h1>
             <div>
                 <button id="profileDropdown" class="profile-btn">
                     <img src="UploadHrProfile/<?php echo htmlspecialchars($profilePicture); ?>" alt="Profile">
