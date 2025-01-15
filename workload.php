@@ -188,66 +188,73 @@
         }
 
         function displayResults(result) {
-            let resultHTML = `
-                <h2>Results:</h2>
-                <p><strong>Teachers Needed:</strong> ${result.teachers_needed}</p>
-                <p><strong>Subjects Per Teacher:</strong> ${result.subjects_per_teacher}</p>
-                <p><strong>Utilization Rate:</strong> ${(result.utilization_rate * 100).toFixed(2)}%</p>
-            `;
+    let resultHTML = `
+        <h2>Results:</h2>
+        <p><strong>Teachers Needed:</strong> ${result.teachers_needed}</p>
+        <p><strong>Subjects Per Teacher:</strong> ${result.subjects_per_teacher}</p>
+        <p><strong>Utilization Rate:</strong> ${(result.utilization_rate * 100).toFixed(2)}%</p>
+    `;
 
-            // Check if there are notifications and display them accordingly
-            if (result.notifications && result.notifications.length > 0) {
-                resultHTML += '<h3>Notifications:</h3>';
+    // Check if there are notifications and display only the most critical one
+    if (result.notifications && result.notifications.length > 0) {
+        let highestPriorityNotification = null;
 
-                result.notifications.forEach(notification => {
-                    switch (notification.type) {
-                        case 'overcrowding':
-                            resultHTML += `
-                                <div class="notification error">
-                                    <p>${notification.message}</p>
-                                    ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
-                                </div>`;
-                            break;
-                        case 'underutilization':
-                            resultHTML += `
-                                <div class="notification info">
-                                    <p>${notification.message}</p>
-                                </div>`;
-                            break;
-                        case 'workload':
-                            resultHTML += `
-                                <div class="notification warning">
-                                    <p>${notification.message}</p>
-                                    ${notification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${notification.additional_teachers_needed}</p>` : ''}
-                                </div>`;
-                            break;
-                        case 'teacher_overload': // Handle teacher overload
-                            resultHTML += `
-                                <div class="notification error">
-                                    <p>${notification.message}</p>
-                                    <p><strong>Suggested Action:</strong> Reduce workload or hire additional teachers.</p>
-                                </div>`;
-                            break;
-                        case 'hiring':
-                            resultHTML += `
-                                <div class="notification info">
-                                    <p>${notification.message}</p>
-                                </div>`;
-                            break;
-                        case 'sufficient_teachers':
-                            resultHTML += `
-                                <div class="notification success">
-                                    <p>${notification.message}</p>
-                                </div>`;
-                            break;
-                        default:
-                            break;
-                    }
-                });
+        const priorityOrder = {
+            "error": 1,
+            "warning": 2,
+            "info": 3,
+            "success": 4
+        };
+
+        // Find the highest-priority notification
+        result.notifications.forEach(notification => {
+            if (
+                !highestPriorityNotification || 
+                priorityOrder[notification.type] < priorityOrder[highestPriorityNotification.type]
+            ) {
+                highestPriorityNotification = notification;
             }
+        });
 
-            document.getElementById('results').innerHTML = resultHTML;
+        if (highestPriorityNotification) {
+            switch (highestPriorityNotification.type) {
+                case 'overcrowding':
+                case 'teacher_overload':
+                    resultHTML += `
+                        <div class="notification error">
+                            <p>${highestPriorityNotification.message}</p>
+                            ${highestPriorityNotification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${highestPriorityNotification.additional_teachers_needed}</p>` : ''}
+                        </div>`;
+                    break;
+                case 'workload':
+                    resultHTML += `
+                        <div class="notification warning">
+                            <p>${highestPriorityNotification.message}</p>
+                            ${highestPriorityNotification.additional_teachers_needed ? `<p><strong>Additional Teachers Needed:</strong> ${highestPriorityNotification.additional_teachers_needed}</p>` : ''}
+                        </div>`;
+                    break;
+                case 'hiring':
+                case 'underutilization':
+                    resultHTML += `
+                        <div class="notification info">
+                            <p>${highestPriorityNotification.message}</p>
+                        </div>`;
+                    break;
+                case 'sufficient_teachers':
+                    resultHTML += `
+                        <div class="notification success">
+                            <p>${highestPriorityNotification.message}</p>
+                        </div>`;
+                    break;
+                default:
+                    break;
+            }
         }
+    }
+
+    document.getElementById('results').innerHTML = resultHTML;
+}
+
     </script>
 </head>
 <body>
